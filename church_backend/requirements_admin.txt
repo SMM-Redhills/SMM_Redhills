@@ -1,0 +1,2 @@
+# Additional requirements for admin dashboard
+djangorestframework-simplejwt==5.3.0
