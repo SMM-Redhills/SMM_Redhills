@@ -13,12 +13,27 @@ const sampleGalleryItems = [
 const Gallery = ({ onNavigate, scrollToSection }) => {
   const [activeCategory, setActiveCategory] = useState('All');
   const observerRef = useRef(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    image: '',
+    video_url: '',
+    category: 'Community',
+    media_type: 'image'
+  });
+  const [galleryItems, setGalleryItems] = useState(sampleGalleryItems);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const adminToken = localStorage.getItem('adminToken');
+    setIsAdmin(!!adminToken);
+  }, []);
 
   const categories = ['All', 'Architecture', 'Celebrations', 'Worship', 'Community', 'Prayer', 'Youth'];
 
   const filteredItems = activeCategory === 'All'
-    ? sampleGalleryItems
-    : sampleGalleryItems.filter(item => item.category === activeCategory);
+    ? galleryItems
+    : galleryItems.filter(item => item.category === activeCategory);
 
   // Initialize scroll animations
   useEffect(() => {
@@ -88,9 +103,34 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
         }}
       >
         <div className="scroll-slide-up" style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ fontSize: '3rem', fontFamily: 'serif', fontWeight: '700', marginBottom: '1rem' }}>
-            Our Gallery
-          </h1>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem'}}>
+            <h1 style={{ fontSize: '3rem', fontFamily: 'serif', fontWeight: '700' }}>
+              Our Gallery
+            </h1>
+            {isAdmin && (
+              <button
+                onClick={() => setShowAddForm(true)}
+                style={{
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '50px',
+                  height: '50px',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
+              >
+                +
+              </button>
+            )}
+          </div>
           <p style={{ fontSize: '1.125rem' }}>
             Capturing moments of faith, fellowship, and community
           </p>
@@ -215,6 +255,134 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
           </div>
         </div>
       </div>
+
+      {/* Add Gallery Item Modal */}
+      {showAddForm && (
+        <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50}}>
+          <div style={{backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
+            <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937'}}>Add Gallery Item</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const newItem = {
+                id: Date.now(),
+                ...formData,
+                image: formData.media_type === 'image' ? formData.image : 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600'
+              };
+              setGalleryItems([newItem, ...galleryItems]);
+              setShowAddForm(false);
+              setFormData({ title: '', image: '', video_url: '', category: 'Community', media_type: 'image' });
+            }}>
+              <div style={{marginBottom: '1rem'}}>
+                <input
+                  type="text"
+                  placeholder="Title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  required
+                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                />
+              </div>
+              <div style={{marginBottom: '1rem'}}>
+                <select
+                  value={formData.media_type}
+                  onChange={(e) => setFormData({...formData, media_type: e.target.value})}
+                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                >
+                  <option value="image">Photo</option>
+                  <option value="video">Video</option>
+                </select>
+              </div>
+              <div style={{marginBottom: '1rem'}}>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                >
+                  <option value="Community">Community</option>
+                  <option value="Architecture">Architecture</option>
+                  <option value="Celebrations">Celebrations</option>
+                  <option value="Worship">Worship</option>
+                  <option value="Prayer">Prayer</option>
+                  <option value="Youth">Youth</option>
+                </select>
+              </div>
+              {formData.media_type === 'image' ? (
+                <div style={{marginBottom: '1rem'}}>
+                  <input
+                    type="url"
+                    placeholder="Image URL"
+                    value={formData.image}
+                    onChange={(e) => setFormData({...formData, image: e.target.value})}
+                    required
+                    style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                  />
+                </div>
+              ) : (
+                <div style={{marginBottom: '1rem'}}>
+                  <input
+                    type="url"
+                    placeholder="Video URL"
+                    value={formData.video_url}
+                    onChange={(e) => setFormData({...formData, video_url: e.target.value})}
+                    required
+                    style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                  />
+                </div>
+              )}
+              <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
+                <button
+                  type="button"
+                  onClick={() => {setShowAddForm(false); setFormData({ title: '', image: '', video_url: '', category: 'Community', media_type: 'image' });}}
+                  style={{padding: '0.5rem 1rem', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (formData.title && (formData.image || formData.video_url)) {
+                      try {
+                        const response = await fetch('http://localhost:8000/api/gallery/', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
+                          },
+                          body: JSON.stringify({
+                            ...formData,
+                            image_url: formData.media_type === 'image' ? formData.image : null,
+                            video_url: formData.media_type === 'video' ? formData.video_url : null
+                          })
+                        });
+                        
+                        if (response.ok) {
+                          const newItem = {
+                            id: Date.now(),
+                            ...formData,
+                            image: formData.media_type === 'image' ? formData.image : 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600'
+                          };
+                          setGalleryItems([newItem, ...galleryItems]);
+                          setShowAddForm(false);
+                          setFormData({ title: '', image: '', video_url: '', category: 'Community', media_type: 'image' });
+                          alert('Gallery item added successfully!');
+                        } else {
+                          alert('Error adding gallery item. Please try again.');
+                        }
+                      } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error adding gallery item. Please try again.');
+                      }
+                    }
+                  }}
+                  style={{padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
+                >
+                  Add Item
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Custom styles for hover effects */}
       <style jsx>{`

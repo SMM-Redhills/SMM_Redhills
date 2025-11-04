@@ -12,65 +12,99 @@ const AdminLogin = ({ onLoginSuccess }) => {
     setError('');
 
     try {
-      const response = await adminAPI.login(credentials);
-      localStorage.setItem('adminToken', response.data.access);
-      localStorage.setItem('adminUser', JSON.stringify(response.data.user));
-      onLoginSuccess(response.data.user);
+      const response = await fetch('http://localhost:8001/api/auth/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials)
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const userData = { username: credentials.username, token: data.token || data.access };
+        onLoginSuccess(userData);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Invalid username or password');
+      }
     } catch (error) {
-      setError(error.response?.data?.error || 'Login failed');
+      setError('Login failed. Please check your connection.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div style={{minHeight: '100vh', backgroundColor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      <div style={{maxWidth: '28rem', width: '100%', padding: '2rem'}}>
+        <div style={{textAlign: 'center', marginBottom: '2rem'}}>
+          <h2 style={{fontSize: '1.875rem', fontWeight: '800', color: '#1f2937', marginBottom: '0.5rem'}}>
             🏛️ Church Admin Login
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p style={{fontSize: '0.875rem', color: '#6b7280'}}>
             Sign in to manage church content
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <input
-                type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
-                value={credentials.username}
-                onChange={(e) => setCredentials({...credentials, username: e.target.value})}
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={credentials.password}
-                onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-              />
-            </div>
+        <form onSubmit={handleSubmit} style={{backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
+          <div style={{marginBottom: '1rem'}}>
+            <input
+              type="text"
+              required
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem 0.375rem 0 0',
+                fontSize: '0.875rem',
+                color: '#1f2937'
+              }}
+              placeholder="Username"
+              value={credentials.username}
+              onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+            />
+            <input
+              type="password"
+              required
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #d1d5db',
+                borderTop: 'none',
+                borderRadius: '0 0 0.375rem 0.375rem',
+                fontSize: '0.875rem',
+                color: '#1f2937'
+              }}
+              placeholder="Password"
+              value={credentials.password}
+              onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+            />
           </div>
 
           {error && (
-            <div className="text-red-600 text-sm text-center">{error}</div>
+            <div style={{color: '#dc2626', fontSize: '0.875rem', textAlign: 'center', marginBottom: '1rem'}}>{error}</div>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              backgroundColor: loading ? '#9ca3af' : '#2563eb',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#1d4ed8')}
+            onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#2563eb')}
+          >
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
         </form>
       </div>
     </div>

@@ -16,39 +16,10 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
 
   const navigation = [
     { name: 'Home', id: 'home' },
-    { 
-      name: 'About Us', 
-      id: 'church',
-      submenu: [
-        { name: 'Our Mission', id: 'mission' },
-        { name: 'Our History', id: 'history' },
-        { name: 'St.Thomas in Santhome', id: 'st-thomas' },
-        { name: 'Tomb Chapel', id: 'tomb-chapel' },
-        { name: 'Mylai Madha', id: 'mylai-madha' },
-        { name: 'Papal Visit', id: 'papal-visit' },
-        { name: 'Our Museum', id: 'museum' },
-        { name: 'Parish Team', id: 'parish-team' },
-        { name: 'Our Parish', id: 'parish' },
-        { name: 'Our Archdiocese', id: 'archdiocese' }
-      ]
-    },
+    { name: 'About Us', id: 'church' },
     { name: 'News & Events', id: 'news-events' },
-    { 
-      name: 'Gallery', 
-      id: 'gallery',
-      submenu: [
-        { name: 'Photos', id: 'photos' },
-        { name: 'Videos', id: 'videos' }
-      ]
-    },
-    { 
-      name: 'Prayers', 
-      id: 'prayers',
-      submenu: [
-        { name: 'English Prayers', id: 'english-prayers' },
-        { name: 'Tamil Prayers', id: 'tamil-prayers' }
-      ]
-    },
+    { name: 'Gallery', id: 'gallery' },
+    { name: 'Prayers', id: 'prayers' },
     { name: 'Schedule', id: 'schedule' },
     { name: 'Contact', id: 'contact' },
   ];

@@ -1,8 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Clock, Heart, Users, Book, Cross, Calendar, Bell, Star } from 'lucide-react';
 
 const Schedule = () => {
   const observerRef = useRef(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState({
+    service_name: '',
+    time: '',
+    day: '',
+    description: '',
+    type: 'Mass'
+  });
+  const [scheduleItems, setScheduleItems] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const adminToken = localStorage.getItem('adminToken');
+    setIsAdmin(!!adminToken);
+  }, []);
 
   // Initialize scroll animations
   useEffect(() => {
@@ -48,10 +63,35 @@ const Schedule = () => {
         <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.1)'}}></div>
         <div style={{position: 'relative', maxWidth: '72rem', margin: '0 auto', textAlign: 'center'}}>
 
-          <h1 className="scroll-slide-up" style={{fontSize: '3rem', fontWeight: '700', marginBottom: '1rem', lineHeight: '1.1', textAlign: 'center', fontFamily: 'serif'}}>
-            Our Schedule
-            <span style={{display: 'block', fontSize: '1.5rem', fontWeight: '300', marginTop: '0.5rem', color: '#e0f2fe'}}>Mass Times & church Services</span>
-          </h1>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem'}}>
+            <h1 className="scroll-slide-up" style={{fontSize: '3rem', fontWeight: '700', lineHeight: '1.1', textAlign: 'center', fontFamily: 'serif'}}>
+              Our Schedule
+            </h1>
+            {isAdmin && (
+              <button
+                onClick={() => setShowAddForm(true)}
+                style={{
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '50px',
+                  height: '50px',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
+              >
+                +
+              </button>
+            )}
+          </div>
+          <span style={{display: 'block', fontSize: '1.5rem', fontWeight: '300', color: '#e0f2fe'}}>Mass Times & church Services</span>
           <p className="scroll-slide-up" style={{fontSize: '1.125rem', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto 2rem auto', lineHeight: '1.7', textAlign: 'center', color: '#e0f2fe'}}>
             Join us for worship, prayer, and spiritual growth throughout the week
           </p>
@@ -338,6 +378,120 @@ const Schedule = () => {
           scroll-margin-top: 80px;
         }
       `}</style>
+      
+      {/* Add Schedule Modal */}
+      {showAddForm && (
+        <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50}}>
+          <div style={{backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
+            <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937'}}>Add Schedule Item</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const newItem = {
+                id: Date.now(),
+                ...formData
+              };
+              setScheduleItems([newItem, ...scheduleItems]);
+              setShowAddForm(false);
+              setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });
+              alert('Schedule item added successfully!');
+            }}>
+              <div style={{marginBottom: '1rem'}}>
+                <input
+                  type="text"
+                  placeholder="Service Name"
+                  value={formData.service_name}
+                  onChange={(e) => setFormData({...formData, service_name: e.target.value})}
+                  required
+                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                />
+              </div>
+              <div style={{marginBottom: '1rem'}}>
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData({...formData, type: e.target.value})}
+                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                >
+                  <option value="Mass">Mass</option>
+                  <option value="Prayer">Prayer</option>
+                  <option value="Devotion">Devotion</option>
+                  <option value="Service">Service</option>
+                </select>
+              </div>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem'}}>
+                <input
+                  type="text"
+                  placeholder="Day (e.g., Sunday, Daily)"
+                  value={formData.day}
+                  onChange={(e) => setFormData({...formData, day: e.target.value})}
+                  required
+                  style={{padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                />
+                <input
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => setFormData({...formData, time: e.target.value})}
+                  required
+                  style={{padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                />
+              </div>
+              <div style={{marginBottom: '1rem'}}>
+                <textarea
+                  placeholder="Description (optional)"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows="3"
+                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                />
+              </div>
+              <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
+                <button
+                  type="button"
+                  onClick={() => {setShowAddForm(false); setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });}}
+                  style={{padding: '0.5rem 1rem', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (formData.service_name && formData.time && formData.day) {
+                      try {
+                        const response = await fetch('http://localhost:8000/api/schedule/', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
+                          },
+                          body: JSON.stringify(formData)
+                        });
+                        
+                        if (response.ok) {
+                          const newItem = {
+                            id: Date.now(),
+                            ...formData
+                          };
+                          setScheduleItems([newItem, ...scheduleItems]);
+                          setShowAddForm(false);
+                          setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });
+                          alert('Schedule item added successfully!');
+                        } else {
+                          alert('Error adding schedule item. Please try again.');
+                        }
+                      } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error adding schedule item. Please try again.');
+                      }
+                    }
+                  }}
+                  style={{padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
+                >
+                  Add Schedule
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

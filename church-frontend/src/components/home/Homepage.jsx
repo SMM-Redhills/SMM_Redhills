@@ -256,7 +256,7 @@ const Homepage = ({ onNavigate, scrollToSection }) => {
         <section 
           id="about-saint"
           className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '5rem', background: 'linear-gradient(to right, #f0f9ff, #e0f2fe)', borderRadius: '1rem', padding: '3rem', textAlign: 'center', width: '100%'}}
+          style={{marginBottom: '5rem', background: 'linear-gradient(to right, #f0f9ff, #e0f2fe)', borderRadius: '1rem', padding: '10PX', textAlign: 'center', width: '100%'}}
         >
           <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>About Saint Mary Magdalene</h2>
           <div style={{maxWidth: '64rem', margin: '0 auto'}}>

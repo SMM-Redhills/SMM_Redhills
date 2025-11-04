@@ -69,15 +69,15 @@ const About = ({ onNavigate, scrollToSection }) => {
         <section 
           id="church-story"
           className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '4rem', backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}
+          style={{marginBottom: '4rem', backgroundColor: '#ffffff', padding: 'clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem)', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}
         >
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '3rem', alignItems: 'center'}}>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 'clamp(1.5rem, 4vw, 3rem)', alignItems: 'center'}}>
             <div className="scroll-slide-left">
-              <h2 style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Our Sacred Heritage</h2>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', fontSize: '1.125rem', lineHeight: '1.7'}}>
+              <h2 style={{fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Our Sacred Heritage</h2>
+              <p style={{color: '#64748b', marginBottom: '1.5rem', fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', lineHeight: '1.7'}}>
                 Saint Mary Magdalene church is a sacred place of worship dedicated to the beloved disciple who was the first witness to Christ's resurrection. Our church serves as a spiritual home for the faithful community in Redhills, Chennai.
               </p>
-              <p style={{color: '#64748b', marginBottom: '2rem', fontSize: '1.125rem', lineHeight: '1.7'}}>
+              <p style={{color: '#64748b', marginBottom: '2rem', fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', lineHeight: '1.7'}}>
                 Built with devotion and faith, our church stands as a testament to the enduring love and redemption that Saint Mary Magdalene represents. We welcome all who seek spiritual guidance, community, and the transformative power of God's love.
               </p>
             </div>
@@ -85,7 +85,7 @@ const About = ({ onNavigate, scrollToSection }) => {
               <img 
                 src="/assets/images/SMMCR.jpg" 
                 alt="church Interior" 
-                style={{width: '100%', maxWidth: '28rem', height: '20rem', objectFit: 'cover', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}
+                style={{width: '100%', maxWidth: '28rem', height: 'clamp(15rem, 40vw, 20rem)', objectFit: 'cover', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}
               />
             </div>
           </div>

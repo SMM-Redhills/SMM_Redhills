@@ -58,24 +58,35 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl">Loading admin dashboard...</div>
+      <div style={{minHeight: '100vh', backgroundColor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <div style={{fontSize: '1.25rem', color: '#64748b'}}>Loading admin dashboard...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
+    <div style={{minHeight: '100vh', backgroundColor: '#f8fafc'}}>
+      <div style={{background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: 'white'}}>
+        <div style={{maxWidth: '80rem', margin: '0 auto', padding: '0 1rem'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 0'}}>
             <div>
-              <h1 className="text-3xl font-bold">🏛️ Church Admin Dashboard</h1>
-              <p className="text-blue-100 mt-2">Welcome, {user?.username}! Manage your church content and community</p>
+              <h1 style={{fontSize: '1.875rem', fontWeight: '700', fontFamily: 'serif'}}>🏛️ Church Admin Dashboard</h1>
+              <p style={{color: '#dbeafe', marginTop: '0.5rem'}}>Welcome, {user?.username}! Manage your church content and community</p>
             </div>
             <button
               onClick={handleLogout}
-              className="bg-blue-800 hover:bg-blue-900 px-4 py-2 rounded-md transition-colors"
+              style={{
+                backgroundColor: '#1e40af',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '0.375rem',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                fontWeight: '500'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#1e3a8a'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#1e40af'}
             >
               Logout
             </button>
@@ -83,57 +94,57 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-            <div className="flex items-center justify-between">
+      <div style={{maxWidth: '80rem', margin: '0 auto', padding: '2rem 1rem'}}>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem'}}>
+          <div style={{backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', borderLeft: '4px solid #3b82f6'}}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
               <div>
-                <p className="text-sm font-medium text-gray-600">Unread Messages</p>
-                <p className="text-3xl font-bold text-blue-600">{stats.unread_messages || 0}</p>
+                <p style={{fontSize: '0.875rem', fontWeight: '500', color: '#64748b'}}>Unread Messages</p>
+                <p style={{fontSize: '1.875rem', fontWeight: '700', color: '#3b82f6'}}>{stats.unread_messages || 0}</p>
               </div>
-              <div className="text-3xl">📧</div>
+              <div style={{fontSize: '1.875rem'}}>📧</div>
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
-            <div className="flex items-center justify-between">
+          <div style={{backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', borderLeft: '4px solid #8b5cf6'}}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
               <div>
-                <p className="text-sm font-medium text-gray-600">Prayer Requests</p>
-                <p className="text-3xl font-bold text-purple-600">{stats.prayer_requests || 0}</p>
+                <p style={{fontSize: '0.875rem', fontWeight: '500', color: '#64748b'}}>Prayer Requests</p>
+                <p style={{fontSize: '1.875rem', fontWeight: '700', color: '#8b5cf6'}}>{stats.prayer_requests || 0}</p>
               </div>
-              <div className="text-3xl">🙏</div>
+              <div style={{fontSize: '1.875rem'}}>🙏</div>
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-            <div className="flex items-center justify-between">
+          <div style={{backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', borderLeft: '4px solid #10b981'}}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
               <div>
-                <p className="text-sm font-medium text-gray-600">Published News</p>
-                <p className="text-3xl font-bold text-green-600">{stats.published_news || 0}</p>
+                <p style={{fontSize: '0.875rem', fontWeight: '500', color: '#64748b'}}>Published News</p>
+                <p style={{fontSize: '1.875rem', fontWeight: '700', color: '#10b981'}}>{stats.published_news || 0}</p>
               </div>
-              <div className="text-3xl">📰</div>
+              <div style={{fontSize: '1.875rem'}}>📰</div>
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
-            <div className="flex items-center justify-between">
+          <div style={{backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', borderLeft: '4px solid #f59e0b'}}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
               <div>
-                <p className="text-sm font-medium text-gray-600">Upcoming Events</p>
-                <p className="text-3xl font-bold text-orange-600">{stats.upcoming_events || 0}</p>
+                <p style={{fontSize: '0.875rem', fontWeight: '500', color: '#64748b'}}>Upcoming Events</p>
+                <p style={{fontSize: '1.875rem', fontWeight: '700', color: '#f59e0b'}}>{stats.upcoming_events || 0}</p>
               </div>
-              <div className="text-3xl">📅</div>
+              <div style={{fontSize: '1.875rem'}}>📅</div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center mb-4">
-              <div className="text-2xl mr-3">📧</div>
-              <h3 className="text-lg font-semibold text-gray-900">Contact Messages</h3>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem'}}>
+          <div style={{backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease', cursor: 'pointer'}} onMouseEnter={(e) => e.target.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'} onMouseLeave={(e) => e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'}>
+            <div style={{display: 'flex', alignItems: 'center', marginBottom: '1rem'}}>
+              <div style={{fontSize: '1.5rem', marginRight: '0.75rem'}}>📧</div>
+              <h3 style={{fontSize: '1.125rem', fontWeight: '600', color: '#111827'}}>Contact Messages</h3>
             </div>
-            <p className="text-gray-600 mb-4">View and respond to contact form submissions</p>
-            <a href="http://localhost:8001/admin/church_app/contactmessage/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
+            <p style={{color: '#64748b', marginBottom: '1rem'}}>View and respond to contact form submissions</p>
+            <a href="http://localhost:8001/admin/church_app/contactmessage/" target="_blank" rel="noopener noreferrer" style={{backgroundColor: '#2563eb', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.375rem', textDecoration: 'none', display: 'inline-block', transition: 'all 0.3s ease'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#1d4ed8'} onMouseLeave={(e) => e.target.style.backgroundColor = '#2563eb'}>
               Manage
             </a>
           </div>

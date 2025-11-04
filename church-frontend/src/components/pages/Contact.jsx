@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Phone, Clock, Mail, Users, Heart, Cross } from 'lucide-react';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { churchAPI } from '../../services/api';
 
 const Contact = () => {
+  const observerRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,13 +14,54 @@ const Contact = () => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [recaptchaValue, setRecaptchaValue] = useState(null);
+
+  // Initialize scroll animations
+  useEffect(() => {
+    // Create intersection observer for scroll animations
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+      }
+    );
+
+    // Observe all elements with scroll animation classes
+    const animatedElements = document.querySelectorAll(
+      '.scroll-fade-in, .scroll-slide-up, .scroll-slide-left, .scroll-slide-right, .scroll-scale-in, .scroll-stagger-children'
+    );
+
+    animatedElements.forEach((el) => {
+      observerRef.current.observe(el);
+    });
+
+    // Cleanup function
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!recaptchaValue) {
+      setMessage('Please complete the reCAPTCHA verification.');
+      return;
+    }
+    
     setLoading(true);
     
     try {
-      await churchAPI.submitContact(formData);
+      await churchAPI.submitContact({ ...formData, recaptcha: recaptchaValue });
       setMessage('Message sent successfully! We will get back to you soon.');
       setFormData({
         name: '',
@@ -27,6 +70,7 @@ const Contact = () => {
         subject: 'General Inquiry',
         message: ''
       });
+      setRecaptchaValue(null);
     } catch (error) {
       setMessage('Error sending message. Please try again.');
     } finally {
@@ -45,17 +89,21 @@ const Contact = () => {
   return (
     <div style={{minHeight: '100vh', backgroundColor: '#ffffff', width: '100%'}}>
       {/* Hero Section */}
-      <section style={{position: 'relative', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)', color: 'white', padding: '4rem 1rem', width: '100%', display: 'flex', justifyContent: 'center'}}>
+      <section 
+        id="contact-hero"
+        className="scroll-fade-in smooth-scroll-section"
+        style={{position: 'relative', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)', color: 'white', padding: '4rem 1rem', width: '100%', display: 'flex', justifyContent: 'center'}}
+      >
         <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.1)'}}></div>
         <div style={{position: 'relative', maxWidth: '72rem', margin: '0 auto', textAlign: 'center'}}>
-          <div style={{marginBottom: '2rem'}}>
+          <div className="scroll-scale-in" style={{marginBottom: '2rem'}}>
             <Cross style={{width: '3rem', height: '3rem', margin: '0 auto 1rem auto', color: '#ffffff', display: 'block'}} />
           </div>
-          <h1 style={{fontSize: '3rem', fontWeight: '700', marginBottom: '1rem', lineHeight: '1.1', textAlign: 'center', fontFamily: 'serif'}}>
+          <h1 className="scroll-slide-up" style={{fontSize: '3rem', fontWeight: '700', marginBottom: '1rem', lineHeight: '1.1', textAlign: 'center', fontFamily: 'serif'}}>
             Contact Us
             <span style={{display: 'block', fontSize: '1.5rem', fontWeight: '300', marginTop: '0.5rem', color: '#e0f2fe'}}>Get in Touch with Our Parish Community</span>
           </h1>
-          <p style={{fontSize: '1.125rem', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto 2rem auto', lineHeight: '1.7', textAlign: 'center', color: '#e0f2fe'}}>
+          <p className="scroll-slide-up" style={{fontSize: '1.125rem', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto 2rem auto', lineHeight: '1.7', textAlign: 'center', color: '#e0f2fe'}}>
             We'd love to hear from you. Reach out for any questions, prayer requests, or to join our community
           </p>
         </div>
@@ -66,9 +114,12 @@ const Contact = () => {
         <div style={{maxWidth: '80rem', width: '100%', margin: '0 auto'}}>
 
         {/* Contact Information & Form */}
-        <section style={{marginBottom: '4rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '3rem'}}>
+        <section 
+          id="contact-info"
+          className="scroll-fade-in smooth-scroll-section"
+          style={{marginBottom: '4rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '3rem'}}>
           {/* Contact Information */}
-          <div style={{backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
+          <div className="scroll-slide-left" style={{backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
             <h2 style={{fontSize: '2rem', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Get In Touch</h2>
             <div style={{display: 'flex', flexDirection: 'column', gap: '2rem'}}>
               <div style={{backgroundColor: '#e0f2fe', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #0ea5e9', display: 'flex', alignItems: 'flex-start', gap: '1rem'}}>
@@ -115,7 +166,7 @@ const Contact = () => {
           </div>
 
           {/* Contact Form */}
-          <div style={{backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
+          <div className="scroll-slide-right" style={{backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
             <h2 style={{fontSize: '2rem', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Send us a Message</h2>
             
             {message && (
@@ -188,18 +239,26 @@ const Contact = () => {
                   placeholder="Your message..."
                 ></textarea>
               </div>
+
+              <div style={{display: 'flex', justifyContent: 'center', marginBottom: '1rem'}}>
+                <ReCAPTCHA
+                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
+                  onChange={setRecaptchaValue}
+                  onExpired={() => setRecaptchaValue(null)}
+                />
+              </div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !recaptchaValue}
                 style={{
                   width: '100%',
-                  backgroundColor: loading ? '#9ca3af' : '#0284c7',
+                  backgroundColor: loading || !recaptchaValue ? '#9ca3af' : '#0284c7',
                   color: 'white',
                   padding: '0.75rem 1.5rem',
                   borderRadius: '0.5rem',
                   fontWeight: '600',
                   border: 'none',
-                  cursor: loading ? 'not-allowed' : 'pointer',
+                  cursor: loading || !recaptchaValue ? 'not-allowed' : 'pointer',
                   fontSize: '1rem'
                 }}
               >
@@ -210,7 +269,10 @@ const Contact = () => {
         </section>
 
         {/* Quick Actions */}
-        <section style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem'}}>
+        <section 
+          id="quick-actions"
+          className="scroll-fade-in smooth-scroll-section"
+          style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem'}}>
           <div style={{backgroundColor: '#e0f2fe', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', textAlign: 'center'}}>
             <Users style={{width: '3rem', height: '3rem', color: '#0284c7', margin: '0 auto 1rem auto', display: 'block'}} />
             <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7'}}>Join Our Community</h3>

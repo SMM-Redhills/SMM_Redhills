@@ -25,6 +25,7 @@ import PrayerServices from './components/prayer/PrayerServices.jsx';
 // Admin component
 import AdminDashboard from './components/AdminDashboard.jsx';
 import ReactAdmin from './components/ReactAdmin.jsx';
+import AdminLogin from './components/AdminLogin.jsx';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState(() => {
@@ -83,25 +84,20 @@ const App = () => {
   const handleNavigation = (pageId, options = {}) => {
     const { smooth = true, scrollToTop = true } = options;
     
+    // Immediately scroll to top and set page
+    if (scrollToTop) {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+    
+    setCurrentPage(pageId);
     setIsLoading(true);
     
-    // Simulate loading for better UX
+    // Brief loading state
     setTimeout(() => {
-      setCurrentPage(pageId);
       setIsLoading(false);
-      
-      if (scrollToTop) {
-        if (smooth) {
-          window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-          });
-        } else {
-          window.scrollTo(0, 0);
-        }
-      }
-    }, 300);
+    }, 100);
   };
 
   // Scroll to section within a page
@@ -186,9 +182,15 @@ const App = () => {
         return <STMaryMagdelene onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
       
       case 'admin':
-        return <ReactAdmin />;
-      
       case 'react-admin':
+        const adminToken = localStorage.getItem('adminToken');
+        if (!adminToken) {
+          return <AdminLogin onLoginSuccess={(userData) => {
+            localStorage.setItem('adminToken', userData.token || 'admin-token');
+            localStorage.setItem('adminUser', JSON.stringify(userData));
+            window.location.reload();
+          }} />;
+        }
         return <ReactAdmin />;
       
       default:
