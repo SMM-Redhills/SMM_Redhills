@@ -12,6 +12,7 @@ import BannerSlider from './components/home/BannerSlider.jsx';
 // Page components (in src/components/pages/)
 import About from './components/pages/About.jsx';
 import Contact from './components/pages/Contact.jsx';
+import Donate from './components/pages/Donate.jsx';
 import Events from './components/pages/Events.jsx';
 import Gallery from './components/pages/Gallery.jsx';
 import News from './components/pages/News.jsx';
@@ -179,6 +180,9 @@ const App = () => {
       case 'contact':
         return <Contact onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
       
+      case 'donate':
+        return <Donate onNavigate={handleNavigation} />;
+
       case 'st-mary-magdalene':
         return <STMaryMagdelene onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
       

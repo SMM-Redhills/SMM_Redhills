@@ -60,12 +60,15 @@ const About = ({ onNavigate, scrollToSection }) => {
           <section id="church-story" className="scroll-fade-in smooth-scroll-section church-story" style={{backgroundColor: assignedColors.church}}>
             <div className="church-story-grid">
               <div className="scroll-slide-left church-story-text">
-                <h2>Our Sacred Heritage</h2>
+                <h2>Our History</h2>
                 <p>
                   Saint Mary Magdalene church is a sacred place of worship dedicated to the beloved disciple who was the first witness to Christ's resurrection. Our church serves as a spiritual home for the faithful community in Redhills, Chennai.
                 </p>
                 <p>
                   Built with devotion and faith, our church stands as a testament to the enduring love and redemption that Saint Mary Magdalene represents. We welcome all who seek spiritual guidance, community, and the transformative power of God's love.
+                </p>
+                <p style={{ marginTop: '1rem', fontStyle: 'italic', color: '#475569' }}>
+                  "இந்த திருச்சபை மாதவரத்திலிருந்து பிரிக்கப்பட்டு 1978 இல் கட்டப்பட்டது. இது பிரான்சிஸ்கன் மிஷனரிகளிடம் ஒப்படைக்கப்பட்டது. இந்த திருச்சபைக்கான நிலம் 1983 ஆம் ஆண்டு திருச்சபை ஜான் கொட்டாரம் அவர்களால் வாங்கப்பட்டது. புனித மேரி மகதலேனாவின் நினைவாக திருச்சபை தேவாலயம் 18 02 1985 அன்று பேராயர் மேதகு டாக்டர் ஆர் அருளப்பா அவர்களால் புனிதப்படுத்தப்பட்டது. இந்த தேவாலயத்தின் முதல் திருச்சபை பாதிரியார் அருட்தந்தை தாமஸ் முண்டக்கல் ஆவார்."
                 </p>
               </div>
               <div className="scroll-slide-right church-story-image">

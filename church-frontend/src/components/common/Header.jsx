@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Phone, Mail, MapPin, Clock, ChevronDown } from 'lucide-react';
+import { Menu, X, Phone, Mail, MapPin, Clock, ChevronDown, Heart } from 'lucide-react';
 
 const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -120,13 +120,61 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
               ))}
             </nav>
 
-            {/* Mobile menu button */}
-            <button
-              className="lg:hidden p-2 rounded-md text-gray-700 hover:text-blue-600"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Menu className="w-6 h-6" />
-            </button>
+            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+              
+              {/* Force Hide Styles */}
+              <style>{`
+                #desktop-donate-container {
+                  display: none !important;
+                }
+                @media (min-width: 768px) {
+                  #desktop-donate-container {
+                    display: block !important;
+                  }
+                }
+              `}</style>
+
+              {/* Donate Button - Desktop & Tablet */}
+              <div id="desktop-donate-container">
+                <button
+                  onClick={() => handleNavClick('donate')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    backgroundColor: '#ec4899', // Pink-500
+                    color: 'white',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '9999px',
+                    fontWeight: '600',
+                    fontSize: '0.875rem',
+                    border: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 6px -1px rgba(236, 72, 153, 0.4)',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                    e.currentTarget.style.backgroundColor = '#db2777'; // Pink-600
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.backgroundColor = '#ec4899';
+                  }}
+                >
+                   <Heart style={{width: '1rem', height: '1rem', fill: 'currentColor'}} />
+                   <span>Donate Now</span>
+                </button>
+              </div>
+
+              {/* Mobile menu button */}
+              <button
+                className="lg:hidden p-2 rounded-md text-gray-700 hover:text-blue-600"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -239,6 +287,33 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
               )}
             </div>
           ))}
+
+          {/* Mobile Donate Button */}
+          <div style={{marginTop: '1rem', borderTop: '1px solid #e5e7eb', paddingTop: '1rem'}} className="md:hidden">
+             <button
+              onClick={() => handleNavClick('donate')}
+              className="animate-heartbeat"
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                backgroundColor: '#ec4899', // Pink-500
+                color: 'white',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.5rem',
+                fontWeight: '600',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 4px 6px -1px rgba(236, 72, 153, 0.4)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+               <Heart style={{width: '1.25rem', height: '1.25rem', fill: 'currentColor'}} />
+               <span>Donate Now</span>
+            </button>
+          </div>
         </nav>
       </div>
     </>

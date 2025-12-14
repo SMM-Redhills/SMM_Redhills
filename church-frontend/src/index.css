@@ -10,7 +10,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -28,7 +29,12 @@ body {
 }
 
 /* Typography - Let Tailwind handle most typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin-bottom: 0.5rem;
   line-height: 1.2;
 }
@@ -60,12 +66,43 @@ button {
     background-color: #1a202c;
     color: #e2e8f0;
   }
-  
+
   a {
     color: #63b3ed;
   }
-  
+
   a:hover {
     color: #90cdf4;
   }
-}
+
+  /* Heartbeat Animation */
+  @keyframes heartbeat {
+    0% {
+      transform: scale(1);
+    }
+
+    14% {
+      transform: scale(1.1);
+    }
+
+    28% {
+      transform: scale(1);
+    }
+
+    42% {
+      transform: scale(1.1);
+    }
+
+    70% {
+      transform: scale(1);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+
+  .animate-heartbeat {
+    animation: heartbeat 2s infinite;
+  }
