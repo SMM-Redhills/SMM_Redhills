@@ -53,154 +53,167 @@ const Schedule = () => {
     };
   }, []);
 
-  return (
-    <div style={{minHeight: '100vh', backgroundColor: '#ffffff', width: '100%'}}>
-      {/* Hero Section */}
-      <section 
-        className="scroll-fade-in"
-        style={{position: 'relative', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)', color: 'white', padding: '4rem 1rem', width: '100%', display: 'flex', justifyContent: 'center'}}
-      >
-        <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.1)'}}></div>
-        <div style={{position: 'relative', maxWidth: '72rem', margin: '0 auto', textAlign: 'center'}}>
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
-          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem'}}>
-            <h1 className="scroll-slide-up" style={{fontSize: '3rem', fontWeight: '700', lineHeight: '1.1', textAlign: 'center', fontFamily: 'serif'}}>
-              Our Schedule
-            </h1>
-            {isAdmin && (
-              <button
-                onClick={() => setShowAddForm(true)}
-                style={{
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '50px',
-                  height: '50px',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
-              >
-                +
-              </button>
-            )}
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.service_name && formData.time && formData.day) {
+      try {
+        const response = await fetch('http://localhost:8000/api/schedule/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+          const newItem = {
+            id: Date.now(),
+            ...formData
+          };
+          setScheduleItems([newItem, ...scheduleItems]);
+          setShowAddForm(false);
+          setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });
+          alert('Schedule item added successfully!');
+        } else {
+          alert('Error adding schedule item. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error adding schedule item. Please try again.');
+      }
+    }
+  };
+
+  // Cancel form submission
+  const handleCancel = () => {
+    setShowAddForm(false);
+    setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });
+  };
+
+  return (
+    <div className="schedule-container">
+      {/* Hero Section */}
+      <section className="hero-section scroll-fade-in">
+        <div className="hero-overlay"></div>
+        <div className="hero-content">
+          <div className="hero-title-container">
+            <h1 className="hero-title scroll-slide-up">Our Schedule</h1>
           </div>
-          <span style={{display: 'block', fontSize: '1.5rem', fontWeight: '300', color: '#e0f2fe'}}>Mass Times & church Services</span>
-          <p className="scroll-slide-up" style={{fontSize: '1.125rem', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto 2rem auto', lineHeight: '1.7', textAlign: 'center', color: '#e0f2fe'}}>
+          <span className="hero-subtitle">Mass Times & church Services</span>
+          <p className="hero-description scroll-slide-up">
             Join us for worship, prayer, and spiritual growth throughout the week
           </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <div style={{width: '100%', padding: '4rem 1rem', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <div style={{maxWidth: '80rem', width: '100%', margin: '0 auto'}}>
+      <div className="main-content">
+        <div className="content-container">
 
         {/* Quick Schedule Overview */}
-        <section 
-          className="scroll-fade-in"
-          style={{marginBottom: '5rem', backgroundColor: '#e0f2fe', borderRadius: '1rem', padding: '3rem', textAlign: 'center', width: '100%'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>Schedule Overview</h2>
-          <div className="scroll-stagger-children" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', justifyItems: 'center'}}>
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '18rem', transition: 'all 0.3s ease'}}>
-              <Clock style={{width: '2rem', height: '2rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e293b'}}>Visiting Hours</h3>
-              <p style={{color: '#64748b', marginBottom: '1rem'}}>Daily: 6:00 AM - 8:00 PM</p>
-              <div style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>Open daily for prayer</div>
+        <section className="overview-section scroll-fade-in">
+          <h2 className="section-title scroll-slide-up">Schedule Overview</h2>
+          <div className="overview-grid scroll-stagger-children">
+            <div className="overview-card hover-lift">
+              <Clock className="card-icon" />
+              <h3 className="card-title">Visiting Hours</h3>
+              <p className="card-text">Daily: 6:00 AM - 8:00 PM</p>
+              <div className="card-link">Open daily for prayer</div>
             </div>
             
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '18rem', transition: 'all 0.3s ease'}}>
-              <Heart style={{width: '2rem', height: '2rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e293b'}}>Special Devotions</h3>
-              <p style={{color: '#64748b', marginBottom: '1rem'}}>Various times throughout the week</p>
-              <div style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>See details below</div>
+            <div className="overview-card hover-lift">
+              <Heart className="card-icon" />
+              <h3 className="card-title">Special Devotions</h3>
+              <p className="card-text">Various times throughout the week</p>
+              <div className="card-link">See details below</div>
             </div>
             
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '18rem', transition: 'all 0.3s ease'}}>
-              <Users style={{width: '2rem', height: '2rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e293b'}}>Mass Schedule</h3>
-              <p style={{color: '#64748b', marginBottom: '1rem', fontSize: '0.875rem', lineHeight: '1.4'}}>
+            <div className="overview-card hover-lift">
+              <Users className="card-icon" />
+              <h3 className="card-title">Mass Schedule</h3>
+              <p className="card-text">
                 Sunday: 8:00 AM - 10:00 AM<br/>
                 Evening: 6:00 PM - 7:30 PM<br/>
                 Weekdays: 6:00 AM
               </p>
-              <div style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>Full schedule below</div>
+              <div className="card-link">Full schedule below</div>
             </div>
             
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '18rem', transition: 'all 0.3s ease'}}>
-              <Book style={{width: '2rem', height: '2rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e293b'}}>Eucharistic Adoration</h3>
-              <p style={{color: '#64748b', marginBottom: '1rem'}}>Special hours for prayer and reflection</p>
-              <div style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>View times below</div>
+            <div className="overview-card hover-lift">
+              <Book className="card-icon" />
+              <h3 className="card-title">Eucharistic Adoration</h3>
+              <p className="card-text">Special hours for prayer and reflection</p>
+              <div className="card-link">View times below</div>
             </div>
           </div>
         </section>
 
         {/* Detailed Mass Schedule */}
-        <section 
-          className="scroll-fade-in"
-          style={{marginBottom: '5rem', backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)', width: '100%'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>Mass Schedule</h2>
-          <div className="scroll-stagger-children" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem'}}>
+        <section className="mass-schedule-section scroll-fade-in">
+          <h2 className="section-title scroll-slide-up">Mass Schedule</h2>
+          <div className="mass-schedule-grid scroll-stagger-children">
             
             {/* Sunday Schedule */}
-            <div className="hover-lift" style={{backgroundColor: '#f0f9ff', padding: '2rem', borderRadius: '1rem', border: '2px solid #0ea5e9', transition: 'all 0.3s ease'}}>
-              <div style={{display: 'flex', alignItems: 'center', marginBottom: '1.5rem'}}>
-                <Star style={{width: '2rem', height: '2rem', color: '#0284c7', marginRight: '1rem'}} />
-                <h3 style={{fontSize: '1.5rem', fontWeight: '700', color: '#0284c7', margin: 0}}>Sunday</h3>
+            <div className="schedule-card sunday-card hover-lift">
+              <div className="card-header">
+                <Star className="header-icon" />
+                <h3 className="card-heading">Sunday</h3>
               </div>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-                  <span style={{fontWeight: '600', color: '#1e293b'}}>Morning Mass</span>
-                  <span style={{color: '#0284c7', fontWeight: '500'}}>8:00 AM - 10:00 AM</span>
+              <div className="schedule-list">
+                <div className="schedule-item">
+                  <span className="item-name">Morning Mass</span>
+                  <span className="item-time">8:00 AM - 10:00 AM</span>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-                  <span style={{fontWeight: '600', color: '#1e293b'}}>Evening Mass</span>
-                  <span style={{color: '#0284c7', fontWeight: '500'}}>6:00 PM - 7:30 PM</span>
+                <div className="schedule-item">
+                  <span className="item-name">Evening Mass</span>
+                  <span className="item-time">6:00 PM - 7:30 PM</span>
                 </div>
               </div>
             </div>
 
             {/* Weekday Schedule */}
-            <div className="hover-lift" style={{backgroundColor: '#e0f2fe', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', transition: 'all 0.3s ease'}}>
-              <div style={{display: 'flex', alignItems: 'center', marginBottom: '1.5rem'}}>
-                <Calendar style={{width: '2rem', height: '2rem', color: '#0284c7', marginRight: '1rem'}} />
-                <h3 style={{fontSize: '1.5rem', fontWeight: '700', color: '#0284c7', margin: 0}}>Weekdays</h3>
+            <div className="schedule-card weekday-card hover-lift">
+              <div className="card-header">
+                <Calendar className="header-icon" />
+                <h3 className="card-heading">Weekdays</h3>
               </div>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-                  <span style={{fontWeight: '600', color: '#1e293b'}}>Monday - Friday</span>
-                  <span style={{color: '#0284c7', fontWeight: '500'}}>6:00 AM</span>
+              <div className="schedule-list">
+                <div className="schedule-item">
+                  <span className="item-name">Monday - Friday</span>
+                  <span className="item-time">6:00 AM</span>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-                  <span style={{fontWeight: '600', color: '#1e293b'}}>Saturday</span>
-                  <span style={{color: '#0284c7', fontWeight: '500'}}>6:00 AM</span>
+                <div className="schedule-item">
+                  <span className="item-name">Saturday</span>
+                  <span className="item-time">6:00 AM</span>
                 </div>
               </div>
             </div>
 
             {/* Special Occasions */}
-            <div className="hover-lift" style={{backgroundColor: '#fef3c7', padding: '2rem', borderRadius: '1rem', border: '1px solid #f59e0b', transition: 'all 0.3s ease'}}>
-              <div style={{display: 'flex', alignItems: 'center', marginBottom: '1.5rem'}}>
-                <Bell style={{width: '2rem', height: '2rem', color: '#d97706', marginRight: '1rem'}} />
-                <h3 style={{fontSize: '1.5rem', fontWeight: '700', color: '#d97706', margin: 0}}>Special Occasions</h3>
+            <div className="schedule-card special-card hover-lift">
+              <div className="card-header">
+                <Bell className="header-icon special-icon" />
+                <h3 className="card-heading special-heading">Special Occasions</h3>
               </div>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                <div style={{padding: '0.75rem', backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-                  <div style={{fontWeight: '600', color: '#1e293b', marginBottom: '0.25rem'}}>Feast Days & Holy Days</div>
-                  <div style={{color: '#d97706', fontSize: '0.875rem'}}>Additional Masses as announced</div>
+              <div className="schedule-list">
+                <div className="schedule-item">
+                  <div className="item-name">Feast Days & Holy Days</div>
+                  <div className="item-time special-time">Additional Masses as announced</div>
                 </div>
-                <div style={{padding: '0.75rem', backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-                  <div style={{fontWeight: '600', color: '#1e293b', marginBottom: '0.25rem'}}>Christmas & Easter</div>
-                  <div style={{color: '#d97706', fontSize: '0.875rem'}}>Special schedule published</div>
+                <div className="schedule-item">
+                  <div className="item-name">Christmas & Easter</div>
+                  <div className="item-time special-time">Special schedule published</div>
                 </div>
               </div>
             </div>
@@ -208,71 +221,66 @@ const Schedule = () => {
         </section>
 
         {/* Special Services & Devotions */}
-        <section 
-          className="scroll-fade-in"
-          style={{marginBottom: '5rem', backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)', width: '100%'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>Special Services & Devotions</h2>
-          <div className="scroll-stagger-children" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem'}}>
+        <section className="services-section scroll-fade-in">
+          <h2 className="section-title scroll-slide-up">Special Services & Devotions</h2>
+          <div className="services-grid scroll-stagger-children">
             
-            <div className="hover-lift" style={{backgroundColor: '#f0f9ff', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', transition: 'all 0.3s ease'}}>
-              <Heart style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', textAlign: 'center'}}>Eucharistic Adoration</h3>
-              <div style={{textAlign: 'center', marginBottom: '1rem'}}>
-                <div style={{color: '#64748b', marginBottom: '0.5rem'}}>Every Friday</div>
-                <div style={{color: '#0284c7', fontWeight: '600', fontSize: '1.125rem'}}>7:00 PM - 8:00 PM</div>
+            <div className="service-card hover-lift">
+              <Heart className="service-icon" />
+              <h3 className="service-title">Eucharistic Adoration</h3>
+              <div className="service-time">
+                <div className="service-day">Every Friday</div>
+                <div className="service-hour">7:00 PM - 8:00 PM</div>
               </div>
-              <p style={{color: '#64748b', textAlign: 'center', fontSize: '0.875rem'}}>
+              <p className="service-description">
                 Join us for an hour of prayer and reflection before the Blessed Sacrament
               </p>
             </div>
 
-            <div className="hover-lift" style={{backgroundColor: '#f0f9ff', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', transition: 'all 0.3s ease'}}>
-              <Book style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', textAlign: 'center'}}>Rosary Prayer</h3>
-              <div style={{textAlign: 'center', marginBottom: '1rem'}}>
-                <div style={{color: '#64748b', marginBottom: '0.5rem'}}>Daily</div>
-                <div style={{color: '#0284c7', fontWeight: '600', fontSize: '1.125rem'}}>5:30 PM</div>
+            <div className="service-card hover-lift">
+              <Book className="service-icon" />
+              <h3 className="service-title">Rosary Prayer</h3>
+              <div className="service-time">
+                <div className="service-day">Daily</div>
+                <div className="service-hour">5:30 PM</div>
               </div>
-              <p style={{color: '#64748b', textAlign: 'center', fontSize: '0.875rem'}}>
+              <p className="service-description">
                 Daily recitation of the Holy Rosary before evening activities
               </p>
             </div>
 
-         
-
-            <div className="hover-lift" style={{backgroundColor: '#f0f9ff', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', transition: 'all 0.3s ease'}}>
-              <Users style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', textAlign: 'center'}}>Novena Prayers</h3>
-              <div style={{textAlign: 'center', marginBottom: '1rem'}}>
-                <div style={{color: '#64748b', marginBottom: '0.5rem'}}>Tuesdays</div>
-                <div style={{color: '#0284c7', fontWeight: '600', fontSize: '1.125rem'}}>7:00 PM</div>
+            <div className="service-card hover-lift">
+              <Users className="service-icon" />
+              <h3 className="service-title">Novena Prayers</h3>
+              <div className="service-time">
+                <div className="service-day">Tuesdays</div>
+                <div className="service-hour">7:00 PM</div>
               </div>
-              <p style={{color: '#64748b', textAlign: 'center', fontSize: '0.875rem'}}>
+              <p className="service-description">
                 Special devotional prayers to Saint Mary Magdalene
               </p>
             </div>
 
-            <div className="hover-lift" style={{backgroundColor: '#f0f9ff', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', transition: 'all 0.3s ease'}}>
-              <Bell style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', textAlign: 'center'}}>Confession</h3>
-              <div style={{textAlign: 'center', marginBottom: '1rem'}}>
-                <div style={{color: '#64748b', marginBottom: '0.5rem'}}>Daily Available</div>
-                <div style={{color: '#0284c7', fontWeight: '600', fontSize: '1.125rem'}}>5+ Hours Daily</div>
+            <div className="service-card hover-lift">
+              <Bell className="service-icon" />
+              <h3 className="service-title">Confession</h3>
+              <div className="service-time">
+                <div className="service-day">Daily Available</div>
+                <div className="service-hour">5+ Hours Daily</div>
               </div>
-              <p style={{color: '#64748b', textAlign: 'center', fontSize: '0.875rem'}}>
+              <p className="service-description">
                 Sacrament of Reconciliation available throughout the day
               </p>
             </div>
 
-            <div className="hover-lift" style={{backgroundColor: '#f0f9ff', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', transition: 'all 0.3s ease'}}>
-              <Star style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', textAlign: 'center'}}>First Friday Devotion</h3>
-              <div style={{textAlign: 'center', marginBottom: '1rem'}}>
-                <div style={{color: '#64748b', marginBottom: '0.5rem'}}>First Friday of Month</div>
-                <div style={{color: '#0284c7', fontWeight: '600', fontSize: '1.125rem'}}>After 6:00 AM Mass</div>
+            <div className="service-card hover-lift">
+              <Star className="service-icon" />
+              <h3 className="service-title">First Friday Devotion</h3>
+              <div className="service-time">
+                <div className="service-day">First Friday of Month</div>
+                <div className="service-hour">After 6:00 AM Mass</div>
               </div>
-              <p style={{color: '#64748b', textAlign: 'center', fontSize: '0.875rem'}}>
+              <p className="service-description">
                 Special devotion to the Sacred Heart of Jesus
               </p>
             </div>
@@ -280,23 +288,20 @@ const Schedule = () => {
         </section>
 
         {/* Important Notes */}
-        <section 
-          className="scroll-fade-in"
-          style={{backgroundColor: '#fef3c7', borderRadius: '1rem', padding: '2rem', border: '1px solid #f59e0b', width: '100%'}}
-        >
-          <h3 style={{fontSize: '1.5rem', fontWeight: '700', color: '#d97706', marginBottom: '1rem', textAlign: 'center'}}>Important Notes</h3>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem'}}>
-            <div style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-              <h4 style={{fontWeight: '600', color: '#d97706', marginBottom: '0.5rem'}}>⏰ Arrival Time</h4>
-              <p style={{color: '#92400e', fontSize: '0.875rem', margin: 0}}>Please arrive 10-15 minutes before Mass begins</p>
+        <section className="notes-section scroll-fade-in">
+          <h3 className="notes-title">Important Notes</h3>
+          <div className="notes-grid">
+            <div className="note-card">
+              <h4 className="note-title">⏰ Arrival Time</h4>
+              <p className="note-text">Please arrive 10-15 minutes before Mass begins</p>
             </div>
-            <div style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-              <h4 style={{fontWeight: '600', color: '#d97706', marginBottom: '0.5rem'}}>📱 Updates</h4>
-              <p style={{color: '#92400e', fontSize: '0.875rem', margin: 0}}>Schedule changes are announced during services and online</p>
+            <div className="note-card">
+              <h4 className="note-title">📱 Updates</h4>
+              <p className="note-text">Schedule changes are announced during services and online</p>
             </div>
-            <div style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-              <h4 style={{fontWeight: '600', color: '#d97706', marginBottom: '0.5rem'}}>🎄 Special Seasons</h4>
-              <p style={{color: '#92400e', fontSize: '0.875rem', margin: 0}}>Christmas and Easter may have modified schedules</p>
+            <div className="note-card">
+              <h4 className="note-title">🎄 Special Seasons</h4>
+              <p className="note-text">Christmas and Easter may have modified schedules</p>
             </div>
           </div>
         </section>
@@ -304,8 +309,505 @@ const Schedule = () => {
         </div>
       </div>
 
+      {/* Add Schedule Modal */}
+      {showAddForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="modal-title">Add Schedule Item</h3>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <input
+                  type="text"
+                  name="service_name"
+                  placeholder="Service Name"
+                  value={formData.service_name}
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleInputChange}
+                  className="form-select"
+                >
+                  <option value="Mass">Mass</option>
+                  <option value="Prayer">Prayer</option>
+                  <option value="Devotion">Devotion</option>
+                  <option value="Service">Service</option>
+                </select>
+              </div>
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="day"
+                  placeholder="Day (e.g., Sunday, Daily)"
+                  value={formData.day}
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+                <input
+                  type="time"
+                  name="time"
+                  value={formData.time}
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <textarea
+                  name="description"
+                  placeholder="Description (optional)"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="3"
+                  className="form-textarea"
+                />
+              </div>
+              <div className="form-actions">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="btn-cancel"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-submit"
+                >
+                  Add Schedule
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Add custom styles for animations */}
       <style jsx>{`
+        /* Container and Layout Styles */
+        .schedule-container {
+          min-height: 100vh;
+          background-color: #ffffff;
+          width: 100%;
+        }
+
+        .main-content {
+          width: 100%;
+          padding: 4rem 1rem;
+          background-color: #f8fafc;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .content-container {
+          max-width: 80rem;
+          width: 100%;
+          margin: 0 auto;
+        }
+
+        /* Hero Section Styles */
+        .hero-section {
+          position: relative;
+          background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+          color: white;
+          padding: 4rem 1rem;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+
+        .hero-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(255,255,255,0.1);
+        }
+
+        .hero-content {
+          position: relative;
+          max-width: 72rem;
+          margin: 0 auto;
+          text-align: center;
+        }
+
+        .hero-title-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .hero-title {
+          font-size: 3rem;
+          font-weight: 700;
+          line-height: 1.1;
+          text-align: center;
+          font-family: serif;
+        }
+
+        .hero-subtitle {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: 300;
+          color: #e0f2fe;
+        }
+
+        .hero-description {
+          font-size: 1.125rem;
+          margin-bottom: 2rem;
+          max-width: 48rem;
+          margin: 0 auto 2rem auto;
+          line-height: 1.7;
+          text-align: center;
+          color: #e0f2fe;
+        }
+
+        /* Section Styles */
+        .overview-section {
+          margin-bottom: 5rem;
+          background-color: #e0f2fe;
+          border-radius: 1rem;
+          padding: 3rem;
+          text-align: center;
+          width: 100%;
+        }
+
+        .mass-schedule-section {
+          margin-bottom: 5rem;
+          background-color: #ffffff;
+          padding: 3rem 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+          width: 100%;
+        }
+
+        .services-section {
+          margin-bottom: 5rem;
+          background-color: #ffffff;
+          padding: 3rem 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+          width: 100%;
+        }
+
+        .notes-section {
+          background-color: #fef3c7;
+          border-radius: 1rem;
+          padding: 2rem;
+          border: 1px solid #f59e0b;
+          width: 100%;
+        }
+
+        .section-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: #0284c7;
+          margin-bottom: 3rem;
+          text-align: center;
+          font-family: serif;
+        }
+
+        /* Grid Styles */
+        .overview-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 2rem;
+          justify-items: center;
+        }
+
+        .mass-schedule-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+        }
+
+        .services-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 2rem;
+        }
+
+        .notes-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1rem;
+        }
+
+        /* Card Styles */
+        .overview-card {
+          background-color: #ffffff;
+          padding: 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          text-align: center;
+          width: 100%;
+          max-width: 18rem;
+          transition: all 0.3s ease;
+        }
+
+        .schedule-card {
+          padding: 2rem;
+          border-radius: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .sunday-card {
+          background-color: #f0f9ff;
+          border: 2px solid #0ea5e9;
+        }
+
+        .weekday-card {
+          background-color: #e0f2fe;
+          border: 1px solid #0ea5e9;
+        }
+
+        .special-card {
+          background-color: #fef3c7;
+          border: 1px solid #f59e0b;
+        }
+
+        .service-card {
+          background-color: #f0f9ff;
+          padding: 2rem;
+          border-radius: 1rem;
+          border: 1px solid #0ea5e9;
+          transition: all 0.3s ease;
+        }
+
+        .note-card {
+          background-color: #ffffff;
+          padding: 1.5rem;
+          border-radius: 0.75rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Card Content Styles */
+        .card-icon {
+          width: 2rem;
+          height: 2rem;
+          color: #0ea5e9;
+          margin: 0 auto 1rem auto;
+          display: block;
+        }
+
+        .card-title {
+          font-size: 1.125rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: #1e293b;
+        }
+
+        .card-text {
+          color: #64748b;
+          margin-bottom: 1rem;
+        }
+
+        .card-link {
+          color: #0ea5e9;
+          font-weight: 500;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
+        .card-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .header-icon {
+          width: 2rem;
+          height: 2rem;
+          color: #0284c7;
+          margin-right: 1rem;
+        }
+
+        .special-icon {
+          color: #d97706;
+        }
+
+        .card-heading {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #0284c7;
+          margin: 0;
+        }
+
+        .special-heading {
+          color: #d97706;
+        }
+
+        .schedule-list {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .schedule-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem;
+          background-color: #ffffff;
+          border-radius: 0.5rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-name {
+          font-weight: 600;
+          color: #1e293b;
+        }
+
+        .item-time {
+          color: #0284c7;
+          font-weight: 500;
+        }
+
+        .special-time {
+          color: #d97706;
+          font-size: 0.875rem;
+        }
+
+        .service-icon {
+          width: 3rem;
+          height: 3rem;
+          color: #0ea5e9;
+          margin: 0 auto 1rem auto;
+          display: block;
+        }
+
+        .service-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #0284c7;
+          text-align: center;
+        }
+
+        .service-time {
+          text-align: center;
+          margin-bottom: 1rem;
+        }
+
+        .service-day {
+          color: #64748b;
+          margin-bottom: 0.5rem;
+        }
+
+        .service-hour {
+          color: #0284c7;
+          font-weight: 600;
+          font-size: 1.125rem;
+        }
+
+        .service-description {
+          color: #64748b;
+          text-align: center;
+          font-size: 0.875rem;
+        }
+
+        .notes-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #d97706;
+          margin-bottom: 1rem;
+          text-align: center;
+        }
+
+        .note-title {
+          font-weight: 600;
+          color: #d97706;
+          margin-bottom: 0.5rem;
+        }
+
+        .note-text {
+          color: #92400e;
+          font-size: 0.875rem;
+          margin: 0;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0,0,0,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 50;
+        }
+
+        .modal-content {
+          background-color: white;
+          padding: 2rem;
+          border-radius: 0.5rem;
+          width: 90%;
+          max-width: 500px;
+          max-height: 80vh;
+          overflow-y: auto;
+        }
+
+        .modal-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #1f2937;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.375rem;
+          color: #1f2937;
+        }
+
+        .form-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+        }
+
+        .btn-cancel {
+          padding: 0.5rem 1rem;
+          background-color: #6b7280;
+          color: white;
+          border: none;
+          border-radius: 0.375rem;
+          cursor: pointer;
+        }
+
+        .btn-submit {
+          padding: 0.5rem 1rem;
+          background-color: #2563eb;
+          color: white;
+          border: none;
+          border-radius: 0.375rem;
+          cursor: pointer;
+        }
+
         /* Scroll Animation Base Styles */
         .scroll-fade-in,
         .scroll-slide-up,
@@ -378,120 +880,6 @@ const Schedule = () => {
           scroll-margin-top: 80px;
         }
       `}</style>
-      
-      {/* Add Schedule Modal */}
-      {showAddForm && (
-        <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50}}>
-          <div style={{backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
-            <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937'}}>Add Schedule Item</h3>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const newItem = {
-                id: Date.now(),
-                ...formData
-              };
-              setScheduleItems([newItem, ...scheduleItems]);
-              setShowAddForm(false);
-              setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });
-              alert('Schedule item added successfully!');
-            }}>
-              <div style={{marginBottom: '1rem'}}>
-                <input
-                  type="text"
-                  placeholder="Service Name"
-                  value={formData.service_name}
-                  onChange={(e) => setFormData({...formData, service_name: e.target.value})}
-                  required
-                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
-                />
-              </div>
-              <div style={{marginBottom: '1rem'}}>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({...formData, type: e.target.value})}
-                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
-                >
-                  <option value="Mass">Mass</option>
-                  <option value="Prayer">Prayer</option>
-                  <option value="Devotion">Devotion</option>
-                  <option value="Service">Service</option>
-                </select>
-              </div>
-              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem'}}>
-                <input
-                  type="text"
-                  placeholder="Day (e.g., Sunday, Daily)"
-                  value={formData.day}
-                  onChange={(e) => setFormData({...formData, day: e.target.value})}
-                  required
-                  style={{padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
-                />
-                <input
-                  type="time"
-                  value={formData.time}
-                  onChange={(e) => setFormData({...formData, time: e.target.value})}
-                  required
-                  style={{padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
-                />
-              </div>
-              <div style={{marginBottom: '1rem'}}>
-                <textarea
-                  placeholder="Description (optional)"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  rows="3"
-                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
-                />
-              </div>
-              <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
-                <button
-                  type="button"
-                  onClick={() => {setShowAddForm(false); setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });}}
-                  style={{padding: '0.5rem 1rem', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (formData.service_name && formData.time && formData.day) {
-                      try {
-                        const response = await fetch('http://localhost:8000/api/schedule/', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
-                          },
-                          body: JSON.stringify(formData)
-                        });
-                        
-                        if (response.ok) {
-                          const newItem = {
-                            id: Date.now(),
-                            ...formData
-                          };
-                          setScheduleItems([newItem, ...scheduleItems]);
-                          setShowAddForm(false);
-                          setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });
-                          alert('Schedule item added successfully!');
-                        } else {
-                          alert('Error adding schedule item. Please try again.');
-                        }
-                      } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error adding schedule item. Please try again.');
-                      }
-                    }
-                  }}
-                  style={{padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
-                >
-                  Add Schedule
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

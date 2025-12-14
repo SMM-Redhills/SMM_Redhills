@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Book, Heart, Cross, Star, Clock, Users } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { churchAPI } from '../../services/api';
+import { adminAPI } from '../../services/adminApi';
+import { assignedColors } from '../../utils/sectionColors';
 
 const prayers = [
   {
@@ -147,7 +149,8 @@ const Prayer = () => {
   const [prayerFormData, setPrayerFormData] = useState({
     title: '',
     content: '',
-    category: 'Traditional'
+    category: 'Traditional',
+    language: 'english'
   });
   const [prayersList, setPrayersList] = useState(prayers);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -240,6 +243,38 @@ const Prayer = () => {
     }));
   };
 
+  const handlePrayerFormChange = (e) => {
+    const { name, value } = e.target;
+    setPrayerFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // In your Prayer component's handleAddPrayerSubmit function
+const handleAddPrayerSubmit = async (e) => {
+  e.preventDefault();
+  if (prayerFormData.title && prayerFormData.content) {
+    try {
+      const response = await adminAPI.createPrayer(prayerFormData);
+      const newPrayer = response.data;
+      setPrayersList([newPrayer, ...prayersList]);
+      setShowAddPrayerForm(false);
+      setPrayerFormData({ title: '', content: '', category: 'Traditional', language: 'english' });
+      alert('Prayer added successfully!');
+    } catch (error) {
+      console.error('Error adding prayer:', error.response?.data || error.message);
+      // Log the detailed error response
+      console.log('Error response:', error.response);
+      alert(`Error: ${JSON.stringify(error.response?.data) || 'Please try again'}`);
+    }
+  }
+};
+  const closeAddPrayerForm = () => {
+    setShowAddPrayerForm(false);
+    setPrayerFormData({ title: '', content: '', category: 'Traditional', language: 'english' });
+  };
+
   const getCategoryIcon = (category) => {
     switch(category) {
       case 'Traditional': return <Cross style={{width: '1.25rem', height: '1.25rem'}} />;
@@ -251,294 +286,840 @@ const Prayer = () => {
   };
 
   return (
-    <section 
-      id="prayer-hero"
-      className="scroll-fade-in smooth-scroll-section"
-      style={{padding: 'clamp(2rem, 6vw, 4rem) 0', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)', width: '100%', display: 'flex', justifyContent: 'center', minHeight: '100vh'}}>
-      <div style={{maxWidth: '80rem', margin: '0 auto', padding: '0 clamp(1rem, 4vw, 2rem)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', width: '100%'}}>
-        <div className="scroll-slide-up" style={{textAlign: 'center', marginBottom: 'clamp(2rem, 5vw, 3rem)'}}>
-          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem'}}>
-            <h1 style={{fontSize: 'clamp(2rem, 6vw, 3rem)', fontFamily: 'serif', fontWeight: '700', color: 'white'}}>Our Prayers</h1>
-            {isAdmin && (
-              <button
-                onClick={() => setShowAddPrayerForm(true)}
-                style={{
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '50px',
-                  height: '50px',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
-              >
-                +
-              </button>
-            )}
+    <>
+      <style>
+        {`
+          #prayer-hero {
+            padding: clamp(2rem, 6vw, 4rem) 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #ddd6fe 100%);
+          }
+          
+          .prayer-container {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 clamp(1rem, 4vw, 2rem);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+          }
+          
+          .header-container {
+            text-align: center;
+            margin-bottom: clamp(2rem, 5vw, 3rem);
+            position: relative;
+            padding-bottom: 1.5rem;
+          }
+          
+          .header-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            border-radius: 3px;
+          }
+          
+          .header-title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+          }
+          
+          .header-icon {
+            width: clamp(2.5rem, 5vw, 3rem);
+            height: clamp(2.5rem, 5vw, 3rem);
+            color: #d4af37;
+            opacity: 0.9;
+          }
+          
+          .header-title {
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-family: 'Georgia', serif;
+            font-weight: 700;
+            color: #6d28d9;
+            text-shadow: 0 2px 10px rgba(109,40,217,0.1);
+            letter-spacing: 0.05em;
+            margin: 0;
+          }
+          
+          .header-subtitle {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            color: #475569;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-weight: 550;
+            letter-spacing: 0.02em;
+
+          }
+          
+          .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+            padding: 1rem;
+            // background-color: rgba(0, 0, 0, 0);
+            // border-radius: 12px;
+            // border: 2px solid rgba(130, 0, 251, 0.2);
+            // box-shadow: 0 0 15px rgba(243, 201, 64, 0.46);
+            width: 100%;
+            max-width: 800px;
+          }
+          
+          .category-button {
+            padding: 0.6rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background-color: rgba(139, 92, 246, 0.1);
+            color: #6d28d9;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            min-width: 120px;
+          }
+          
+          .category-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+          }
+          
+          .category-button:hover {
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+          }
+          
+          .category-button:hover::before {
+            opacity: 1;
+          }
+          
+          .category-button.active {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+          }
+          
+          .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: clamp(2rem, 5vw, 3rem);
+            width: 100%;
+            max-width: 80rem;
+          }
+          
+          .prayer-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            padding: clamp(1rem, 3vw, 1.5rem);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+          }
+          
+          .prayer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 1);
+          }
+          
+          .prayer-category {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+          }
+          
+          .prayer-category-icon {
+            color: #8b5cf6;
+          }
+          
+          .prayer-category-text {
+            color: #8b5cf6;
+            font-size: 0.875rem;
+            font-weight: 500;
+          }
+          
+          .prayer-title {
+            font-size: clamp(1.125rem, 3vw, 1.25rem);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #6d28d9;
+            font-family: serif;
+          }
+          
+          .prayer-preview {
+            color: #334155;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+          }
+          
+          .prayer-read-more {
+            color: #8b5cf6;
+            font-weight: 500;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-top: auto;
+          }
+          
+          .prayer-read-more:hover {
+            color: #7c3aed;
+            text-decoration: underline;
+          }
+          
+          .prayer-request-form {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            padding: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: clamp(2rem, 5vw, 3rem);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 48rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+          }
+          
+          .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+          }
+          
+          .form-icon {
+            width: 4rem;
+            height: 4rem;
+            color: #d4af37;
+            margin: 0 auto 1rem auto;
+            display: block;
+          }
+          
+          .form-title {
+            font-size: clamp(1.25rem, 4vw, 1.5rem);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #6d28d9;
+            font-family: serif;
+          }
+          
+          .form-subtitle {
+            color: #475569;
+            font-size: 0.875rem;
+          }
+          
+          .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+            gap: 1rem;
+          }
+          
+          .form-input, .form-select, .form-textarea {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            color: #1e293b;
+            font-size: 0.875rem;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          
+          .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+          }
+          
+          .form-textarea {
+            resize: vertical;
+            font-family: inherit;
+            min-height: 100px;
+          }
+          
+          .form-checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+          
+          .form-checkbox {
+            accent-color: #8b5cf6;
+          }
+          
+          .form-checkbox-label {
+            color: #475569;
+            font-size: 0.875rem;
+          }
+          
+          .form-message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+          }
+          
+          .form-message.success {
+            background-color: #f0fdf4;
+            color: #166534;
+          }
+          
+          .form-message.error {
+            background-color: #fef2f2;
+            color: #dc2626;
+          }
+          
+          .recaptcha-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+          }
+          
+          .form-button {
+            background-color: #8b5cf6;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            width: 100%;
+          }
+          
+          .form-button:hover:not(:disabled) {
+            background-color: #7c3aed;
+          }
+          
+          .form-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+          }
+          
+          .cta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: clamp(1rem, 4vw, 2rem);
+            width: 100%;
+            max-width: 60rem;
+          }
+          
+          .cta-card {
+            background-color: rgba(139, 92, 246, 0.1);
+            border-radius: 1rem;
+            padding: clamp(1.5rem, 4vw, 2rem);
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          
+          .cta-card:hover {
+            transform: translateY(-5px);
+            background-color: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.3);
+          }
+          
+          .cta-icon {
+            width: 3rem;
+            height: 3rem;
+            color: #d4af37;
+            margin: 0 auto 1rem auto;
+            display: block;
+          }
+          
+          .cta-title {
+            font-size: clamp(1.125rem, 3vw, 1.25rem);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #6d28d9;
+            font-family: serif;
+          }
+          
+          .cta-description {
+            color: #475569;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: clamp(0.8rem, 2vw, 0.875rem);
+            flex-grow: 1;
+          }
+          
+          .cta-button {
+            background-color: #8b5cf6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.8rem, 2vw, 0.875rem);
+            width: 100%;
+          }
+          
+          .cta-button:hover {
+            background-color: #7c3aed;
+          }
+          
+          .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 1rem;
+          }
+          
+          .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: #1e293b;
+          }
+          
+          .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #6d28d9;
+          }
+          
+          .modal-form-group {
+            margin-bottom: 1rem;
+          }
+          
+          .modal-form-input, .modal-form-select, .modal-form-textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            color: #1e293b;
+            box-sizing: border-box;
+          }
+          
+          .modal-form-textarea {
+            resize: vertical;
+            font-family: inherit;
+            min-height: 100px;
+          }
+          
+          .modal-form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+          }
+          
+          .modal-button-cancel {
+            padding: 0.5rem 1rem;
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+          }
+          
+          .modal-button-submit {
+            padding: 0.5rem 1rem;
+            background-color: #9a75f2ff;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+          }
+          
+          .prayer-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 1rem;
+          }
+          
+          .prayer-modal-content {
+            background-color: rgba(30, 41, 59, 0.95);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 32rem;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            color: #f8fafc;
+          }
+          
+          .prayer-modal-category {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+          }
+          
+          .prayer-modal-category-icon {
+            color: #d4af37;
+          }
+          
+          .prayer-modal-category-text {
+            color: #d4af37;
+            font-size: 0.875rem;
+            font-weight: 500;
+          }
+          
+          .prayer-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            font-family: serif;
+            text-align: center;
+          }
+          
+          .prayer-modal-content-text {
+            color: #e2e8f0;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            white-space: pre-line;
+            text-align: center;
+          }
+          
+          .prayer-modal-close-button {
+            width: 100%;
+            background-color: #8b5cf6;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+          }
+          
+          .prayer-modal-close-button:hover {
+            background-color: #7c3aed;
+          }
+          
+          /* Animation classes */
+          .scroll-fade-in {
+            opacity: 0;
+            transition: opacity 0.6s ease;
+          }
+          
+          .scroll-fade-in.animate {
+            opacity: 1;
+          }
+          
+          .scroll-slide-up {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.6s ease, opacity 0.6s ease;
+          }
+          
+          .scroll-slide-up.animate {
+            transform: translateY(0);
+            opacity: 1;
+          }
+          
+          .scroll-slide-left {
+            transform: translateX(-20px);
+            opacity: 0;
+            transition: transform 0.6s ease, opacity 0.6s ease;
+          }
+          
+          .scroll-slide-left.animate {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          
+          .scroll-slide-right {
+            transform: translateX(20px);
+            opacity: 0;
+            transition: transform 0.6s ease, opacity 0.6s ease;
+          }
+          
+          .scroll-slide-right.animate {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          
+          .scroll-scale-in {
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.6s ease, opacity 0.6s ease;
+          }
+          
+          .scroll-scale-in.animate {
+            transform: scale(1);
+            opacity: 1;
+          }
+          
+          .scroll-stagger-children > * {
+            opacity: 0;
+            transition: all 0.6s ease;
+          }
+          
+          .scroll-stagger-children.animate > * {
+            opacity: 1;
+          }
+        `}
+      </style>
+      
+      <section 
+        id="prayer-hero"
+        className="scroll-fade-in smooth-scroll-section"
+      >
+        <div className="prayer-container">
+          <div className="header-container scroll-slide-up">
+            <div className="header-title-container">
+              {/* <Book className="header-icon" /> */}
+              <h1 className="header-title">Our Prayers</h1>
+            </div>
+            <p className="header-subtitle">
+              Find comfort and strength in these sacred prayers and devotions
+            </p>
           </div>
-          <p style={{fontSize: 'clamp(1rem, 3vw, 1.125rem)', color: '#e0f2fe'}}>Find comfort and strength in these sacred prayers and devotions</p>
-        </div>
 
-        {/* Category Filter */}
-        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem'}}>
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '9999px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                transition: 'all 0.3s ease',
-                backgroundColor: activeCategory === category ? '#0ea5e9' : 'rgba(255, 255, 255, 0.1)',
-                color: activeCategory === category ? '#0284c7' : '#e0f2fe',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                cursor: 'pointer'
-              }}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
+          {/* Category Filter */}
+          <div className="category-buttons">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`category-button ${activeCategory === category ? 'active' : ''}`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
 
-        {/* Prayer Grid */}
-        <div 
-          id="prayer-grid"
-          className="scroll-stagger-children smooth-scroll-section"
-          style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 'clamp(1rem, 3vw, 1.5rem)', marginBottom: 'clamp(2rem, 5vw, 3rem)', width: '100%'}}>
-          {prayersList.filter(prayer => activeCategory === 'All' ? true : prayer.category === activeCategory).map(prayer => (
-            <div key={prayer.id} style={{backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '1rem', padding: 'clamp(1rem, 3vw, 1.5rem)', border: '1px solid rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(10px)', transition: 'all 0.3s ease', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'}} onClick={() => setSelectedPrayer(prayer)}>
-              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem', gap: '0.5rem'}}>
-                <div style={{color: '#0ea5e9'}}>
-                  {getCategoryIcon(prayer.category)}
+          {/* Prayer Grid */}
+          <div 
+            id="prayer-grid"
+            className="prayer-grid scroll-stagger-children smooth-scroll-section"
+          >
+            {prayersList.filter(prayer => activeCategory === 'All' ? true : prayer.category === activeCategory).map(prayer => (
+              <div key={prayer.id} className="prayer-card" onClick={() => setSelectedPrayer(prayer)}>
+                <div className="prayer-category">
+                  <div className="prayer-category-icon">
+                    {getCategoryIcon(prayer.category)}
+                  </div>
+                  <span className="prayer-category-text">{prayer.category}</span>
                 </div>
-                <span style={{color: '#0ea5e9', fontSize: '0.875rem', fontWeight: '500'}}>{prayer.category}</span>
+                
+                <h3 className="prayer-title">{prayer.title}</h3>
+                <p className="prayer-preview">
+                  {prayer.content.split('\n').slice(0, 3).join('\n')}
+                  {prayer.content.split('\n').length > 3 && '...'}
+                </p>
+                <button className="prayer-read-more">
+                  Read Full Prayer →
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Prayer Request Form */}
+          <div className="prayer-request-form">
+            <div className="form-header">
+              <Heart className="form-icon" />
+              <h2 className="form-title">Submit Prayer Request</h2>
+              <p className="form-subtitle">Share your intentions with our prayer community</p>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="form-group">
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Your Name"
+                  required
+                  className="form-input"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Email (Optional)"
+                  className="form-input"
+                />
               </div>
               
-              <h3 style={{fontSize: 'clamp(1.125rem, 3vw, 1.25rem)', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', fontFamily: 'serif'}}>{prayer.title}</h3>
-              <p style={{color: '#0369a1', fontSize: '0.875rem', lineHeight: '1.6', marginBottom: '1rem'}}>
-                {prayer.content.split('\n').slice(0, 3).join('\n')}
-                {prayer.content.split('\n').length > 3 && '...'}
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Phone (Optional)"
+                className="form-input"
+              />
+              
+              <select
+                name="prayer_type"
+                value={formData.prayer_type}
+                onChange={handleChange}
+                required
+                className="form-select"
+              >
+                <option value="">Prayer Type</option>
+                <option value="health">Health & Healing</option>
+                <option value="family">Family & Relationships</option>
+                <option value="finance">Financial Blessing</option>
+                <option value="career">Career & Education</option>
+                <option value="spiritual">Spiritual Growth</option>
+                <option value="thanksgiving">Thanksgiving</option>
+                <option value="other">Other</option>
+              </select>
+              
+              <textarea
+                name="intention"
+                value={formData.intention}
+                onChange={handleChange}
+                placeholder="Share your prayer request..."
+                rows="4"
+                required
+                className="form-textarea"
+              />
+              
+              <div className="form-checkbox-group">
+                <input
+                  type="checkbox"
+                  id="is_public"
+                  name="is_public"
+                  checked={formData.is_public}
+                  onChange={handleChange}
+                  className="form-checkbox"
+                />
+                <label htmlFor="is_public" className="form-checkbox-label">Make this prayer request public</label>
+              </div>
+              
+              {message && (
+                <div className={`form-message ${message.includes('Error') ? 'error' : 'success'}`}>
+                  {message}
+                </div>
+              )}
+              
+              <div className="recaptcha-container">
+                <ReCAPTCHA
+                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
+                  onChange={setRecaptchaValue}
+                  onExpired={() => setRecaptchaValue(null)}
+                />
+              </div>
+              
+              <button 
+                type="submit"
+                disabled={loading || !recaptchaValue}
+                className="form-button"
+              >
+                {loading ? 'Submitting...' : 'Submit Prayer Request'}
+              </button>
+            </form>
+          </div>
+
+          {/* Call to Action */}
+          <div className="cta-grid">
+            <div className="cta-card">
+              <Heart className="cta-icon" />
+              <h2 className="cta-title">Prayer Chain</h2>
+              <p className="cta-description">
+                Join our prayer chain to receive and pray for community intentions.
               </p>
-              <button style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.875rem'}}>
-                Read Full Prayer →
+              <button className="cta-button">
+                Join Prayer Chain
               </button>
             </div>
-          ))}
-        </div>
-
-        {/* Prayer Request Form */}
-        <div style={{backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '1rem', padding: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: 'clamp(2rem, 5vw, 3rem)', border: '1px solid rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(10px)', width: '100%', maxWidth: '48rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'}}>
-          <div style={{textAlign: 'center', marginBottom: '2rem'}}>
-            <Heart style={{width: '4rem', height: '4rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-            <h2 style={{fontSize: 'clamp(1.25rem, 4vw, 1.5rem)', fontWeight: '600', marginBottom: '0.5rem', color: '#0284c7', fontFamily: 'serif'}}>Submit Prayer Request</h2>
-            <p style={{color: '#0369a1', fontSize: '0.875rem'}}>Share your intentions with our prayer community</p>
-          </div>
-          
-          <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem'}}>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Your Name"
-                required
-                style={{
-                  padding: '0.75rem',
-                  borderRadius: '0.5rem',
-                  backgroundColor: 'white',
-                  border: '1px solid #d1d5db',
-                  color: '#374151',
-                  fontSize: '0.875rem'
-                }}
-              />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email (Optional)"
-                style={{
-                  padding: '0.75rem',
-                  borderRadius: '0.5rem',
-                  backgroundColor: 'white',
-                  border: '1px solid #d1d5db',
-                  color: '#374151',
-                  fontSize: '0.875rem'
-                }}
-              />
+            
+            <div className="cta-card">
+              <Users className="cta-icon" />
+              <h2 className="cta-title">Prayer Groups</h2>
+              <p className="cta-description">
+                Join our prayer groups and grow in faith with fellow parishioners.
+              </p>
+              <button className="cta-button">
+                Join Group
+              </button>
             </div>
-            
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Phone (Optional)"
-              style={{
-                padding: '0.75rem',
-                borderRadius: '0.5rem',
-                backgroundColor: 'white',
-                border: '1px solid #d1d5db',
-                color: '#374151',
-                fontSize: '0.875rem'
-              }}
-            />
-            
-            <select
-              name="prayer_type"
-              value={formData.prayer_type}
-              onChange={handleChange}
-              required
-              style={{
-                padding: '0.75rem',
-                borderRadius: '0.5rem',
-                backgroundColor: 'white',
-                border: '1px solid #d1d5db',
-                color: '#374151',
-                fontSize: '0.875rem'
-              }}>
-              <option value="">Prayer Type</option>
-              <option value="health">Health & Healing</option>
-              <option value="family">Family & Relationships</option>
-              <option value="finance">Financial Blessing</option>
-              <option value="career">Career & Education</option>
-              <option value="spiritual">Spiritual Growth</option>
-              <option value="thanksgiving">Thanksgiving</option>
-              <option value="other">Other</option>
-            </select>
-            
-            <textarea
-              name="intention"
-              value={formData.intention}
-              onChange={handleChange}
-              placeholder="Share your prayer request..."
-              rows="4"
-              required
-              style={{
-                padding: '0.75rem',
-                borderRadius: '0.5rem',
-                backgroundColor: 'white',
-                border: '1px solid #d1d5db',
-                color: '#374151',
-                fontSize: '0.875rem',
-                resize: 'vertical',
-                fontFamily: 'inherit'
-              }}
-            />
-            
-            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <input
-                type="checkbox"
-                id="is_public"
-                name="is_public"
-                checked={formData.is_public}
-                onChange={handleChange}
-                style={{accentColor: '#0ea5e9'}}
-              />
-              <label htmlFor="is_public" style={{color: '#374151', fontSize: '0.875rem'}}>Make this prayer request public</label>
-            </div>
-            
-            {message && (
-              <div style={{padding: '1rem', borderRadius: '0.5rem', backgroundColor: message.includes('Error') ? '#fef2f2' : '#f0f9ff', color: message.includes('Error') ? '#dc2626' : '#0284c7'}}>
-                {message}
-              </div>
-            )}
-            
-
-            
-            <div style={{display: 'flex', justifyContent: 'center', marginBottom: '1rem'}}>
-              <ReCAPTCHA
-                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
-                onChange={setRecaptchaValue}
-                onExpired={() => setRecaptchaValue(null)}
-              />
-            </div>
-            
-            <button 
-              type="submit"
-              disabled={loading || !recaptchaValue}
-              style={{
-                backgroundColor: loading || !recaptchaValue ? '#9ca3af' : '#0ea5e9',
-                color: 'white',
-                padding: '0.75rem 2rem',
-                borderRadius: '0.5rem',
-                fontWeight: '600',
-                border: 'none',
-                cursor: loading || !recaptchaValue ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s ease',
-                fontSize: '0.875rem'
-              }}
-            >
-              {loading ? 'Submitting...' : 'Submit Prayer Request'}
-            </button>
-          </form>
-        </div>
-
-        {/* Call to Action */}
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 'clamp(1rem, 4vw, 2rem)', width: '100%', maxWidth: '60rem'}}>
-          <div style={{backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '1rem', padding: 'clamp(1.5rem, 4vw, 2rem)', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
-            <Heart style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-            <h2 style={{fontSize: 'clamp(1.125rem, 3vw, 1.25rem)', fontWeight: '600', marginBottom: '1rem', color: 'white', fontFamily: 'serif'}}>Prayer Chain</h2>
-            <p style={{color: '#cbd5e1', marginBottom: '1.5rem', lineHeight: '1.6', fontSize: 'clamp(0.8rem, 2vw, 0.875rem)'}}>
-              Join our prayer chain to receive and pray for community intentions.
-            </p>
-            <button style={{backgroundColor: '#0ea5e9', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', fontWeight: '600', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', fontSize: 'clamp(0.8rem, 2vw, 0.875rem)'}}>
-              Join Prayer Chain
-            </button>
-          </div>
-          
-          <div style={{backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '1rem', padding: 'clamp(1.5rem, 4vw, 2rem)', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
-            <Users style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-            <h2 style={{fontSize: 'clamp(1.125rem, 3vw, 1.25rem)', fontWeight: '600', marginBottom: '1rem', color: 'white', fontFamily: 'serif'}}>Prayer Groups</h2>
-            <p style={{color: '#cbd5e1', marginBottom: '1.5rem', lineHeight: '1.6', fontSize: 'clamp(0.8rem, 2vw, 0.875rem)'}}>
-              Join our prayer groups and grow in faith with fellow parishioners.
-            </p>
-            <button style={{backgroundColor: '#0ea5e9', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', fontWeight: '600', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', fontSize: 'clamp(0.8rem, 2vw, 0.875rem)'}}>
-              Join Group
-            </button>
           </div>
         </div>
 
         {/* Add Prayer Modal */}
         {showAddPrayerForm && (
-          <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50}}>
-            <div style={{backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937'}}>Add New Prayer</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const newPrayer = {
-                  id: Date.now(),
-                  ...prayerFormData
-                };
-                setPrayersList([newPrayer, ...prayersList]);
-                setShowAddPrayerForm(false);
-                setPrayerFormData({ title: '', content: '', category: 'Traditional' });
-              }}>
-                <div style={{marginBottom: '1rem'}}>
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3 className="modal-title">Add New Prayer</h3>
+              <form onSubmit={handleAddPrayerSubmit}>
+                <div className="modal-form-group">
                   <input
                     type="text"
+                    name="title"
                     placeholder="Prayer Title"
                     value={prayerFormData.title}
-                    onChange={(e) => setPrayerFormData({...prayerFormData, title: e.target.value})}
+                    onChange={handlePrayerFormChange}
                     required
-                    style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                    className="modal-form-input"
                   />
                 </div>
-                <div style={{marginBottom: '1rem'}}>
+                <div className="modal-form-group">
                   <select
+                    name="category"
                     value={prayerFormData.category}
-                    onChange={(e) => setPrayerFormData({...prayerFormData, category: e.target.value})}
-                    style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                    onChange={handlePrayerFormChange}
+                    className="modal-form-select"
                   >
                     <option value="Traditional">Traditional</option>
                     <option value="Saint Devotion">Saint Devotion</option>
@@ -546,57 +1127,39 @@ const Prayer = () => {
                     <option value="Special Intentions">Special Intentions</option>
                   </select>
                 </div>
-                <div style={{marginBottom: '1rem'}}>
+                <div className="modal-form-group">
+                  <select
+                    name="language"
+                    value={prayerFormData.language}
+                    onChange={handlePrayerFormChange}
+                    className="modal-form-select"
+                  >
+                    <option value="english">English</option>
+                    <option value="tamil">Tamil</option>
+                  </select>
+                </div>
+                <div className="modal-form-group">
                   <textarea
+                    name="content"
                     placeholder="Prayer Content"
                     value={prayerFormData.content}
-                    onChange={(e) => setPrayerFormData({...prayerFormData, content: e.target.value})}
+                    onChange={handlePrayerFormChange}
                     required
                     rows="6"
-                    style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#1f2937'}}
+                    className="modal-form-textarea"
                   />
                 </div>
-                <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
+                <div className="modal-form-actions">
                   <button
                     type="button"
-                    onClick={() => {setShowAddPrayerForm(false); setPrayerFormData({ title: '', content: '', category: 'Traditional' });}}
-                    style={{padding: '0.5rem 1rem', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
+                    onClick={closeAddPrayerForm}
+                    className="modal-button-cancel"
                   >
                     Cancel
                   </button>
                   <button
-                    type="button"
-                    onClick={async () => {
-                      if (prayerFormData.title && prayerFormData.content) {
-                        try {
-                          const response = await fetch('http://localhost:8000/api/prayers/', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                                'Authorization': `Token ${localStorage.getItem('adminToken')}`,
-                            },
-                            body: JSON.stringify(prayerFormData)
-                          });
-                          
-                          if (response.ok) {
-                            const newPrayer = {
-                              id: Date.now(),
-                              ...prayerFormData
-                            };
-                            setPrayersList([newPrayer, ...prayersList]);
-                            setShowAddPrayerForm(false);
-                            setPrayerFormData({ title: '', content: '', category: 'Traditional' });
-                            alert('Prayer added successfully!');
-                          } else {
-                            alert('Error adding prayer. Please try again.');
-                          }
-                        } catch (error) {
-                          console.error('Error:', error);
-                          alert('Error adding prayer. Please try again.');
-                        }
-                      }
-                    }}
-                    style={{padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
+                    type="submit"
+                    className="modal-button-submit"
                   >
                     Add Prayer
                   </button>
@@ -608,29 +1171,29 @@ const Prayer = () => {
 
         {/* Prayer Modal */}
         {selectedPrayer && (
-          <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0, 0, 0, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem'}} onClick={() => setSelectedPrayer(null)}>
-            <div style={{backgroundColor: 'rgba(30, 41, 59, 0.95)', borderRadius: '1rem', padding: '2rem', maxWidth: '32rem', width: '100%', border: '1px solid rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(20px)'}} onClick={(e) => e.stopPropagation()}>
-              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem', gap: '0.5rem'}}>
-                <div style={{color: '#0ea5e9'}}>
+          <div className="prayer-modal-overlay" onClick={() => setSelectedPrayer(null)}>
+            <div className="prayer-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="prayer-modal-category">
+                <div className="prayer-modal-category-icon">
                   {getCategoryIcon(selectedPrayer.category)}
                 </div>
-                <span style={{color: '#0ea5e9', fontSize: '0.875rem', fontWeight: '500'}}>{selectedPrayer.category}</span>
+                <span className="prayer-modal-category-text">{selectedPrayer.category}</span>
               </div>
-              <h3 style={{fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: 'white', fontFamily: 'serif', textAlign: 'center'}}>{selectedPrayer.title}</h3>
-              <div style={{color: '#cbd5e1', lineHeight: '1.8', marginBottom: '2rem', whiteSpace: 'pre-line', textAlign: 'center'}}>
+              <h3 className="prayer-modal-title">{selectedPrayer.title}</h3>
+              <div className="prayer-modal-content-text">
                 {selectedPrayer.content}
               </div>
               <button 
                 onClick={() => setSelectedPrayer(null)}
-                style={{width: '100%', backgroundColor: '#0ea5e9', color: 'white', padding: '0.75rem', borderRadius: '0.5rem', fontWeight: '600', border: 'none', cursor: 'pointer'}}
+                className="prayer-modal-close-button"
               >
                 Close
               </button>
             </div>
           </div>
         )}
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

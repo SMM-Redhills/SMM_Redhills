@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Phone, Clock, Mail, Users, Heart, Cross } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { churchAPI } from '../../services/api';
+import { assignedColors } from '../../utils/sectionColors';
 
 const Contact = () => {
   const observerRef = useRef(null);
@@ -117,36 +118,36 @@ const Contact = () => {
         <section 
           id="contact-info"
           className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '4rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '3rem'}}>
+          style={{marginBottom: '4rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 'clamp(1.5rem, 4vw, 3rem)'}}>
           {/* Contact Information */}
-          <div className="scroll-slide-left" style={{backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
-            <h2 style={{fontSize: '2rem', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Get In Touch</h2>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '2rem'}}>
-              <div style={{backgroundColor: '#e0f2fe', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #0ea5e9', display: 'flex', alignItems: 'flex-start', gap: '1rem'}}>
-                <MapPin style={{width: '2rem', height: '2rem', color: '#0284c7', marginTop: '0.25rem', flexShrink: 0}} />
+          <div className="scroll-slide-left" style={{backgroundColor: assignedColors.lightEmerald, padding: 'clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem)', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
+            <h2 style={{fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: '700', color: '#0284c7', marginBottom: 'clamp(1rem, 3vw, 2rem)', fontFamily: 'serif'}}>Get In Touch</h2>
+            <div style={{display: 'flex', flexDirection: 'column', gap: 'clamp(1rem, 3vw, 2rem)'}}>
+              <div style={{backgroundColor: '#e0f2fe', padding: 'clamp(1rem, 3vw, 1.5rem)', borderRadius: '0.75rem', border: '1px solid #0ea5e9', display: 'flex', alignItems: 'flex-start', gap: 'clamp(0.75rem, 2vw, 1rem)'}}>
+                <MapPin style={{width: 'clamp(1.5rem, 4vw, 2rem)', height: 'clamp(1.5rem, 4vw, 2rem)', color: '#0284c7', marginTop: '0.25rem', flexShrink: 0}} />
                 <div>
-                  <h3 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem'}}>Address</h3>
-                  <p style={{color: '#0369a1', fontSize: '1rem', marginBottom: '0.25rem'}}>Saint Mary Magdalene church</p>
-                  <p style={{color: '#0369a1', fontSize: '1rem', marginBottom: '0.25rem'}}>Redhills, Chennai - 600052</p>
-                  <p style={{color: '#0369a1', fontSize: '1rem'}}>Tamil Nadu, India</p>
+                  <h3 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem', fontSize: 'clamp(0.95rem, 2.5vw, 1.1rem)'}}>Address</h3>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', marginBottom: '0.25rem', lineHeight: '1.5'}}>Saint Mary Magdalene church</p>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', marginBottom: '0.25rem', lineHeight: '1.5'}}>Redhills, Chennai - 600052</p>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', lineHeight: '1.5'}}>Tamil Nadu, India</p>
+                </div>
+              </div>
+              
+              <div style={{backgroundColor: '#e0f2fe', padding: 'clamp(1rem, 3vw, 1.5rem)', borderRadius: '0.75rem', border: '1px solid #0ea5e9', display: 'flex', alignItems: 'flex-start', gap: 'clamp(0.75rem, 2vw, 1rem)'}}>
+                <Phone style={{width: 'clamp(1.5rem, 4vw, 2rem)', height: 'clamp(1.5rem, 4vw, 2rem)', color: '#0284c7', marginTop: '0.25rem', flexShrink: 0}} />
+                <div>
+                  <h3 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem', fontSize: 'clamp(0.95rem, 2.5vw, 1.1rem)'}}>Phone</h3>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', marginBottom: '0.25rem', lineHeight: '1.5'}}>+91 44 2498 4123</p>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', lineHeight: '1.5'}}>+91 90030 86057</p>
                 </div>
               </div>
               
               <div style={{backgroundColor: '#e0f2fe', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #0ea5e9', display: 'flex', alignItems: 'flex-start', gap: '1rem'}}>
-                <Phone style={{width: '2rem', height: '2rem', color: '#0284c7', marginTop: '0.25rem', flexShrink: 0}} />
+                <Mail style={{width: 'clamp(1.5rem, 4vw, 2rem)', height: 'clamp(1.5rem, 4vw, 2rem)', color: '#0284c7', marginTop: '0.25rem', flexShrink: 0}} />
                 <div>
-                  <h3 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem'}}>Phone</h3>
-                  <p style={{color: '#0369a1', fontSize: '1rem', marginBottom: '0.25rem'}}>+91 44 2498 4123</p>
-                  <p style={{color: '#0369a1', fontSize: '1rem'}}>+91 90030 86057</p>
-                </div>
-              </div>
-              
-              <div style={{backgroundColor: '#e0f2fe', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #0ea5e9', display: 'flex', alignItems: 'flex-start', gap: '1rem'}}>
-                <Mail style={{width: '2rem', height: '2rem', color: '#0284c7', marginTop: '0.25rem', flexShrink: 0}} />
-                <div>
-                  <h3 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem'}}>Email</h3>
-                  <p style={{color: '#0369a1', fontSize: '1rem'}}>
-                    <a href="mailto:info@saintmarymagdelenechurch.org" style={{color: '#0284c7', textDecoration: 'none'}}>
+                  <h3 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem', fontSize: 'clamp(0.95rem, 2.5vw, 1.1rem)'}}>Email</h3>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', lineHeight: '1.5', wordBreak: 'break-word'}}>
+                    <a href="mailto:info@saintmarymagdelenechurch.org" style={{color: '#0284c7', textDecoration: 'none', wordBreak: 'break-word'}}>
                       info@saintmarymagdelenechurch.org
                     </a>
                   </p>
@@ -154,19 +155,19 @@ const Contact = () => {
               </div>
               
               <div style={{backgroundColor: '#e0f2fe', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #0ea5e9', display: 'flex', alignItems: 'flex-start', gap: '1rem'}}>
-                <Clock style={{width: '2rem', height: '2rem', color: '#0284c7', marginTop: '0.25rem', flexShrink: 0}} />
+                <Clock style={{width: 'clamp(1.5rem, 4vw, 2rem)', height: 'clamp(1.5rem, 4vw, 2rem)', color: '#0284c7', marginTop: '0.25rem', flexShrink: 0}} />
                 <div>
-                  <h3 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem'}}>Office Hours</h3>
-                  <p style={{color: '#0369a1', fontSize: '1rem', marginBottom: '0.25rem'}}>Monday - Friday: 9:00 AM - 5:00 PM</p>
-                  <p style={{color: '#0369a1', fontSize: '1rem', marginBottom: '0.25rem'}}>Saturday: 9:00 AM - 2:00 PM</p>
-                  <p style={{color: '#0369a1', fontSize: '1rem'}}>Sunday: After Mass Services</p>
+                  <h3 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem', fontSize: 'clamp(0.95rem, 2.5vw, 1.1rem)'}}>Office Hours</h3>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', marginBottom: '0.25rem', lineHeight: '1.5'}}>Monday - Friday: 9:00 AM - 5:00 PM</p>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', marginBottom: '0.25rem', lineHeight: '1.5'}}>Saturday: 9:00 AM - 2:00 PM</p>
+                  <p style={{color: '#0369a1', fontSize: 'clamp(0.875rem, 2vw, 1rem)', lineHeight: '1.5'}}>Sunday: After Mass Services</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="scroll-slide-right" style={{backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
+          <div className="scroll-slide-right" style={{backgroundColor: '#ffffff', padding: 'clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem)', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
             <h2 style={{fontSize: '2rem', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Send us a Message</h2>
             
             {message && (

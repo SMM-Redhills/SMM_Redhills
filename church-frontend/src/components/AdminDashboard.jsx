@@ -144,7 +144,7 @@ const AdminDashboard = () => {
               <h3 style={{fontSize: '1.125rem', fontWeight: '600', color: '#111827'}}>Contact Messages</h3>
             </div>
             <p style={{color: '#64748b', marginBottom: '1rem'}}>View and respond to contact form submissions</p>
-            <a href="http://localhost:8001/admin/church_app/contactmessage/" target="_blank" rel="noopener noreferrer" style={{backgroundColor: '#2563eb', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.375rem', textDecoration: 'none', display: 'inline-block', transition: 'all 0.3s ease'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#1d4ed8'} onMouseLeave={(e) => e.target.style.backgroundColor = '#2563eb'}>
+            <a href="http://localhost:8000/admin/church_app/contactmessage/" target="_blank" rel="noopener noreferrer" style={{backgroundColor: '#2563eb', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.375rem', textDecoration: 'none', display: 'inline-block', transition: 'all 0.3s ease'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#1d4ed8'} onMouseLeave={(e) => e.target.style.backgroundColor = '#2563eb'}>
               Manage
             </a>
           </div>
@@ -155,7 +155,7 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900">Prayer Requests</h3>
             </div>
             <p className="text-gray-600 mb-4">Review prayer requests from community</p>
-            <a href="http://localhost:8001/admin/church_app/prayerrequest/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
+            <a href="http://localhost:8000/admin/church_app/prayerrequest/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
               Manage
             </a>
           </div>
@@ -166,7 +166,7 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900">News Management</h3>
             </div>
             <p className="text-gray-600 mb-4">Add and manage news articles</p>
-            <a href="http://localhost:8001/admin/church_app/news/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
+            <a href="http://localhost:8000/admin/church_app/news/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
               Manage
             </a>
           </div>
@@ -177,7 +177,7 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900">Events Management</h3>
             </div>
             <p className="text-gray-600 mb-4">Add and manage church events</p>
-            <a href="http://localhost:8001/admin/church_app/event/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
+            <a href="http://localhost:8000/admin/church_app/event/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
               Manage
             </a>
           </div>
@@ -188,7 +188,7 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900">Gallery Management</h3>
             </div>
             <p className="text-gray-600 mb-4">Upload and organize photos and videos</p>
-            <a href="http://localhost:8001/admin/church_app/gallery/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
+            <a href="http://localhost:8000/admin/church_app/gallery/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
               Manage
             </a>
           </div>
@@ -199,7 +199,7 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900">Schedule Management</h3>
             </div>
             <p className="text-gray-600 mb-4">Update mass times and church schedule</p>
-            <a href="http://localhost:8001/admin/church_app/schedule/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
+            <a href="http://localhost:8000/admin/church_app/schedule/" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block">
               Manage
             </a>
           </div>

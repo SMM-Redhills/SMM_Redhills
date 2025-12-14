@@ -35,23 +35,17 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
     <>
       {/* Top Info Bar */}
       <div style={{backgroundColor: '#0ea5e9', color: 'white', padding: '0.75rem 1rem', fontSize: '0.875rem'}}>
-        <div style={{maxWidth: '80rem', margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', textAlign: 'center'}}>
+        <div style={{maxWidth: '80rem', margin: '0 auto', display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
               <Phone className="w-4 h-4" />
               <span>+91 44 2498 4123</span>
             </div>
-            <div className="hidden md:flex items-center space-x-2">
+            <div className="hidden sm:flex items-center space-x-2">
               <Mail className="w-4 h-4" />
               <span>info@saintmarymagdelenechurch.org</span>
             </div>
-          </div>
-          <div className="hidden lg:flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <Clock className="w-4 h-4" />
-              <span>Sunday Mass:  8:30 AM - 10:00 AM</span>
-            </div>
-            <div className="flex items-center space-x-2">
+            <div className="hidden lg:flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
               <span>Redhills, Chennai</span>
             </div>
@@ -69,7 +63,7 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
               style={{display: 'flex', alignItems: 'center', gap: '0.75rem', backgroundColor: 'transparent', border: 'none', cursor: 'pointer', transition: 'opacity 0.3s ease'}}
             >
               <div style={{width: '3rem', height: '3rem', backgroundColor: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <div style={{color: 'white', fontWeight: 'bold', fontSize: '1.25rem'}}>✞</div>
+                <div style={{color: 'white', fontWeight: 'bold', fontSize: '1.25rem'}}></div>
               </div>
               <div>
                 <h1 style={{fontSize: '1.25rem', fontFamily: 'serif', fontWeight: '700', color: '#1e293b', margin: 0}}>
@@ -167,7 +161,7 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
         <div style={{padding: '1.5rem', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
             <div style={{width: '2.5rem', height: '2.5rem', backgroundColor: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <div style={{color: 'white', fontWeight: 'bold', fontSize: '1rem'}}>✞</div>
+              <div style={{color: 'white', fontWeight: 'bold', fontSize: '1rem'}}></div>
             </div>
             <div>
               <h2 style={{fontSize: '1rem', fontFamily: 'serif', fontWeight: '700', color: '#1e293b', margin: 0}}>SMM Church</h2>

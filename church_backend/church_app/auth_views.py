@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 
 @api_view(['POST'])
@@ -21,34 +21,36 @@ def admin_login(request):
     user = authenticate(username=username, password=password)
     
     if user and user.is_staff:
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'is_staff': user.is_staff,
-            }
-        })
+        # Check if authtoken app is installed and tables exist
+        try:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'is_staff': user.is_staff,
+                }
+            })
+        except Exception as e:
+            print(f"Token creation error: {e}")
+            return Response({'error': 'Token system error. Did you run migrations?'}, status=500)
     
     return Response({
         'error': 'Invalid credentials or insufficient permissions'
     }, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def admin_logout(request):
     """Simple logout endpoint"""
-    try:
-        refresh_token = request.data.get('refresh')
-        if refresh_token:
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-        return Response({'message': 'Successfully logged out'})
-    except Exception:
-        return Response({'message': 'Logged out'})
+    if request.user.is_authenticated:
+        try:
+            # Delete the token to force logout
+            request.user.auth_token.delete()
+        except Exception:
+            pass
+    return Response({'message': 'Successfully logged out'})
 
 @api_view(['GET'])
 def admin_profile(request):

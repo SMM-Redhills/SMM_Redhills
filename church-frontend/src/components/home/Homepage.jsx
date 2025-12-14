@@ -1,12 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import { Calendar, Clock, Users, Book, Heart, Youtube, Camera, Cross } from 'lucide-react';
+import { Calendar, Clock, Users, Book, Heart, Youtube, Camera, MapPin } from 'lucide-react';
+import BannerSlider from './BannerSlider';
 
-const Homepage = ({ onNavigate, scrollToSection }) => {
+const Homepage = () => {
   const observerRef = useRef(null);
 
-  // Initialize scroll animations
   useEffect(() => {
-    // Create intersection observer for scroll animations
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -21,7 +20,6 @@ const Homepage = ({ onNavigate, scrollToSection }) => {
       }
     );
 
-    // Observe all elements with scroll animation classes
     const animatedElements = document.querySelectorAll(
       '.scroll-fade-in, .scroll-slide-up, .scroll-slide-left, .scroll-slide-right, .scroll-scale-in, .scroll-stagger-children'
     );
@@ -30,7 +28,6 @@ const Homepage = ({ onNavigate, scrollToSection }) => {
       observerRef.current.observe(el);
     });
 
-    // Cleanup function
     return () => {
       if (observerRef.current) {
         observerRef.current.disconnect();
@@ -38,282 +35,802 @@ const Homepage = ({ onNavigate, scrollToSection }) => {
     };
   }, []);
 
+  const assignedColors = {
+    church: '#f0f9ff',
+    quickLinks: '#f8fafc',
+    history: '#e0f2fe',
+    schedule: '#f5f3ff',
+    aboutSaint: '#fef3c7'
+  };
+
   return (
-    <div style={{minHeight: '100vh', backgroundColor: '#ffffff', width: '100%'}}>
-      {/* Hero Section */}
-      <section 
-        id="hero"
-        className="scroll-fade-in smooth-scroll-section"
-        style={{position: 'relative', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)', color: 'white', padding: '6rem 1rem', width: '100%', display: 'flex', justifyContent: 'center'}}
-      >
-        <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.1)'}}></div>
-        <div style={{position: 'relative', maxWidth: '72rem', margin: '0 auto', textAlign: 'center'}}>
-          {/* <div className="scroll-scale-in" style={{marginBottom: '2rem'}}>
-            <Cross style={{width: '4rem', height: '4rem', margin: '0 auto 1rem auto', color: '#ffffff', display: 'block'}} />
-          </div> */}
-          <h1 className="scroll-slide-up" style={{fontSize: '3.5rem', fontWeight: '700', marginBottom: '1.5rem', lineHeight: '1.1', textAlign: 'center', fontFamily: 'serif'}}>
-            Welcome to
-            <span style={{display: 'block', color: '#ffffff', marginTop: '0.5rem'}}>Saint Mary Magdalene</span>
-            <span style={{display: 'block', fontSize: '2rem', fontWeight: '300', marginTop: '0.5rem', color: '#e0f2fe'}}>church  </span>
-          </h1>
-          <p className="scroll-slide-up" style={{fontSize: '1.25rem', marginBottom: '2.5rem', maxWidth: '48rem', margin: '0 auto 2.5rem auto', lineHeight: '1.7', textAlign: 'center', color: '#e0f2fe'}}>
-            A sacred place of worship, pilgrimage, evangelization, and reconciliation in Redhills, Chennai
-          </p>
-          
-
-
-        </div>
-      </section>
+    <div className="homepage-container">
+      {/* Hero Section - Banner */}
+      {/* Hero Section - Banner */}
+      <BannerSlider />
 
       {/* Main Content */}
-      <div style={{width: '100%', padding: '4rem 1rem', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'}}>
-        <div style={{maxWidth: '80rem', width: '100%', margin: '0 auto', textAlign: 'center'}}>
-        
-        {/* church   Section */}
-        <section 
-          id="church-section"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '5rem', textAlign: 'center', width: '100%', backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', textAlign: 'center', fontFamily: 'serif'}}>Saint Mary Magdalene </h2>
-          <div style={{display: 'grid', gridTemplateColumns: '1fr', gap: '3rem', alignItems: 'center', justifyItems: 'center', maxWidth: '70rem', margin: '0 auto'}}>
-            <div className="scroll-slide-left" style={{textAlign: 'center', maxWidth: '50rem', width: '100%'}}>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', fontSize: '1.125rem', lineHeight: '1.7'}}>
-                The church serves as a sacred place of worship, pilgrimage, evangelization, and reconciliation, 
-                fulfilling its mission with great dedication. We trust that you will find the information on this 
-                site valuable, especially if you are planning a pilgrimage to our church.
-              </p>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', fontSize: '1.125rem', lineHeight: '1.7'}}>
-                As the heart of our parish, the church serves as the spiritual home to nearly 1,600 families. 
-                It is a vibrant community of faith, welcoming over 200,000 visitors each year.
-              </p>
-              <p style={{color: '#64748b', marginBottom: '2rem', fontSize: '1.125rem', lineHeight: '1.7'}}>
-                We offer three daily Masses and more than five hours of confessions each day, along with a 
-                Catholic bookstore to serve the needs of our visitors.
-              </p>
-              <div style={{backgroundColor: '#e0f2fe', padding: '2rem', borderRadius: '1rem', marginTop: '2rem', border: '1px solid #0ea5e9'}}>
-                <h4 style={{fontWeight: '600', color: '#0284c7', marginBottom: '1rem', fontSize: '1.25rem'}}>About Saint Mary Magdalene</h4>
-                <p style={{fontSize: '1rem', color: '#0369a1', lineHeight: '1.6'}}>
-                  Saint Mary Magdalene was a devoted follower of Jesus Christ and is often called the "Apostle to the Apostles" 
-                  because she was the first to witness and announce Christ's resurrection. She represents redemption, 
-                  devotion, and the transformative power of divine love.
+      <div className="main-content">
+        <div className="content-wrapper">
+          {/* Church Section */}
+          <section
+            id="church-section"
+            className="scroll-fade-in smooth-scroll-section church-section"
+            style={{ backgroundColor: assignedColors.church }}
+          >
+            <h2 className="scroll-slide-up section-title">
+              Saint Mary Magdalene Church
+            </h2>
+            <div className="church-grid">
+              <div className="scroll-slide-left church-image-container">
+                <img
+                  src="public/assets/images/smm.jpg"
+                  className="church-image"
+                />
+              </div>
+              <div className="scroll-slide-right church-text">
+                <p className="church-paragraph">
+                  The church serves as a sacred place of worship, pilgrimage, evangelization, and reconciliation,
+                  fulfilling its mission with great dedication. We trust that you will find the information on this
+                  site valuable, especially if you are planning a pilgrimage to our church.
+                </p>
+                <p className="church-paragraph">
+                  As the heart of our parish, the church serves as the spiritual home to nearly 1,600 families.
+                  It is a vibrant community of faith, welcoming over 200,000 visitors each year.
+                </p>
+                <p className="church-paragraph">
+                  We offer three daily Masses and more than five hours of confessions each day, along with a
+                  Catholic bookstore to serve the needs of our visitors.
                 </p>
               </div>
             </div>
-            <div className="scroll-slide-right" style={{backgroundColor: '#f8fafc', borderRadius: '1rem', padding: '2rem', border: '1px solid #e2e8f0'}}>
-              <img 
-                src="/assets/images/smm.jpg" 
-                alt="church Interior" 
-                style={{width: '100%', height: '20rem', objectFit: 'cover', borderRadius: '0.75rem', marginBottom: '1rem'}}
-              />
-            </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Quick Links Section */}
-        <section 
-          id="quick-links"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '5rem', textAlign: 'center', width: '100%'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>Quick Links</h2>
-          <div className="scroll-stagger-children" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', justifyItems: 'center'}}>
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid #e2e8f0', textAlign: 'center', width: '100%', maxWidth: '20rem', transition: 'all 0.3s ease'}}>
-              <Calendar style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1.5rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1e293b'}}>News & Events</h3>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.6'}}>Stay updated with our latest news and upcoming events</p>
-              <button 
-                style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}
-                onClick={() => onNavigate && onNavigate('news-events')}
-              >
-                Read More →
-              </button>
-            </div>
-            
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid #e2e8f0', textAlign: 'center', width: '100%', maxWidth: '20rem', transition: 'all 0.3s ease'}}>
-              <Youtube style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1.5rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1e293b'}}>YouTube Channel</h3>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.6'}}>Watch our services and spiritual content online</p>
-              <button 
-                style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}
-                onClick={() => window.open('https://www.youtube.com/@KORKAITV', '_blank')}
-              >
-                View Channel →
-              </button>
-            </div>
-            
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid #e2e8f0', textAlign: 'center', width: '100%', maxWidth: '20rem', transition: 'all 0.3s ease'}}>
-              <Camera style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1.5rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1e293b'}}>Our Gallery</h3>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.6'}}>Explore photos and videos from our church community</p>
-              <button 
-                style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}
-                onClick={() => onNavigate && onNavigate('gallery')}
-              >
-                View Gallery →
-              </button>
-            </div>
-            
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid #e2e8f0', textAlign: 'center', width: '100%', maxWidth: '20rem', transition: 'all 0.3s ease'}}>
-              <Book style={{width: '3rem', height: '3rem', color: '#0ea5e9', margin: '0 auto 1.5rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1e293b'}}>Our Prayers</h3>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.6'}}>Find prayers in English and Tamil for your spiritual journey</p>
-              <button 
-                style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}
-                onClick={() => onNavigate && onNavigate('prayers')}
-              >
-                View Prayers →
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* History Section */}
-        <section 
-          id="history"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '5rem', textAlign: 'center', width: '100%'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>Our History & Heritage</h2>
-          <div className="scroll-stagger-children" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', justifyItems: 'center'}}>
-            
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid #e2e8f0', textAlign: 'center', width: '100%', maxWidth: '22rem', transition: 'all 0.3s ease'}}>
-              <img 
-                src="public/assets/images/sain_mm.jpeg" 
-                alt="Saint Mary Magdalene" 
-                style={{width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.75rem', marginBottom: '1rem'}}
-              />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1e293b'}}>Saint Mary Magdalene</h3>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.6'}}>
-                Known as the "Apostle to the Apostles," she was the first witness to Christ's resurrection and a symbol of redemption and unwavering faith.
-              </p>
-              <button 
-                style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}
-                onClick={() => onNavigate && onNavigate('st-mary-magdalene')}
-              >
-                Read More →
-              </button>
-            </div>
-            
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid #e2e8f0', textAlign: 'center', width: '100%', maxWidth: '22rem', transition: 'all 0.3s ease'}}>
-              <img 
-                src="/assets/images/smm.jpg" 
-                alt="church Heritage" 
-                style={{width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.75rem', marginBottom: '1rem'}}
-              />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#1e293b'}}>church Heritage</h3>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.6'}}>
-                Our church stands as a testament to faith, serving the community of Redhills with devotion, prayer, and spiritual guidance for generations.
-              </p>
-              <button style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>Read More →</button>
-            </div>
-          </div>
-        </section>
-
-        {/* Schedule Section */}
-        <section 
-          id="schedule"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '5rem', backgroundColor: '#e0f2fe', borderRadius: '1rem', padding: '3rem', textAlign: 'center', width: '100%'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>Our Schedule</h2>
-          <div className="scroll-stagger-children" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', justifyItems: 'center'}}>
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '18rem'}}>
-              <Clock style={{width: '2rem', height: '2rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e293b'}}>Visiting Hours</h3>
-              <p style={{color: '#64748b', marginBottom: '1rem'}}>Daily: 6:00 AM - 8:00 PM</p>
-              <button style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>More details...</button>
-            </div>
-            
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '18rem'}}>
-              <Heart style={{width: '2rem', height: '2rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e293b'}}>Special Devotions</h3>
-              <p style={{color: '#64748b', marginBottom: '1rem'}}>Various times throughout the week</p>
-              <button style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>More details...</button>
-            </div>
-            
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '18rem'}}>
-              <Users style={{width: '2rem', height: '2rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e293b'}}>Mass Schedule</h3>
-              <p style={{color: '#64748b', marginBottom: '1rem', fontSize: '0.875rem', lineHeight: '1.4'}}>
-                Sunday: 8:00 AM - 10:00 AM<br/>
-                Evening: 6:00 PM - 7:30 PM<br/>
-                Weekdays: 6:00 AM
-              </p>
-              <button style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>More details...</button>
-            </div>
-            
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '2rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '18rem'}}>
-              <Book style={{width: '2rem', height: '2rem', color: '#0ea5e9', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e293b'}}>Eucharistic Adoration</h3>
-              <p style={{color: '#64748b', marginBottom: '1rem'}}>Special hours for prayer and reflection</p>
-              <button style={{color: '#0ea5e9', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer'}}>More details...</button>
-            </div>
-          </div>
-        </section>
-
-        {/* Saint Mary Magdalene Facts Section */}
-        <section 
-          id="about-saint"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '5rem', background: 'linear-gradient(to right, #f0f9ff, #e0f2fe)', borderRadius: '1rem', padding: '10PX', textAlign: 'center', width: '100%'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>About Saint Mary Magdalene</h2>
-          <div style={{maxWidth: '64rem', margin: '0 auto'}}>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', alignItems: 'center', justifyItems: 'center'}}>
-              <div className="scroll-slide-left">
-                <img 
-                  src="public/assets/images/sain_mm.jpeg" 
-                  alt="Saint Mary Magdalene" 
-                  style={{width: '100%', height: '20rem', objectFit: 'cover', borderRadius: '0.75rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'}}
+          
+          {/* About Saint Mary Magdalene Section */}
+          <section
+            id="about-saint"
+            className="scroll-fade-in smooth-scroll-section about-saint-section"
+            style={{ backgroundColor: assignedColors.aboutSaint }}
+          >
+            <h2 className="scroll-slide-up section-title">About Saint Mary Magdalene</h2>
+            <div className="about-content">
+              <div className="scroll-slide-left about-image-container">
+                <img
+                  src="public/assets/images/sain_mm.jpeg"
+                  alt="Saint Mary Magdalene"
+                  className="about-image"
                 />
               </div>
-              <div className="scroll-stagger-children" style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'}}>
-                  <h4 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem', fontSize: '1rem'}}>✨ The Apostle to the Apostles</h4>
-                  <p style={{color: '#64748b', fontSize: '0.875rem', lineHeight: '1.5', margin: 0}}>
-                    Saint Mary Magdalene was the first person to witness Christ's resurrection and was commissioned by Jesus to announce this good news to the apostles.
+              <div className="scroll-stagger-children about-features">
+                <div className="hover-lift feature-box">
+                  <h4 className="feature-title">✨ The Apostle to the Apostles</h4>
+                  <p className="feature-text">
+                    The first to witness Christ's resurrection, she was entrusted with sharing the joyous news with the apostles.
                   </p>
                 </div>
-                <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'}}>
-                  <h4 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem', fontSize: '1rem'}}>💝 Symbol of Redemption</h4>
-                  <p style={{color: '#64748b', fontSize: '0.875rem', lineHeight: '1.5', margin: 0}}>
-                    Her life represents the transformative power of God's love and forgiveness, showing that no one is beyond redemption.
+                <div className="hover-lift feature-box">
+                  <h4 className="feature-title"> Symbol of Redemption</h4>
+                  <p className="feature-text">
+                    Her life shows how God's love can transform and heal, inspiring hope for all who seek forgiveness.
                   </p>
                 </div>
-                <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'}}>
-                  <h4 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem', fontSize: '1rem'}}>🙏 Devoted Follower</h4>
-                  <p style={{color: '#64748b', fontSize: '0.875rem', lineHeight: '1.5', margin: 0}}>
-                    She followed Jesus throughout his ministry, supported him financially, and remained faithful even at the cross when others fled.
+                <div className="hover-lift feature-box">
+                  <h4 className="feature-title"> Devoted Follower</h4>
+                  <p className="feature-text">
+                    Mary Magdalene stayed by Jesus through his ministry and at the cross, remaining faithful to the end.
                   </p>
                 </div>
-                <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'}}>
-                  <h4 style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.5rem', fontSize: '1rem'}}>📅 Feast Day: July 22</h4>
-                  <p style={{color: '#64748b', fontSize: '0.875rem', lineHeight: '1.5', margin: 0}}>
-                    The Catholic Church celebrates her feast day on July 22nd, recognizing her as a saint and model of faith.
+                <div className="hover-lift feature-box">
+                  <h4 className="feature-title"> Feast Day: July 22</h4>
+                  <p className="feature-text">
+                    Celebrated by the Church on July 22nd, she remains a shining example of faith and devotion.
                   </p>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
         </div>
       </div>
+          {/* History Section */}
+          <section
+            id="history"
+            className="scroll-fade-in smooth-scroll-section history-section"
+            style={{ backgroundColor: assignedColors.history }}
+          >
+            <h2 className="scroll-slide-up section-title">Our History & Heritage</h2>
+            <div className="scroll-stagger-children history-grid">
+              <div className="hover-lift history-card">
+                <img
+                  src="public/assets/images/sain_mm.jpeg"
+                  alt="Saint Mary Magdalene"
+                  className="history-image"
+                />
+                <h3 className="history-card-title">Saint Mary Magdalene</h3>
+                <p className="history-card-text">
+                  Known as the "Apostle to the Apostles," she was the first witness to Christ's resurrection and a symbol of redemption and unwavering faith.
+                </p>
+                <button className="read-more-button">Read More →</button>
+              </div>
+              <div className="hover-lift history-card">
+                <img
+                  src="public/assets/images/smm.jpg"
+                  alt="church Heritage"
+                  className="history-image"
+                />
+                <h3 className="history-card-title">Church Heritage</h3>
+                <p className="history-card-text">
+                  Our church stands as a testament to faith, serving the community of Redhills with devotion, prayer, and spiritual guidance for generations.
+                </p>
+                <button className="read-more-button">Read More →</button>
+              </div>
+            </div>
+          </section>
 
-      {/* Add custom styles for animations */}
-      <style jsx>{`
-        @keyframes bounce {
-          0%, 20%, 53%, 80%, 100% {
-            transform: translate3d(0, 0, 0);
+          {/* Schedule Section */}
+          <section
+            id="schedule"
+            className="scroll-fade-in smooth-scroll-section schedule-section"
+            style={{ backgroundColor: assignedColors.schedule }}
+          >
+            <h2 className="scroll-slide-up section-title">Our Schedule</h2>
+            <div className="scroll-stagger-children schedule-grid">
+              <div className="hover-lift schedule-card">
+                <Clock className="schedule-icon" />
+                <h3 className="schedule-card-title">Visiting Hours</h3>
+                <p className="schedule-card-time">Daily: 6:00 AM - 8:00 PM</p>
+                <button className="schedule-button">More details...</button>
+              </div>
+              <div className="hover-lift schedule-card">
+                <Users className="schedule-icon" />
+                <h3 className="schedule-card-title">Mass Schedule</h3>
+                <div className="mass-times">
+                  <p>Sunday: 8:00 AM - 10:00 AM</p>
+                  <p>Evening: 6:00 PM - 7:30 PM</p>
+                  <p>Weekdays: 6:00 AM</p>
+                </div>
+                <button className="schedule-button">More details...</button>
+              </div>
+              <div className="hover-lift schedule-card">
+                <Heart className="schedule-icon" />
+                <h3 className="schedule-card-title">Special Devotions</h3>
+                <p className="schedule-card-time">Various times throughout the week</p>
+                <button className="schedule-button">More details...</button>
+              </div>
+              <div className="hover-lift schedule-card">
+                <Book className="schedule-icon" />
+                <h3 className="schedule-card-title">Eucharistic Adoration</h3>
+                <p className="schedule-card-time">Special hours for prayer and reflection</p>
+                <button className="schedule-button">More details...</button>
+              </div>
+            </div>
+          </section>
+
+      {/* Quick Links Section */}
+          <section
+            id="quick-links"
+            className="scroll-fade-in smooth-scroll-section quick-links-section"
+            style={{ backgroundColor: assignedColors.quickLinks }}
+          >
+            <h2 className="scroll-slide-up section-title">Quick Links</h2>
+            <div className="scroll-stagger-children quick-links-grid">
+              <div className="hover-lift quick-link-card">
+                <Calendar className="quick-link-icon" />
+                <h3 className="quick-link-title">News & Events</h3>
+                <p className="quick-link-description">Stay updated with our latest news and upcoming events</p>
+                <button className="quick-link-button">Read More →</button>
+              </div>
+              <div className="hover-lift quick-link-card">
+                <Youtube className="quick-link-icon" />
+                <h3 className="quick-link-title">YouTube Channel</h3>
+                <p className="quick-link-description">Watch our services and spiritual content online</p>
+                <button className="quick-link-button" onClick={() => window.open('https://www.youtube.com', '_blank')}>View Channel →</button>
+              </div>
+              <div className="hover-lift quick-link-card">
+                <Camera className="quick-link-icon" />
+                <h3 className="quick-link-title">Our Gallery</h3>
+                <p className="quick-link-description">Explore photos and videos from our church community</p>
+                <button className="quick-link-button">View Gallery →</button>
+              </div>
+              <div className="hover-lift quick-link-card">
+                <Book className="quick-link-icon" />
+                <h3 className="quick-link-title">Our Prayers</h3>
+                <p className="quick-link-description">Find prayers in English and Tamil for your spiritual journey</p>
+                <button className="quick-link-button">View Prayers →</button>
+              </div>
+              <div className="hover-lift quick-link-card">
+                <MapPin className="quick-link-icon" />
+                <h3 className="quick-link-title">Our Location</h3>
+                <p className="quick-link-description">Visit us at Redhills, Chennai - Find directions</p>
+                <button className="quick-link-button" onClick={() => window.open('https://maps.app.goo.gl/4zitN6vtu4G89oXz6', '_blank')}>View Location →</button>
+              </div>
+              <div className="hover-lift quick-link-card">
+                <Heart className="quick-link-icon" />
+                <h3 className="quick-link-title">Contact Us</h3>
+                <p className="quick-link-description">Get in touch with us for any queries or support</p>
+                <button className="quick-link-button">Contact →</button>
+              </div>
+            </div>
+          </section>
+
+      <style>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        /* Hero Section */
+        .hero-section {
+          width: 100%;
+          background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+          color: white;
+          padding: 4rem 2rem;
+          text-align: center;
+          min-height: 400px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hero-content {
+          max-width: 700px;
+        }
+
+        .hero-title {
+          font-size: clamp(2rem, 5vw, 3.5rem);
+          font-weight: 700;
+          margin-bottom: 1rem;
+          font-family: serif;
+        }
+
+        .hero-subtitle {
+          font-size: clamp(1rem, 3vw, 1.5rem);
+          margin-bottom: 2rem;
+          opacity: 0.95;
+          line-height: 1.6;
+        }
+
+        .hero-address {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          font-size: 1.1rem;
+        }
+
+        /* Main Layout */
+        .homepage-container {
+          min-height: 100vh;
+          background-color: #ffffff;
+          width: 100%;
+        }
+
+        .main-content {
+          width: 100%;
+          padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem);
+          background-color: #f8fafc;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .content-wrapper {
+          max-width: 1200px;
+          width: 100%;
+          margin: 0 auto;
+        }
+
+        /* Section Styles */
+        .smooth-scroll-section {
+          margin-bottom: clamp(2rem, 5vw, 5rem);
+          width: 100%;
+          border-radius: 1rem;
+          padding: clamp(2rem, 4vw, 3rem);
+          overflow: hidden;
+        }
+
+        .section-title {
+          font-size: clamp(1.75rem, 4vw, 2.5rem);
+          font-weight: 700;
+          color: #0284c7;
+          margin-bottom: clamp(1.5rem, 3vw, 3rem);
+          text-align: center;
+          font-family: serif;
+        }
+
+        /* Church Section */
+        .church-section {
+          box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .church-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: clamp(1.5rem, 3vw, 3rem);
+          align-items: center;
+        }
+
+        .church-image-container {
+          background-color: #f8fafc;
+          border-radius: 1rem;
+          padding: clamp(1rem, 2vw, 2rem);
+          border: 1px solid #e2e8f0;
+        }
+
+        .church-image {
+          width: 100%;
+          height: clamp(200px, 40vw, 350px);
+          object-fit: cover;
+          border-radius: 0.75rem;
+        }
+
+        .church-text {
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .church-paragraph {
+          color: #64748b;
+          font-size: clamp(0.95rem, 2vw, 1.125rem);
+          line-height: 1.7;
+        }
+
+        /* Quick Links Section */
+        .quick-links-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: clamp(1.5rem, 3vw, 2rem);
+          justify-items: center;
+        }
+
+        .quick-link-card {
+          background-color: #ffffff;
+          padding: clamp(1.5rem, 3vw, 2rem);
+          border-radius: 1rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          border: 1px solid #e2e8f0;
+          text-align: center;
+          width: 100%;
+          transition: all 0.3s ease;
+        }
+
+        .quick-link-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+        }
+
+        .quick-link-icon {
+          width: clamp(2.5rem, 5vw, 3rem);
+          height: clamp(2.5rem, 5vw, 3rem);
+          color: #0ea5e9;
+          margin: 0 auto 1rem;
+          display: block;
+        }
+
+        .quick-link-title {
+          font-size: clamp(1rem, 2vw, 1.25rem);
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+          color: #1e293b;
+        }
+
+        .quick-link-description {
+          color: #64748b;
+          margin-bottom: 1rem;
+          line-height: 1.6;
+          font-size: clamp(0.875rem, 1.5vw, 1rem);
+        }
+
+        .quick-link-button {
+          color: #0ea5e9;
+          font-weight: 500;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+          transition: color 0.3s;
+        }
+
+        .quick-link-button:hover {
+          color: #0284c7;
+        }
+
+        /* History Section */
+        .history-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: clamp(1.5rem, 3vw, 2rem);
+          justify-items: center;
+          margin: 0 auto;
+        }
+
+        .history-card {
+          background-color: #ffffff;
+          border-radius: 1rem;
+          overflow: hidden;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          border: 1px solid #e2e8f0;
+          text-align: center;
+          width: 100%;
+          max-width: 350px;
+          transition: all 0.3s ease;
+        }
+
+        .history-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+        }
+
+        .history-image {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+        }
+
+        .history-card-title {
+          font-size: clamp(1.1rem, 2vw, 1.25rem);
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+          color: #1e293b;
+          padding: 1rem 1rem 0;
+        }
+
+        .history-card-text {
+          color: #64748b;
+          line-height: 1.6;
+          margin-bottom: 1rem;
+          padding: 0 1rem;
+          font-size: clamp(0.875rem, 1.5vw, 1rem);
+        }
+
+        .read-more-button {
+          color: #0ea5e9;
+          font-weight: 500;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0 1rem 1rem;
+          transition: color 0.3s;
+        }
+
+        .read-more-button:hover {
+          color: #0284c7;
+        }
+
+        /* Schedule Section */
+        .schedule-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: clamp(1.5rem, 3vw, 2rem);
+          justify-items: center;
+        }
+
+        .schedule-card {
+          background-color: #ffffff;
+          padding: clamp(1.5rem, 3vw, 2rem);
+          border-radius: 1rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          text-align: center;
+          width: 100%;
+          max-width: 250px;
+          transition: all 0.3s ease;
+        }
+
+        .schedule-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+        }
+
+        .schedule-icon {
+          width: clamp(2rem, 4vw, 2.5rem);
+          height: clamp(2rem, 4vw, 2.5rem);
+          color: #0ea5e9;
+          margin: 0 auto 1rem;
+          display: block;
+        }
+
+        .schedule-card-title {
+          font-size: clamp(1rem, 1.8vw, 1.125rem);
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+          color: #1e293b;
+        }
+
+        .schedule-card-time {
+          color: #64748b;
+          margin-bottom: 0.75rem;
+          font-size: clamp(0.875rem, 1.5vw, 1rem);
+        }
+
+        .mass-times {
+          color: #64748b;
+          margin-bottom: 1rem;
+          font-size: clamp(0.8rem, 1.3vw, 0.9rem);
+          line-height: 1.5;
+        }
+
+        .mass-times p {
+          margin: 0.25rem 0;
+        }
+
+        .schedule-button {
+          color: #0ea5e9;
+          font-weight: 500;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+          font-size: clamp(0.875rem, 1.5vw, 1rem);
+        }
+
+        /* About Section */
+        .about-content {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: clamp(2rem, 4vw, 3rem);
+          align-items: start;
+          max-width: 1000px;
+          margin: 0 auto;
+        }
+
+        .about-image-container {
+          display: flex;
+          justify-content: center;
+        }
+
+        .about-image {
+          width: 100%;
+          max-width: 350px;
+          height: auto;
+          border-radius: 0.75rem;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-features {
+          display: flex;
+          flex-direction: column;
+          gap: clamp(1rem, 2vw, 1.5rem);
+        }
+
+        .feature-box {
+          background-color: #ffffff;
+          padding: clamp(1.25rem, 2.5vw, 1.5rem);
+          border-radius: 0.75rem;
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+        }
+
+        .feature-box:hover {
+          transform: translateX(5px);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-title {
+          font-weight: 600;
+          color: #0284c7;
+          margin-bottom: 0.5rem;
+          font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+        }
+
+        .feature-text {
+          color: #64748b;
+          font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
           }
-          40%, 43% {
-            transform: translate3d(0, -30px, 0);
+          to {
+            opacity: 1;
           }
-          70% {
-            transform: translate3d(0, -15px, 0);
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
           }
-          90% {
-            transform: translate3d(0, -4px, 0);
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .scroll-fade-in.animate,
+        .scroll-slide-up.animate,
+        .scroll-slide-left.animate,
+        .scroll-slide-right.animate {
+          opacity: 1;
+          transform: none;
+        }
+
+        .scroll-fade-in {
+          opacity: 0;
+          animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .scroll-slide-up {
+          opacity: 0;
+          animation: slideUp 0.6s ease-out forwards;
+        }
+
+        .scroll-slide-left {
+          opacity: 0;
+          animation: slideLeft 0.6s ease-out forwards;
+        }
+
+        .scroll-slide-right {
+          opacity: 0;
+          animation: slideRight 0.6s ease-out forwards;
+        }
+
+        .hover-lift {
+          transition: all 0.3s ease;
+        }
+
+        .hover-lift:hover {
+          transform: translateY(-5px);
+        }
+
+        /* Tablet Responsive */
+        @media (max-width: 768px) {
+          .hero-section {
+            padding: 3rem 1.5rem;
+            min-height: 300px;
+          }
+
+          .main-content {
+            padding: 1.5rem 1rem;
+          }
+
+          .church-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .church-text {
+            text-align: left;
+          }
+
+          .quick-links-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .quick-link-card {
+            max-width: 100%;
+          }
+
+          .history-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .history-card {
+            max-width: 100%;
+          }
+
+          .schedule-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .schedule-card {
+            max-width: 100%;
+          }
+
+          .about-content {
+            grid-template-columns: 1fr;
+          }
+
+          .about-image {
+            max-width: 100%;
+          }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+          .hero-section {
+            padding: 2rem 1rem;
+            min-height: 250px;
+          }
+
+          .main-content {
+            padding: 1rem 0.75rem;
+          }
+
+          .smooth-scroll-section {
+            padding: 1.5rem 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0.75rem;
+          }
+
+          .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+          }
+
+          .quick-links-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .history-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .history-image {
+            height: 150px;
+          }
+
+          .schedule-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .schedule-card {
+            max-width: 100%;
+            padding: 1.25rem;
+          }
+
+          .about-content {
+            gap: 1.5rem;
+          }
+
+          .about-features {
+            gap: 1rem;
+          }
+
+          .feature-box {
+            padding: 1rem;
+          }
+
+          .hero-address {
+            font-size: 1rem;
+          }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 360px) {
+          .hero-title {
+            font-size: 1.5rem;
+          }
+
+          .hero-subtitle {
+            font-size: 0.9rem;
+          }
+
+          .section-title {
+            font-size: 1.3rem;
+          }
+
+          .quick-link-title {
+            font-size: 1rem;
+          }
+
+          .schedule-card {
+            padding: 1rem;
           }
         }
       `}</style>

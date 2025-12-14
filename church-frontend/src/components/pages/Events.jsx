@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Calendar, MapPin, Clock, Users } from 'lucide-react';
+import { assignedColors } from '../../utils/sectionColors';
 
 const sampleEvents = [
   { id: 1, title: 'Saint Mary Magdalene Feast Day', date: '22/07/2025', time: '07:00 AM', location: 'Main church', description: 'Annual celebration with special masses and procession', type: 'Celebration' },
@@ -80,7 +81,7 @@ const Events = ({ onNavigate, scrollToSection }) => {
     <section 
       id="events-section"
       className="scroll-fade-in smooth-scroll-section"
-      style={{padding: '4rem 0', background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', width: '100%', display: 'flex', justifyContent: 'center', minHeight: '100vh'}}
+      style={{padding: '4rem 0', backgroundColor: assignedColors.events, width: '100%', display: 'flex', justifyContent: 'center', minHeight: '100vh'}}
     >
       <div style={{maxWidth: '80rem', margin: '0 auto', padding: '0 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', width: '100%'}}>
         <div className="scroll-slide-up" style={{textAlign: 'center', marginBottom: '3rem'}}>

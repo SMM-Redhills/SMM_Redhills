@@ -57,6 +57,12 @@ export const adminAPI = {
   createSchedule: (data) => adminApi.post('/admin/schedule/', data),
   updateSchedule: (id, data) => adminApi.put(`/admin/schedule/${id}/`, data),
   deleteSchedule: (id) => adminApi.delete(`/admin/schedule/${id}/`),
+  
+  // Prayers
+  getPrayers: () => adminApi.get('/admin/prayers/'),
+  createPrayer: (data) => adminApi.post('/admin/prayers/', data),
+  updatePrayer: (id, data) => adminApi.put(`/admin/prayers/${id}/`, data),
+  deletePrayer: (id) => adminApi.delete(`/admin/prayers/${id}/`),
 };
 
 export default adminApi;

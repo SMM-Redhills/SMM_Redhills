@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer
+from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide
 
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,4 +34,9 @@ class ScheduleSerializer(serializers.ModelSerializer):
 class PrayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prayer
+        fields = '__all__'
+
+class BannerSlideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BannerSlide
         fields = '__all__'

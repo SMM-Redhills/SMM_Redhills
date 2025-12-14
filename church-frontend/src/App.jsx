@@ -7,6 +7,7 @@ import Loading from './components/common/Loading.jsx';
 
 // Home components
 import Homepage from './components/home/Homepage.jsx';
+import BannerSlider from './components/home/BannerSlider.jsx';
 
 // Page components (in src/components/pages/)
 import About from './components/pages/About.jsx';

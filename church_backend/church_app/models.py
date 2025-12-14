@@ -114,20 +114,28 @@ class Schedule(models.Model):
     def __str__(self):
         return f"{self.title} - {self.get_day_display()} {self.time}"
 
+# church_app/models.py
 class Prayer(models.Model):
-    LANGUAGES = [
-        ('english', 'English'),
-        ('tamil', 'Tamil'),
-    ]
-    
     title = models.CharField(max_length=200)
     content = models.TextField()
-    language = models.CharField(max_length=10, choices=LANGUAGES)
-    category = models.CharField(max_length=50, default='General')
+    category = models.CharField(max_length=100)
+    language = models.CharField(max_length=20, default='english')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.title
+class BannerSlide(models.Model):
+    title = models.CharField(max_length=200)
+    subtitle = models.CharField(max_length=300)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='banners/')
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['language', 'title']
+        ordering = ['order', '-created_at']
 
     def __str__(self):
-        return f"{self.title} ({self.get_language_display()})"
+        return self.title

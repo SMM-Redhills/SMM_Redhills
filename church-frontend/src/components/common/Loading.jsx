@@ -21,7 +21,7 @@ const Loading = ({
   // Cross Spinner Component (Church themed)
   const CrossSpinner = ({ className }) => (
     <div className={`animate-pulse ${className} flex items-center justify-center`}>
-      <div className="text-blue-600 font-bold text-4xl animate-bounce">✞</div>
+      <div className="text-blue-600 font-bold text-4xl animate-bounce"></div>
     </div>
   );
 
@@ -73,7 +73,7 @@ const Loading = ({
           <p className="text-gray-600 font-medium">{message}</p>
           <div className="text-center">
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
-              <div className="text-white font-bold text-sm">✞</div>
+              <div className="text-white font-bold text-sm"></div>
             </div>
             <p className="text-sm text-gray-500">Saint Mary Magdalene</p>
           </div>

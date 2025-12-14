@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { Church, Heart, Users, BookOpen, Calendar, MapPin, Phone, Mail, Cross } from 'lucide-react';
+import { Church, Heart, Users, BookOpen, Calendar, MapPin, Phone, Mail } from 'lucide-react';
+import { assignedColors } from '../../utils/sectionColors';
 
 const About = ({ onNavigate, scrollToSection }) => {
   const observerRef = useRef(null);
 
   // Initialize scroll animations
   useEffect(() => {
-    // Create intersection observer for scroll animations
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -21,7 +21,6 @@ const About = ({ onNavigate, scrollToSection }) => {
       }
     );
 
-    // Observe all elements with scroll animation classes
     const animatedElements = document.querySelectorAll(
       '.scroll-fade-in, .scroll-slide-up, .scroll-slide-left, .scroll-slide-right, .scroll-scale-in, .scroll-stagger-children'
     );
@@ -30,7 +29,6 @@ const About = ({ onNavigate, scrollToSection }) => {
       observerRef.current.observe(el);
     });
 
-    // Cleanup function
     return () => {
       if (observerRef.current) {
         observerRef.current.disconnect();
@@ -39,155 +37,384 @@ const About = ({ onNavigate, scrollToSection }) => {
   }, []);
 
   return (
-    <div style={{minHeight: '100vh', backgroundColor: '#ffffff', width: '100%'}}>
+    <div className="about-main">
       {/* Hero Section */}
-      <section 
-        id="about-hero"
-        className="scroll-fade-in smooth-scroll-section"
-        style={{position: 'relative', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)', color: 'white', padding: '4rem 1rem', width: '100%', display: 'flex', justifyContent: 'center'}}
-      >
-        <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.1)'}}></div>
-        <div style={{position: 'relative', maxWidth: '72rem', margin: '0 auto', textAlign: 'center'}}>
-          {/* <div className="scroll-scale-in" style={{marginBottom: '2rem'}}>
-            <Cross style={{width: '3rem', height: '3rem', margin: '0 auto 1rem auto', color: '#ffffff', display: 'block'}} />
-          </div> */}
-          <h1 className="scroll-slide-up" style={{fontSize: '3rem', fontWeight: '700', marginBottom: '1rem', lineHeight: '1.1', textAlign: 'center', fontFamily: 'serif'}}>
+      <section id="about-hero" className="scroll-fade-in smooth-scroll-section about-hero">
+        <div className="about-hero-overlay"></div>
+        <div className="about-hero-content">
+          <h1 className="scroll-slide-up about-hero-title">
             About Our church
-            <span style={{display: 'block', fontSize: '1.5rem', fontWeight: '300', marginTop: '0.5rem', color: '#e0f2fe'}}>Saint Mary Magdalene church  </span>
+            <span className="about-hero-subtitle">Saint Mary Magdalene church</span>
           </h1>
-          <p className="scroll-slide-up" style={{fontSize: '1.125rem', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto 2rem auto', lineHeight: '1.7', textAlign: 'center', color: '#e0f2fe'}}>
+          <p className="scroll-slide-up about-hero-description">
             A sacred place of worship, pilgrimage, evangelization, and reconciliation in Redhills, Chennai
           </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <div style={{width: '100%', padding: '4rem 1rem', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <div style={{maxWidth: '80rem', width: '100%', margin: '0 auto'}}>
+      <div className="about-main-content">
+        <div className="about-container">
         
-        {/* church Story Section */}
-        <section 
-          id="church-story"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '4rem', backgroundColor: '#ffffff', padding: 'clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem)', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}
-        >
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 'clamp(1.5rem, 4vw, 3rem)', alignItems: 'center'}}>
-            <div className="scroll-slide-left">
-              <h2 style={{fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Our Sacred Heritage</h2>
-              <p style={{color: '#64748b', marginBottom: '1.5rem', fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', lineHeight: '1.7'}}>
-                Saint Mary Magdalene church is a sacred place of worship dedicated to the beloved disciple who was the first witness to Christ's resurrection. Our church serves as a spiritual home for the faithful community in Redhills, Chennai.
-              </p>
-              <p style={{color: '#64748b', marginBottom: '2rem', fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', lineHeight: '1.7'}}>
-                Built with devotion and faith, our church stands as a testament to the enduring love and redemption that Saint Mary Magdalene represents. We welcome all who seek spiritual guidance, community, and the transformative power of God's love.
-              </p>
+          {/* Church Story Section */}
+          <section id="church-story" className="scroll-fade-in smooth-scroll-section church-story" style={{backgroundColor: assignedColors.church}}>
+            <div className="church-story-grid">
+              <div className="scroll-slide-left church-story-text">
+                <h2>Our Sacred Heritage</h2>
+                <p>
+                  Saint Mary Magdalene church is a sacred place of worship dedicated to the beloved disciple who was the first witness to Christ's resurrection. Our church serves as a spiritual home for the faithful community in Redhills, Chennai.
+                </p>
+                <p>
+                  Built with devotion and faith, our church stands as a testament to the enduring love and redemption that Saint Mary Magdalene represents. We welcome all who seek spiritual guidance, community, and the transformative power of God's love.
+                </p>
+              </div>
+              <div className="scroll-slide-right church-story-image">
+                <img src="/assets/images/SMMCR.jpg" alt="church Interior" />
+              </div>
             </div>
-            <div className="scroll-slide-right" style={{textAlign: 'center'}}>
-              <img 
-                src="/assets/images/SMMCR.jpg" 
-                alt="church Interior" 
-                style={{width: '100%', maxWidth: '28rem', height: 'clamp(15rem, 40vw, 20rem)', objectFit: 'cover', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}
-              />
-            </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Features Section */}
-        <section 
-          id="church-features"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '4rem', backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>Our church Features</h2>
-          <div className="scroll-stagger-children" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem'}}>
-            <div className="hover-lift" style={{backgroundColor: '#e0f2fe', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', textAlign: 'center'}}>
-              <Church style={{width: '3rem', height: '3rem', color: '#0284c7', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', fontFamily: 'serif'}}>Sacred Architecture</h3>
-              <p style={{color: '#0369a1', lineHeight: '1.6'}}>Beautiful design reflecting our faith and devotion</p>
+          {/* Features Section */}
+          <section id="church-features" className="scroll-fade-in smooth-scroll-section church-features" style={{backgroundColor: assignedColors.quickLinks}}>
+            <h2 className="scroll-slide-up church-features-title">Our church Features</h2>
+            <div className="scroll-stagger-children features-grid">
+              <div className="feature-card">
+                <Church className="feature-icon" />
+                <h3>Sacred Architecture</h3>
+                <p>Beautiful design reflecting our faith and devotion</p>
+              </div>
+              <div className="feature-card">
+                <Heart className="feature-icon" />
+                <h3>Prayer Spaces</h3>
+                <p>Dedicated areas for contemplation and worship</p>
+              </div>
+              <div className="feature-card">
+                <Users className="feature-icon" />
+                <h3>Community Hall</h3>
+                <p>Space for fellowship and community gatherings</p>
+              </div>
+              <div className="feature-card">
+                <BookOpen className="feature-icon" />
+                <h3>Religious Library</h3>
+                <p>Collection of spiritual books and resources</p>
+              </div>
             </div>
-            <div className="hover-lift" style={{backgroundColor: '#e0f2fe', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', textAlign: 'center'}}>
-              <Heart style={{width: '3rem', height: '3rem', color: '#0284c7', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', fontFamily: 'serif'}}>Prayer Spaces</h3>
-              <p style={{color: '#0369a1', lineHeight: '1.6'}}>Dedicated areas for contemplation and worship</p>
-            </div>
-            <div className="hover-lift" style={{backgroundColor: '#e0f2fe', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', textAlign: 'center'}}>
-              <Users style={{width: '3rem', height: '3rem', color: '#0284c7', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', fontFamily: 'serif'}}>Community Hall</h3>
-              <p style={{color: '#0369a1', lineHeight: '1.6'}}>Space for fellowship and community gatherings</p>
-            </div>
-            <div className="hover-lift" style={{backgroundColor: '#e0f2fe', padding: '2rem', borderRadius: '1rem', border: '1px solid #0ea5e9', textAlign: 'center'}}>
-              <BookOpen style={{width: '3rem', height: '3rem', color: '#0284c7', margin: '0 auto 1rem auto', display: 'block'}} />
-              <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', fontFamily: 'serif'}}>Religious Library</h3>
-              <p style={{color: '#0369a1', lineHeight: '1.6'}}>Collection of spiritual books and resources</p>
-            </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Mission & Values */}
-        <section 
-          id="mission-values"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{marginBottom: '4rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem'}}
-        >
-          <div className="scroll-slide-left hover-lift" style={{backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
-            <h3 style={{fontSize: '2rem', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Our Mission</h3>
-            <p style={{color: '#64748b', fontSize: '1.125rem', lineHeight: '1.7'}}>
-              To spread the love of Christ through worship, service, and community fellowship. We strive to be a beacon of hope and faith in our neighborhood, following the example of Saint Mary Magdalene's devotion.
-            </p>
-          </div>
-          <div className="scroll-slide-right hover-lift" style={{backgroundColor: '#ffffff', padding: '3rem 2rem', borderRadius: '1rem', boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'}}>
-            <h3 style={{fontSize: '2rem', fontWeight: '700', color: '#0284c7', marginBottom: '2rem', fontFamily: 'serif'}}>Our Values</h3>
-            <p style={{color: '#64748b', fontSize: '1.125rem', lineHeight: '1.7'}}>
-              Faith, Love, Service, and Community guide everything we do. We believe in the transformative power of God's grace and the importance of supporting one another in our spiritual journey.
-            </p>
-          </div>
-        </section>
+          {/* Mission & Values */}
+          <section id="mission-values" className="scroll-fade-in smooth-scroll-section mission-values">
+            <div className="mission-card scroll-slide-left hover-lift" style={{backgroundColor: assignedColors.history}}>
+              <h3>Our Mission</h3>
+              <p>To spread the love of Christ through worship, service, and community fellowship. We strive to be a beacon of hope and faith in our neighborhood, following the example of Saint Mary Magdalene's devotion.</p>
+            </div>
+            <div className="values-card scroll-slide-right hover-lift" style={{backgroundColor: assignedColors.schedule}}>
+              <h3>Our Values</h3>
+              <p>Faith, Love, Service, and Community guide everything we do. We believe in the transformative power of God's grace and the importance of supporting one another in our spiritual journey.</p>
+            </div>
+          </section>
 
-        {/* Contact Information */}
-        <section 
-          id="contact-info"
-          className="scroll-fade-in smooth-scroll-section"
-          style={{backgroundColor: '#e0f2fe', padding: '3rem 2rem', borderRadius: '1rem', border: '1px solid #0ea5e9'}}
-        >
-          <h2 className="scroll-slide-up" style={{fontSize: '2.5rem', fontWeight: '700', color: '#0284c7', marginBottom: '3rem', textAlign: 'center', fontFamily: 'serif'}}>Visit Us</h2>
-          <div className="scroll-stagger-children" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', marginBottom: '2rem'}}>
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem'}}>
-              <MapPin style={{width: '2rem', height: '2rem', color: '#0284c7'}} />
-              <div>
-                <p style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.25rem'}}>Address</p>
-                <p style={{color: '#0369a1', fontSize: '0.875rem'}}>Redhills, Chennai, Tamil Nadu</p>
+          {/* Contact Information */}
+          <section id="contact-info" className="scroll-fade-in smooth-scroll-section contact-info" style={{backgroundColor: assignedColors.aboutSaint}}>
+            <h2 className="scroll-slide-up contact-title">Visit Us</h2>
+            <div className="scroll-stagger-children contact-grid">
+              <div className="contact-card hover-lift">
+                <MapPin className="contact-icon"/>
+                <div>
+                  <p className="contact-label">Address</p>
+                  <p className="contact-info">
+                    <a 
+                      href="https://maps.app.goo.gl/4zitN6vtu4G89oXz6" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{color: 'inherit', textDecoration: 'none'}}
+                    >
+                      Saint Mary Magdalene Church, Redhills, Chennai, Tamil Nadu
+                    </a>
+                  </p>
+                </div>
+              </div>
+              <div className="contact-card hover-lift">
+                <Phone className="contact-icon"/>
+                <div>
+                  <p className="contact-label">Phone</p>
+                  <p className="contact-info">+91 1234567890</p>
+                </div>
+              </div>
+              <div className="contact-card hover-lift">
+                <Mail className="contact-icon"/>
+                <div>
+                  <p className="contact-label">Email</p>
+                  <p className="contact-info">info@smmchurch.org</p>
+                </div>
+              </div>
+              <div className="contact-card hover-lift">
+                <Calendar className="contact-icon"/>
+                <div>
+                  <p className="contact-label">Office Hours</p>
+                  <p className="contact-info">Mon-Sat: 9AM-5PM</p>
+                </div>
               </div>
             </div>
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem'}}>
-              <Phone style={{width: '2rem', height: '2rem', color: '#0284c7'}} />
-              <div>
-                <p style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.25rem'}}>Phone</p>
-                <p style={{color: '#0369a1', fontSize: '0.875rem'}}>+91 1234567890</p>
-              </div>
+            <div className="scroll-slide-up contact-footer-text">
+              <p>Experience faith, community, and the inspiring legacy of Saint Mary Magdalene in our welcoming church.</p>
             </div>
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem'}}>
-              <Mail style={{width: '2rem', height: '2rem', color: '#0284c7'}} />
-              <div>
-                <p style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.25rem'}}>Email</p>
-                <p style={{color: '#0369a1', fontSize: '0.875rem'}}>info@smmchurch.org</p>
-              </div>
-            </div>
-            <div className="hover-lift" style={{backgroundColor: '#ffffff', padding: '1.5rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem'}}>
-              <Calendar style={{width: '2rem', height: '2rem', color: '#0284c7'}} />
-              <div>
-                <p style={{fontWeight: '600', color: '#0284c7', marginBottom: '0.25rem'}}>Office Hours</p>
-                <p style={{color: '#0369a1', fontSize: '0.875rem'}}>Mon-Sat: 9AM-5PM</p>
-              </div>
-            </div>
-          </div>
-          <div className="scroll-slide-up" style={{textAlign: 'center'}}>
-            <p style={{fontSize: '1.125rem', color: '#0369a1', marginBottom: '1.5rem'}}>
-              Experience faith, community, and the inspiring legacy of Saint Mary Magdalene in our welcoming church.
-            </p>
-          </div>
-        </section>
-        
+          </section>
+
         </div>
       </div>
+
+      <style jsx>{`
+        .about-main {
+          min-height: 100vh;
+          background-color: #ffffff;
+          width: 100%;
+        }
+        /* Hero */
+        .about-hero {
+          position: relative;
+          background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+          color: white;
+          padding: 4rem 1rem;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          overflow: hidden;
+        }
+        .about-hero-overlay {
+          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+          background-color: rgba(255, 255, 255, 0.1);
+          pointer-events: none;
+        }
+        .about-hero-content {
+          position: relative;
+          max-width: 72rem;
+          margin: 0 auto;
+          text-align: center;
+        }
+        .about-hero-title {
+          font-size: 3rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          line-height: 1.1;
+          font-family: serif;
+        }
+        .about-hero-subtitle {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: 300;
+          margin-top: 0.5rem;
+          color: #e0f2fe;
+        }
+        .about-hero-description {
+          font-size: 1.125rem;
+          margin-bottom: 2rem;
+          max-width: 48rem;
+          margin-left: auto;
+          margin-right: auto;
+          line-height: 1.7;
+          text-align: center;
+          color: #e0f2fe;
+        }
+        /* Main Content */
+        .about-main-content {
+          width: 100%;
+          padding: 4rem 1rem;
+          background-color: #f8fafc;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .about-container {
+          max-width: 80rem;
+          width: 100%;
+          margin: 0 auto;
+        }
+        /* Church Story */
+        .church-story {
+          margin-bottom: 4rem;
+          padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1);
+          display: block;
+        }
+        .church-story-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+          gap: clamp(1.5rem, 4vw, 3rem);
+          align-items: center;
+        }
+        .church-story-text h2 {
+          font-size: clamp(1.75rem, 4vw, 2.5rem);
+          font-weight: 700;
+          color: #0284c7;
+          margin-bottom: 2rem;
+          font-family: serif;
+        }
+        .church-story-text p {
+          color: #64748b;
+          margin-bottom: 1.5rem;
+          font-size: clamp(1rem, 2.5vw, 1.125rem);
+          line-height: 1.7;
+        }
+        .church-story-text p:last-child {
+          margin-bottom: 2rem;
+        }
+        .church-story-image {
+          text-align: center;
+        }
+        .church-story-image img {
+          width: 100%;
+          max-width: 28rem;
+          height: clamp(15rem, 40vw, 20rem);
+          object-fit: cover;
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1);
+        }
+        /* Features Section */
+        .church-features {
+          margin-bottom: 4rem;
+          padding: 3rem 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1);
+        }
+        .church-features-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: #0284c7;
+          margin-bottom: 3rem;
+          text-align: center;
+          font-family: serif;
+        }
+        .features-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 2rem;
+        }
+        .feature-card {
+          background-color: #e0f2fe;
+          padding: 2rem;
+          border-radius: 1rem;
+          border: 1px solid #0ea5e9;
+          text-align: center;
+        }
+        .feature-icon {
+          width: 3rem;
+          height: 3rem;
+          color: #0284c7;
+          margin: 0 auto 1rem auto;
+          display: block;
+        }
+        .feature-card h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #0284c7;
+          font-family: serif;
+        }
+        .feature-card p {
+          color: #0369a1;
+          line-height: 1.6;
+        }
+        /* Mission & Values */
+        .mission-values {
+          margin-bottom: 4rem;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+          gap: clamp(1rem, 3vw, 2rem);
+        }
+        .mission-card, .values-card {
+          padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1);
+          word-wrap: break-word;
+        }
+        .mission-card {
+          border: 1px solid #0ea5e9;
+        }
+        .values-card {
+          border: 1px solid #0ea5e9;
+        }
+        .mission-card h3, .values-card h3 {
+          font-size: clamp(1.5rem, 4vw, 2rem);
+          font-weight: 700;
+          color: #0284c7;
+          margin-bottom: clamp(1rem, 3vw, 2rem);
+          font-family: serif;
+        }
+        .mission-card p, .values-card p {
+          color: #64748b;
+          font-size: clamp(1rem, 2.5vw, 1.125rem);
+          line-height: 1.7;
+        }
+        /* Contact Information */
+        .contact-info {
+          padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+          border-radius: 1rem;
+          border: 1px solid #0ea5e9;
+          box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1);
+        }
+        .contact-title {
+          font-size: clamp(1.75rem, 5vw, 2.5rem);
+          font-weight: 700;
+          color: #0284c7;
+          margin-bottom: clamp(1.5rem, 4vw, 3rem);
+          text-align: center;
+          font-family: serif;
+        }
+        .contact-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+          gap: clamp(1rem, 3vw, 2rem);
+          margin-bottom: clamp(1rem, 3vw, 2rem);
+        }
+        .contact-card {
+          background-color: #ffffff;
+          padding: clamp(1rem, 3vw, 1.5rem);
+          border-radius: 0.75rem;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+        .contact-icon {
+          width: 2rem;
+          height: 2rem;
+          color: #0284c7;
+          flex-shrink: 0;
+          min-width: 2rem;
+        }
+        .contact-label {
+          font-weight: 600;
+          color: #0284c7;
+          margin-bottom: 0.25rem;
+          font-size: clamp(0.875rem, 2vw, 1rem);
+        }
+        .contact-info {
+          color: #0369a1;
+          font-size: clamp(0.813rem, 2vw, 0.875rem);
+          word-break: break-word;
+        }
+        .contact-info a {
+          transition: all 0.2s ease;
+          display: inline-block;
+        }
+        .contact-info a:hover {
+          color: #0284c7;
+          text-decoration: underline;
+          transform: translateX(2px);
+        }
+        .contact-footer-text {
+          text-align: center;
+          padding: 0 1rem;
+        }
+        .contact-footer-text p {
+          font-size: clamp(1rem, 2.5vw, 1.125rem);
+          color: #0369a1;
+          margin-bottom: 1.5rem;
+          line-height: 1.6;
+        }
+      `}</style>
     </div>
   );
 };

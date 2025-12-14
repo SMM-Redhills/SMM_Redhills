@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Clock, Users, Cross } from 'lucide-react';
+import { assignedColors } from '../../utils/sectionColors';
 
 const sampleNews = [
   { id: 1, title: "Saint Mary Magdalene Feast Day Celebration", date: "22/07/2025", content: "Join us for the annual feast day of Saint Mary Magdalene with special masses, procession, and community celebration.", category: "Celebration" },
@@ -26,7 +27,13 @@ const News = ({ onNavigate, scrollToSection }) => {
   }, []);
 
   useEffect(() => {
-    setNews(sampleNews);
+    // Sort news by creation date (newest first)
+    const sortedNews = [...sampleNews].sort((a, b) => {
+      const dateA = new Date(a.created_at || a.date);
+      const dateB = new Date(b.created_at || b.date);
+      return dateB - dateA;
+    });
+    setNews(sortedNews);
   }, []);
 
   // Initialize scroll animations
@@ -72,245 +79,512 @@ const News = ({ onNavigate, scrollToSection }) => {
     }
   };
 
-  return (
-    <div style={{minHeight: '100vh', backgroundColor: '#ffffff', width: '100%'}}>
-      {/* Hero Section */}
-      <section 
-        id="news-hero"
-        className="scroll-fade-in smooth-scroll-section"
-        style={{position: 'relative', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)', color: 'white', padding: '4rem 1rem', width: '100%', display: 'flex', justifyContent: 'center'}}
-      >
-        <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.1)'}}></div>
-        <div style={{position: 'relative', maxWidth: '72rem', margin: '0 auto', textAlign: 'center'}}>
-          {/* <div className="scroll-scale-in" style={{marginBottom: '2rem'}}>
-            <Cross style={{width: '3rem', height: '3rem', margin: '0 auto 1rem auto', color: '#ffffff', display: 'block'}} />
-          </div> */}
-          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem'}}>
-            <h1 className="scroll-slide-up" style={{fontSize: '3rem', fontWeight: '700', lineHeight: '1.1', textAlign: 'center', fontFamily: 'serif'}}>
-              Latest News
-            </h1>
-            {isAdmin && (
-              <button
-                onClick={() => setShowAddForm(true)}
-                style={{
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '50px',
-                  height: '50px',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
-              >
-                +
-              </button>
-            )}
-          </div>
-          <span style={{display: 'block', fontSize: '1.5rem', fontWeight: '300', color: '#e0f2fe'}}>Parish Community Updates</span>
-          <p className="scroll-slide-up" style={{fontSize: '1.125rem', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto 2rem auto', lineHeight: '1.7', textAlign: 'center', color: '#e0f2fe'}}>
-            Stay updated with our parish community news and announcements
-          </p>
-        </div>
-      </section>
+  const handleAddButtonHover = (e) => {
+    e.target.style.backgroundColor = '#059669';
+  };
 
-      {/* Main Content */}
-      <div style={{width: '100%', padding: '4rem 1rem', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <div style={{maxWidth: '80rem', width: '100%', margin: '0 auto'}}>
-          <div 
-            id="news-content"
-            className="scroll-fade-in smooth-scroll-section"
-            style={{display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', maxWidth: '60rem', margin: '0 auto'}}
-          >
-            {news.map((n, index) => (
-              <div 
-                key={n.id} 
-                className="scroll-slide-up hover-lift"
-                style={{
-                  backgroundColor: '#ffffff', 
-                  borderRadius: '1rem', 
-                  padding: '2rem', 
-                  boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)',
-                  animationDelay: `${index * 0.2}s`,
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <div className="scroll-fade-in" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem', gap: '0.5rem'}}>
-                  <div style={{color: '#0284c7'}}>
-                    {getCategoryIcon(n.category)}
+  const handleAddButtonLeave = (e) => {
+    e.target.style.backgroundColor = '#10b981';
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const newNews = {
+      id: Date.now(),
+      ...formData,
+      date: new Date().toLocaleDateString('en-GB'),
+      created_at: new Date().toISOString()
+    };
+    setNews([newNews, ...news]);
+    setShowAddForm(false);
+    setFormData({ title: '', content: '', category: 'Updates', image_url: '' });
+  };
+
+  const handleCancelClick = () => {
+    setShowAddForm(false);
+    setFormData({ title: '', content: '', category: 'Updates', image_url: '' });
+  };
+
+  const handleAddNewsClick = async () => {
+    if (formData.title && formData.content) {
+      try {
+        const response = await fetch('http://localhost:8001/api/church_app/news/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
+          },
+          body: JSON.stringify({
+            ...formData,
+            is_published: true
+          })
+        });
+        
+        if (response.ok) {
+          const newNews = {
+            id: Date.now(),
+            ...formData,
+            date: new Date().toLocaleDateString('en-GB'),
+            created_at: new Date().toISOString()
+          };
+          setNews([newNews, ...news]);
+          setShowAddForm(false);
+          setFormData({ title: '', content: '', category: 'Updates', image_url: '' });
+          alert('News added successfully!');
+        } else {
+          alert('Error adding news. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error adding news. Please try again.');
+      }
+    }
+  };
+
+  return (
+    <>
+      <style>{`
+        .news-container {
+          min-height: 100vh;
+          background-color: #ffffff;
+          width: 100%;
+        }
+        .news-hero {
+          position: relative;
+          background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+          color: white;
+          padding: 4rem 1rem;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+        .hero-container {
+          position: relative;
+          max-width: 72rem;
+          margin: 0 auto;
+          text-align: center;
+        }
+        .hero-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+        .add-button {
+          background-color: #10b981;
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          font-size: 1.5rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+        }
+        .hero-title {
+          font-size: 3rem;
+          font-weight: 700;
+          line-height: 1.1;
+          text-align: center;
+          font-family: serif;
+          color: white;
+        }
+        .hero-subtitle {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: 300;
+          color: white;
+        }
+        .hero-description {
+          font-size: 1.125rem;
+          margin-bottom: 2rem;
+          max-width: 48rem;
+          margin: 0 auto 2rem auto;
+          line-height: 1.7;
+          text-align: center;
+          color: white;
+        }
+        .main-content {
+          width: 100%;
+          padding: 4rem 1rem;
+          background-color: rgb(254, 243, 199);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .content-container {
+          max-width: 80rem;
+          width: 100%;
+          margin: 0 auto;
+        }
+        .news-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+          width: 100%;
+        }
+        .news-card {
+          background-color: #ffffff;
+          border-radius: 1rem;
+          padding: 2rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          border: 1px solid #e2e8f0;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+        .news-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 1rem;
+          gap: 0.5rem;
+        }
+        .category-icon {
+          color: #0ea5e9;
+        }
+        .category-badge {
+          color: #0ea5e9;
+          font-size: 0.875rem;
+          font-weight: 500;
+          background-color: #e0f2fe;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+        }
+        .news-date {
+          color: #64748b;
+          font-size: 0.875rem;
+          margin-bottom: 1rem;
+        }
+        .news-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #1e293b;
+        }
+        .news-content {
+          color: #64748b;
+          margin-bottom: 1.5rem;
+          line-height: 1.6;
+        }
+        .read-more-btn {
+          color: #0ea5e9;
+          font-weight: 500;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+        }
+        .view-all-container {
+          text-align: center;
+          margin-top: 3rem;
+        }
+        .view-all-btn {
+          background-color: #0284c7;
+          color: white;
+          padding: 0.75rem 2rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0,0,0,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 50;
+        }
+        .modal-content {
+          background-color: white;
+          padding: 2rem;
+          border-radius: 0.5rem;
+          width: 90%;
+          max-width: 500px;
+          max-height: 80vh;
+          overflow-y: auto;
+        }
+        .modal-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #000000;
+        }
+        .form-group {
+          margin-bottom: 1rem;
+        }
+        .form-input {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.375rem;
+          color: #000000;
+        }
+        .form-textarea {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.375rem;
+          color: #000000;
+        }
+        .button-group {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+        }
+        .cancel-btn {
+          padding: 0.5rem 1rem;
+          background-color: #6b7280;
+          color: white;
+          border: none;
+          border-radius: 0.375rem;
+          cursor: pointer;
+        }
+        .submit-btn {
+          padding: 0.5rem 1rem;
+          background-color: #2563eb;
+          color: white;
+          border: none;
+          border-radius: 0.375rem;
+          cursor: pointer;
+        }
+        .detail-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0,0,0,0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 50;
+          padding: 1rem;
+        }
+        .detail-modal-content {
+          background-color: white;
+          border-radius: 1rem;
+          padding: 2rem;
+          max-width: 40rem;
+          width: 100%;
+          max-height: 80vh;
+          overflow-y: auto;
+        }
+        .detail-category-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 1rem;
+          gap: 0.5rem;
+        }
+        .detail-category-badge {
+          color: #0284c7;
+          font-size: 0.875rem;
+          font-weight: 500;
+          background-color: #e0f2fe;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+        }
+        .detail-date {
+          color: #64748b;
+          font-size: 0.875rem;
+          margin-bottom: 1rem;
+          text-align: center;
+        }
+        .detail-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          color: #0284c7;
+          font-family: serif;
+          text-align: center;
+        }
+        .detail-image {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+          border-radius: 0.5rem;
+          margin-bottom: 1.5rem;
+        }
+        .detail-content {
+          color: #64748b;
+          line-height: 1.6;
+          margin-bottom: 2rem;
+          white-space: pre-line;
+        }
+        .close-btn {
+          width: 100%;
+          background-color: #0284c7;
+          color: white;
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+        }
+      `}</style>
+
+      <div className="news-container">
+        {/* Hero Section */}
+        <section 
+          id="news-hero"
+          className="scroll-fade-in smooth-scroll-section news-hero"
+        >
+          <div className="hero-container">
+            <div className="hero-header">
+              <h1 className="scroll-slide-up hero-title">
+                Latest News
+              </h1>
+             
+            </div>
+            <span className="hero-subtitle">Parish Community Updates</span>
+            <p className="scroll-slide-up hero-description">
+              Stay updated with our parish community news and announcements
+            </p>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <div className="main-content">
+          <div className="content-container">
+            <div 
+              id="news-content"
+              className="scroll-stagger-children smooth-scroll-section news-grid"
+            >
+              {news.map((n, index) => (
+                <div 
+                  key={n.id} 
+                  className="hover-lift news-card"
+                  style={{animationDelay: `${index * 0.1}s`}}
+                >
+                  <div className="news-card-header">
+                    <div className="category-icon">
+                      {getCategoryIcon(n.category)}
+                    </div>
+                    <span className="category-badge">{n.category}</span>
                   </div>
-                  <span style={{color: '#0284c7', fontSize: '0.875rem', fontWeight: '500', backgroundColor: '#e0f2fe', padding: '0.25rem 0.75rem', borderRadius: '1rem'}}>{n.category}</span>
-                </div>
-                <div className="scroll-fade-in" style={{color: '#64748b', fontSize: '0.875rem', marginBottom: '1rem', textAlign: 'center'}}>{n.date}</div>
-                <h2 className="scroll-slide-up" style={{fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem', color: '#0284c7', fontFamily: 'serif', textAlign: 'center'}}>{n.title}</h2>
-                <p className="scroll-slide-up" style={{color: '#64748b', lineHeight: '1.6', marginBottom: '1.5rem', textAlign: 'center'}}>{n.content}</p>
-                <div className="scroll-scale-in" style={{textAlign: 'center'}}>
+                  <div className="news-date">{n.date}</div>
+                  <h3 className="news-title">{n.title}</h3>
+                  <p className="news-content">
+                    {n.content.length > 100 ? `${n.content.substring(0, 100)}...` : n.content}
+                  </p>
                   <button 
-                    className="hover-lift focus-smooth"
                     onClick={() => setSelectedNews(n)}
-                    style={{color: '#0284c7', fontWeight: '500', backgroundColor: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.875rem', transition: 'all 0.2s ease'}}
+                    className="read-more-btn"
                   >
                     Read More →
                   </button>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div className="scroll-fade-in" style={{textAlign: 'center', marginTop: '3rem'}}>
-            <button 
-              className="hover-lift focus-smooth"
-              style={{backgroundColor: '#0284c7', color: 'white', padding: '0.75rem 2rem', borderRadius: '0.5rem', fontWeight: '600', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease'}}
-            >
-              View All News
-            </button>
+            <div className="scroll-fade-in view-all-container">
+              <button className="hover-lift focus-smooth view-all-btn">
+                View All News
+              </button>
+            </div>
           </div>
         </div>
+        
+        {/* Add News Modal */}
+        {showAddForm && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3 className="modal-title">Add News</h3>
+              <form onSubmit={handleFormSubmit}>
+                <div className="form-group">
+                  <input
+                    type="text"
+                    placeholder="News Title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    required
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    className="form-input"
+                  >
+                    <option value="Updates">Updates</option>
+                    <option value="Celebration">Celebration</option>
+                    <option value="Community">Community</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <input
+                    type="url"
+                    placeholder="Image URL (optional)"
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <textarea
+                    placeholder="News Content"
+                    value={formData.content}
+                    onChange={(e) => setFormData({...formData, content: e.target.value})}
+                    required
+                    rows="4"
+                    className="form-textarea"
+                  />
+                </div>
+                <div className="button-group">
+                  <button
+                    type="button"
+                    onClick={handleCancelClick}
+                    className="cancel-btn"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAddNewsClick}
+                    className="submit-btn"
+                  >
+                    Add News
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+        
+        {/* News Detail Modal */}
+        {selectedNews && (
+          <div className="detail-modal-overlay" onClick={() => setSelectedNews(null)}>
+            <div className="detail-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="detail-category-container">
+                <span className="detail-category-badge">{selectedNews.category}</span>
+              </div>
+              <div className="detail-date">{selectedNews.date}</div>
+              <h2 className="detail-title">{selectedNews.title}</h2>
+              {selectedNews.image_url && (
+                <img src={selectedNews.image_url} alt={selectedNews.title} className="detail-image" />
+              )}
+              <div className="detail-content">
+                {selectedNews.content}
+              </div>
+              <button 
+                onClick={() => setSelectedNews(null)}
+                className="close-btn"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-      
-      {/* Add News Modal */}
-      {showAddForm && (
-        <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50}}>
-          <div style={{backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
-            <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#000000'}}>Add News</h3>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const newNews = {
-                id: Date.now(),
-                ...formData,
-                date: new Date().toLocaleDateString('en-GB')
-              };
-              setNews([newNews, ...news]);
-              setShowAddForm(false);
-              setFormData({ title: '', content: '', category: 'Updates', image_url: '' });
-            }}>
-              <div style={{marginBottom: '1rem'}}>
-                <input
-                  type="text"
-                  placeholder="News Title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  required
-                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#000000'}}
-                />
-              </div>
-              <div style={{marginBottom: '1rem'}}>
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#000000'}}
-                >
-                  <option value="Updates">Updates</option>
-                  <option value="Celebration">Celebration</option>
-                  <option value="Community">Community</option>
-                </select>
-              </div>
-              <div style={{marginBottom: '1rem'}}>
-                <input
-                  type="url"
-                  placeholder="Image URL (optional)"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#000000'}}
-                />
-              </div>
-              <div style={{marginBottom: '1rem'}}>
-                <textarea
-                  placeholder="News Content"
-                  value={formData.content}
-                  onChange={(e) => setFormData({...formData, content: e.target.value})}
-                  required
-                  rows="4"
-                  style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', color: '#000000'}}
-                />
-              </div>
-              <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
-                <button
-                  type="button"
-                  onClick={() => {setShowAddForm(false); setFormData({ title: '', content: '', category: 'Updates', image_url: '' });}}
-                  style={{padding: '0.5rem 1rem', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (formData.title && formData.content) {
-                      try {
-                        const response = await fetch('http://localhost:8001/api/church_app/news/', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
-                          },
-                          body: JSON.stringify({
-                            ...formData,
-                            is_published: true
-                          })
-                        });
-                        
-                        if (response.ok) {
-                          const newNews = {
-                            id: Date.now(),
-                            ...formData,
-                            date: new Date().toLocaleDateString('en-GB')
-                          };
-                          setNews([newNews, ...news]);
-                          setShowAddForm(false);
-                          setFormData({ title: '', content: '', category: 'Updates', image_url: '' });
-                          alert('News added successfully!');
-                        } else {
-                          alert('Error adding news. Please try again.');
-                        }
-                      } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error adding news. Please try again.');
-                      }
-                    }
-                  }}
-                  style={{padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
-                >
-                  Add News
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      
-      {/* News Detail Modal */}
-      {selectedNews && (
-        <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem'}} onClick={() => setSelectedNews(null)}>
-          <div style={{backgroundColor: 'white', borderRadius: '1rem', padding: '2rem', maxWidth: '40rem', width: '100%', maxHeight: '80vh', overflowY: 'auto'}} onClick={(e) => e.stopPropagation()}>
-            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem', gap: '0.5rem'}}>
-              <span style={{color: '#0284c7', fontSize: '0.875rem', fontWeight: '500', backgroundColor: '#e0f2fe', padding: '0.25rem 0.75rem', borderRadius: '1rem'}}>{selectedNews.category}</span>
-            </div>
-            <div style={{color: '#64748b', fontSize: '0.875rem', marginBottom: '1rem', textAlign: 'center'}}>{selectedNews.date}</div>
-            <h2 style={{fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#0284c7', fontFamily: 'serif', textAlign: 'center'}}>{selectedNews.title}</h2>
-            {selectedNews.image_url && (
-              <img src={selectedNews.image_url} alt={selectedNews.title} style={{width: '100%', height: '200px', objectFit: 'cover', borderRadius: '0.5rem', marginBottom: '1.5rem'}} />
-            )}
-            <div style={{color: '#64748b', lineHeight: '1.6', marginBottom: '2rem', whiteSpace: 'pre-line'}}>
-              {selectedNews.content}
-            </div>
-            <button 
-              onClick={() => setSelectedNews(null)}
-              style={{width: '100%', backgroundColor: '#0284c7', color: 'white', padding: '0.75rem', borderRadius: '0.5rem', fontWeight: '600', border: 'none', cursor: 'pointer'}}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
+
+  
 };
 
 export default News;

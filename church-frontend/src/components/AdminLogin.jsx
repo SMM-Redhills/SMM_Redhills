@@ -12,7 +12,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8001/api/auth/login/', {
+      const response = await fetch('http://localhost:8000/api/auth/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,6 +23,8 @@ const AdminLogin = ({ onLoginSuccess }) => {
       if (response.ok) {
         const data = await response.json();
         const userData = { username: credentials.username, token: data.token || data.access };
+        localStorage.setItem('adminToken', data.token || data.access);
+        localStorage.setItem('adminUser', JSON.stringify(userData));
         onLoginSuccess(userData);
       } else {
         const errorData = await response.json();

@@ -23,7 +23,7 @@ const Footer = ({ onNavigate = () => {} }) => {
           <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'center'}}>
               <div style={{width: '2.5rem', height: '2.5rem', backgroundColor: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <div style={{color: 'white', fontWeight: 'bold', fontSize: '1.125rem'}}>✞</div>
+                <div style={{color: 'white', fontWeight: 'bold', fontSize: '1.125rem'}}></div>
               </div>
               <div>
                 <h3 style={{fontSize: '1.125rem', fontFamily: 'serif', fontWeight: 'bold', color: 'white', margin: 0}}>Saint Mary Magdalene</h3>
