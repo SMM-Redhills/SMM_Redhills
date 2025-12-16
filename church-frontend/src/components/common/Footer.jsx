@@ -1,5 +1,6 @@
 import React from 'react';
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Youtube } from 'lucide-react';
+import smmLogo from '../../assets/img/smm_logo.png';
 
 const Footer = ({ onNavigate = () => {} }) => {
   const quickLinks = [
@@ -22,9 +23,11 @@ const Footer = ({ onNavigate = () => {} }) => {
           {/* Church Info */}
           <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'center'}}>
-              <div style={{width: '2.5rem', height: '2.5rem', backgroundColor: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <div style={{color: 'white', fontWeight: 'bold', fontSize: '1.125rem'}}></div>
-              </div>
+              <img 
+                src={smmLogo} 
+                alt="Church Logo" 
+                style={{width: '4rem', height: '4rem', objectFit: 'contain'}} 
+              />
               <div>
                 <h3 style={{fontSize: '1.125rem', fontFamily: 'serif', fontWeight: 'bold', color: 'white', margin: 0}}>Saint Mary Magdalene</h3>
                 <p style={{fontSize: '0.875rem', color: '#94a3b8', margin: 0}}>church of St. Thomas</p>

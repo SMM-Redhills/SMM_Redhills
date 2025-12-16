@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Phone, Mail, MapPin, Clock, ChevronDown, Heart } from 'lucide-react';
+import smmLogo from '../../assets/img/smm_logo.png';
 
 const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -62,9 +63,11 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
               onClick={() => handleNavClick('home')}
               style={{display: 'flex', alignItems: 'center', gap: '0.75rem', backgroundColor: 'transparent', border: 'none', cursor: 'pointer', transition: 'opacity 0.3s ease'}}
             >
-              <div style={{width: '3rem', height: '3rem', backgroundColor: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <div style={{color: 'white', fontWeight: 'bold', fontSize: '1.25rem'}}></div>
-              </div>
+              <img 
+                src={smmLogo} 
+                alt="Church Logo" 
+                style={{width: '6rem', height: '6rem', objectFit: 'contain'}} 
+              />
               <div>
                 <h1 style={{fontSize: '1.25rem', fontFamily: 'serif', fontWeight: '700', color: '#1e293b', margin: 0}}>
                   Saint Mary Magdalene
@@ -208,9 +211,11 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
         {/* Sidebar Header */}
         <div style={{padding: '1.5rem', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
-            <div style={{width: '2.5rem', height: '2.5rem', backgroundColor: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <div style={{color: 'white', fontWeight: 'bold', fontSize: '1rem'}}></div>
-            </div>
+            <img 
+              src={smmLogo} 
+              alt="Church Logo" 
+              style={{width: '5rem', height: '5rem', objectFit: 'contain'}} 
+            />
             <div>
               <h2 style={{fontSize: '1rem', fontFamily: 'serif', fontWeight: '700', color: '#1e293b', margin: 0}}>SMM Church</h2>
             </div>

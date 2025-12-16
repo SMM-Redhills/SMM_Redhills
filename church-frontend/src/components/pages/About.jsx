@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { Church, Heart, Users, BookOpen, Calendar, MapPin, Phone, Mail } from 'lucide-react';
-import { assignedColors } from '../../utils/sectionColors';
+import { Church, Heart, Users, BookOpen, Calendar, MapPin, Phone, Mail, Sparkles, HandHeart, Star, Shield } from 'lucide-react';
+import { assignedColors, sectionColors } from '../../utils/sectionColors';
 
 const About = ({ onNavigate, scrollToSection }) => {
   const observerRef = useRef(null);
@@ -56,6 +56,16 @@ const About = ({ onNavigate, scrollToSection }) => {
       <div className="about-main-content">
         <div className="about-container">
         
+          {/* About the Church Section (New) */}
+          <section id="about-us-intro" className="scroll-fade-in smooth-scroll-section about-intro" style={{backgroundColor: assignedColors.about}}>
+            <div className="about-intro-content scroll-slide-up">
+              <h2>Who We Are</h2>
+              <p>
+                Saint Mary Magdalene Church is more than just a building; it is a vibrant family of believers in Redhills, Chennai. We are united by our faith in Christ and our dedication to serving one another. Our community is a tapestry of different ages and backgrounds, woven together by love, prayer, and a shared mission to spread the Gospel. Whether you are a long-time parishioner or a first-time visitor, you will find a warm welcome and a spiritual home here.
+              </p>
+            </div>
+          </section>
+
           {/* Church Story Section */}
           <section id="church-story" className="scroll-fade-in smooth-scroll-section church-story" style={{backgroundColor: assignedColors.church}}>
             <div className="church-story-grid">
@@ -76,6 +86,71 @@ const About = ({ onNavigate, scrollToSection }) => {
               </div>
             </div>
           </section>
+
+          {/* Parish Groups Sections */}
+          <div className="parish-groups-container">
+            <h2 className="section-header-title scroll-fade-in">Our Parish Groups</h2>
+            
+            {/* Youth Group */}
+            <section id="group-youth" className="scroll-fade-in smooth-scroll-section group-section" style={{backgroundColor: sectionColors.lightCyan}}>
+              <div className="group-content">
+                <div className="group-icon-wrapper">
+                  <Sparkles className="group-icon" />
+                </div>
+                <div className="group-text scroll-slide-right">
+                  <h3>Youth Group (Illaignar Ani)</h3>
+                  <p>
+                    Our Youth Group is the energetic heartbeat of the parish. Comprising young men and women dedicated to spiritual growth and social service, they are actively involved in liturgy, choir, and community outreach. The group organizes youth retreats, cultural events, and charitable drives, empowering the next generation to be leaders in faith and society.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Vincent de Paul */}
+            <section id="group-svp" className="scroll-fade-in smooth-scroll-section group-section" style={{backgroundColor: sectionColors.lightEmerald}}>
+              <div className="group-content reverse">
+                <div className="group-icon-wrapper">
+                  <HandHeart className="group-icon" />
+                </div>
+                <div className="group-text scroll-slide-left">
+                  <h3>Vincent de Paul Society</h3>
+                  <p>
+                    Following the footsteps of St. Vincent de Paul, this society is the charitable arm of our parish. Members dedicate themselves to serving the poor, the sick, and the marginalized within our community. Through home visits, financial aid, and provision of essential supplies, they strive to see and serve Christ in the needy, ensuring no one is left behind.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Mariyin Senai */}
+            <section id="group-mary" className="scroll-fade-in smooth-scroll-section group-section" style={{backgroundColor: sectionColors.lightBlue}}>
+              <div className="group-content">
+                <div className="group-icon-wrapper">
+                  <Star className="group-icon" />
+                </div>
+                <div className="group-text scroll-slide-right">
+                  <h3>Mariyin Senai (Legion of Mary)</h3>
+                  <p>
+                    The Legion of Mary is a lay apostolic association of Catholics who, with the sanction of the Church and under the powerful leadership of Mary Immaculate, serve the Church and their neighbor. Our members participate in weekly prayer meetings, visit families to encourage rosary recitation, and engage in evangelization efforts to bring souls closer to Jesus through Mary.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Valanar */}
+            <section id="group-valanar" className="scroll-fade-in smooth-scroll-section group-section" style={{backgroundColor: sectionColors.lightOrange}}>
+              <div className="group-content reverse">
+                <div className="group-icon-wrapper">
+                  <Shield className="group-icon" />
+                </div>
+                <div className="group-text scroll-slide-left">
+                  <h3>Valanar Sabai (St. Joseph's Group)</h3>
+                  <p>
+                    Dedicated to St. Joseph (Punitha Valanar), this group fosters spirituality and brotherhood among the men of the parish. Emulating the virtues of St. Joseph—humility, hard work, and protection of the family—members support the church's maintenance, organize the Feast of St. Joseph, and assist in various parish developmental activities.
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
 
           {/* Features Section */}
           <section id="church-features" className="scroll-fade-in smooth-scroll-section church-features" style={{backgroundColor: assignedColors.quickLinks}}>
@@ -416,6 +491,101 @@ const About = ({ onNavigate, scrollToSection }) => {
           color: #0369a1;
           margin-bottom: 1.5rem;
           line-height: 1.6;
+        }
+
+        /* About Intro New Section */
+        .about-intro {
+          margin-bottom: 4rem;
+          padding: 4rem 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1);
+          text-align: center;
+        }
+        .about-intro h2 {
+          font-size: clamp(2rem, 4vw, 2.5rem);
+          font-weight: 700;
+          color: #d97706; /* Amber-600 */
+          margin-bottom: 1.5rem;
+          font-family: serif;
+        }
+        .about-intro p {
+          color: #4b5563;
+          max-width: 60rem;
+          margin: 0 auto;
+          font-size: 1.125rem;
+          line-height: 1.8;
+        }
+
+        /* Parish Groups */
+        .parish-groups-container {
+          width: 100%;
+          margin-bottom: 4rem;
+        }
+        .section-header-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: #0f172a;
+          text-align: center;
+          margin-bottom: 3rem;
+          font-family: serif;
+        }
+        .group-section {
+          margin-bottom: 2rem;
+          padding: 3rem 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease;
+        }
+        .group-section:hover {
+          transform: translateY(-5px);
+        }
+        .group-content {
+          display: flex;
+          align-items: center;
+          gap: 3rem;
+          max-width: 70rem;
+          margin: 0 auto;
+        }
+        .group-content.reverse {
+          flex-direction: row-reverse;
+        }
+        .group-icon-wrapper {
+          flex-shrink: 0;
+          width: 80px;
+          height: 80px;
+          background: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .group-icon {
+          width: 40px;
+          height: 40px;
+          color: #0284c7;
+        }
+        .group-text {
+          flex: 1;
+        }
+        .group-text h3 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 1rem;
+          font-family: serif;
+        }
+        .group-text p {
+          color: #475569;
+          font-size: 1.1rem;
+          line-height: 1.7;
+        }
+        @media (max-width: 768px) {
+          .group-content, .group-content.reverse {
+            flex-direction: column;
+            text-align: center;
+            gap: 1.5rem;
+          }
         }
       `}</style>
     </div>

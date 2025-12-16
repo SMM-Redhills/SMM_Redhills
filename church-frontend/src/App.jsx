@@ -36,10 +36,19 @@ const App = () => {
     return path || 'home';
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [modalData, setModalData] = useState({ isOpen: false, title: '', content: '' });
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const mainContentRef = useRef(null);
   const scrollTimeoutRef = useRef(null);
+
+  const handleOpenModal = (title, content) => {
+    setModalData({ isOpen: true, title, content });
+  };
+
+  const handleCloseModal = () => {
+    setModalData({ ...modalData, isOpen: false });
+  };
 
   // Scroll progress tracking
   useEffect(() => {
@@ -130,7 +139,7 @@ const App = () => {
 
     switch (currentPage) {
       case 'home':
-        return <Homepage onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
+        return <Homepage onNavigate={handleNavigation} scrollToSection={scrollToSection} openModal={handleOpenModal} />;
       
       // church   pages
       case 'church':
@@ -262,6 +271,92 @@ const App = () => {
           {Math.round(scrollProgress * 100)}%
         </div>
       )}
+      {/* Modal */}
+      {modalData.isOpen && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={handleCloseModal}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <h3 className="modal-title">{modalData.title}</h3>
+            <p className="modal-text">{modalData.content}</p>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #64748b;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background-color: #f1f5f9;
+            color: #ef4444;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0284c7;
+            margin-bottom: 1rem;
+            font-family: serif;
+            padding-right: 2rem;
+        }
+
+        .modal-text {
+            color: #334155;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

@@ -2,8 +2,23 @@ import React, { useEffect, useRef } from 'react';
 import { Calendar, Clock, Users, Book, Heart, Youtube, Camera, MapPin } from 'lucide-react';
 import BannerSlider from './BannerSlider';
 
-const Homepage = () => {
+const Homepage = ({ openModal }) => {
   const observerRef = useRef(null);
+
+  const tamilHistory = "இந்த திருச்சபை மாதவரத்திலிருந்து பிரிக்கப்பட்டு 1978 இல் கட்டப்பட்டது. இது பிரான்சிஸ்கன் மிஷனரிகளிடம் ஒப்படைக்கப்பட்டது. இந்த திருச்சபைக்கான நிலம் 1983 ஆம் ஆண்டு திருச்சபை ஜான் கொட்டாரம் அவர்களால் வாங்கப்பட்டது. புனித மேரி மகதலேனாவின் நினைவாக திருச்சபை தேவாலயம் 18 02 1985 அன்று பேராயர் மேதகு டாக்டர் ஆர் அருளப்பா அவர்களால் புனிதப்படுத்தப்பட்டது. இந்த தேவாலயத்தின் முதல் திருச்சபை பாதிரியார் அருட்தந்தை தாமஸ் முண்டக்கல் ஆவார்.";
+
+  const handleReadMore = (type) => {
+    if (type === 'heritage') {
+      openModal('Church History', tamilHistory);
+    } else if (type === 'saint') {
+      openModal(
+        'புனித மேரி மகதலேனா', 
+        'புனித மரிய மகதலேனா இயேசுவின் தீவிர சீடர்களில் ஒருவர். இயேசுவால் ஏழு பேய்களிலிருந்து விடுவிக்கப்பட்டவர். இயேசுவின் சிலுவைப்பாடுகளின் போதும், அடக்கத்தின் போதும் உடனிருந்தவர். இயேசுவின் உயிர்ப்பை முதன்முதலில் கண்டவரும், அதைச் சீடர்களுக்கு அறிவித்தவரும் இவரே. எனவே இவர் "திருத்தூதர்களுக்கெல்லாம் திருத்தூதர்" என்று அழைக்கப்படுகிறார். இவர் மனந்திரும்புதலுக்கும், இறை அன்புக்கும் சிறந்த எடுத்துக்காட்டாவார்.'
+      );
+    }
+  };
+
+
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
@@ -97,7 +112,7 @@ const Homepage = () => {
             <div className="about-content">
               <div className="scroll-slide-left about-image-container">
                 <img
-                  src="public/assets/images/sain_mm.jpeg"
+                  src="public/assets/images/mary2.jpg"
                   alt="Saint Mary Magdalene"
                   className="about-image"
                 />
@@ -140,9 +155,9 @@ const Homepage = () => {
           >
             <h2 className="scroll-slide-up section-title">Our History & Heritage</h2>
             <div className="scroll-stagger-children history-grid">
-              <div className="hover-lift history-card">
+              <div className="hover-lift history-card" onClick={() => handleReadMore('saint')}>
                 <img
-                  src="public/assets/images/sain_mm.jpeg"
+                  src="public/assets/images/mary1.jpg"
                   alt="Saint Mary Magdalene"
                   className="history-image"
                 />
@@ -150,9 +165,9 @@ const Homepage = () => {
                 <p className="history-card-text">
                   Known as the "Apostle to the Apostles," she was the first witness to Christ's resurrection and a symbol of redemption and unwavering faith.
                 </p>
-                <button className="read-more-button">Read More →</button>
+                <span className="read-more-button">Read More →</span>
               </div>
-              <div className="hover-lift history-card">
+              <div className="hover-lift history-card" onClick={() => handleReadMore('heritage')}>
                 <img
                   src="public/assets/images/smm.jpg"
                   alt="church Heritage"
@@ -162,7 +177,7 @@ const Homepage = () => {
                 <p className="history-card-text">
                   Our church stands as a testament to faith, serving the community of Redhills with devotion, prayer, and spiritual guidance for generations.
                 </p>
-                <button className="read-more-button">Read More →</button>
+                <span className="read-more-button">Read More →</span>
               </div>
             </div>
           </section>
@@ -252,6 +267,8 @@ const Homepage = () => {
               </div>
             </div>
           </section>
+
+
 
       <style>{`
         * {
@@ -456,6 +473,7 @@ const Homepage = () => {
           width: 100%;
           max-width: 350px;
           transition: all 0.3s ease;
+          cursor: pointer;
         }
 
         .history-card:hover {
@@ -794,9 +812,7 @@ const Homepage = () => {
             padding: 1.25rem;
           }
 
-          .about-content {
-            gap: 1.5rem;
-          }
+
 
           .about-features {
             gap: 1rem;

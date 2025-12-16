@@ -10,6 +10,7 @@ const prayers = [
     id: 1,
     title: "Our Father",
     category: "Traditional",
+    language: "english",
     content: `Our Father, who art in heaven,
 hallowed be thy name.
 Thy kingdom come,
@@ -26,6 +27,7 @@ Amen.`
     id: 2,
     title: "Hail Mary",
     category: "Traditional",
+    language: "english",
     content: `Hail Mary, full of grace,
 the Lord is with thee.
 Blessed art thou among women,
@@ -39,6 +41,7 @@ Amen.`
     id: 3,
     title: "Glory Be",
     category: "Traditional",
+    language: "english",
     content: `Glory be to the Father,
 and to the Son,
 and to the Holy Spirit.
@@ -51,6 +54,7 @@ Amen.`
     id: 4,
     title: "Prayer to Saint Mary Magdalene",
     category: "Saint Devotion",
+    language: "english",
     content: `Saint Mary Magdalene,
 woman of many sins, who by conversion
 became the beloved of Jesus,
@@ -68,6 +72,7 @@ Amen.`
     id: 5,
     title: "Morning Prayer",
     category: "Daily Prayers",
+    language: "english",
     content: `Heavenly Father,
 as I begin this new day,
 I offer You my heart, my mind, and my soul.
@@ -84,6 +89,7 @@ Amen.`
     id: 6,
     title: "Evening Prayer",
     category: "Daily Prayers",
+    language: "english",
     content: `Lord Jesus Christ,
 as this day comes to an end,
 I thank You for Your countless blessings.
@@ -100,6 +106,7 @@ Amen.`
     id: 7,
     title: "Prayer for Peace",
     category: "Special Intentions",
+    language: "english",
     content: `Prince of Peace,
 in a world filled with conflict and division,
 we turn to You for hope and healing.
@@ -115,6 +122,7 @@ Amen.`
     id: 8,
     title: "Prayer for the Sick",
     category: "Special Intentions",
+    language: "english",
     content: `Loving God, Divine Physician,
 we lift up to You all who are suffering
 from illness, pain, or distress.
@@ -127,12 +135,70 @@ Give hope to families and friends
 who watch and wait with love.
 Through Christ our Healer.
 Amen.`
+  },
+  {
+    id: 't1',
+    title: "சிலுவை அடையாளம்",
+    category: "Traditional",
+    language: 'tamil',
+    content: "தந்தை மகன் தூய ஆவியாரின் பெயராலே. ஆமென்."
+  },
+  {
+    id: 't2',
+    title: "இயேசு கற்றுத்தந்த இறை வேந்தல்",
+    category: "Traditional",
+    language: 'tamil',
+    content: `விண்ணுலகில் இருக்கின்ற எங்கள் தந்தையே, உமது பெயர் தூயது எனப் போற்றப்பெறுக! உமது ஆட்சி வருக! உமது திருவுளம் விண்ணுலகில் நிறைவேறுவது போல, மண்ணுலகிலும் நிறைவேறுக!
+எங்கள் அன்றாட உணவை இன்று எங்களுக்குத் தாரும். எங்களுக்கு எதிராகக் குற்றம் செய்வோரை நாங்கள் மன்னிப்பது போல எங்கள் குற்றங்களை மன்னியும். எங்களைச் சோதனைக்கு உட்படுத்தாதேயும். தீமையிலிருந்து எங்களை விடுவித்தருளும். ஆமென்.`
+  },
+  {
+    id: 't3',
+    title: "நம்பிக்கை அறிக்கை",
+    category: "Traditional",
+    language: 'tamil',
+    content: `விண்ணகத்தையும் மண்ணகத்தையும் படைத்த எல்லாம் வல்ல தந்தையாகிய கடவுளை நம்புகின்றேன். அவருடைய ஒரே மகனாகிய நம் ஆண்டவர் இயேசு கிறிஸ்துவை நம்புகின்றேன். இவர் தூய ஆவியால் கருவுற்று, கன்னி மரியாவிடமிருந்து பிறந்தார். பொந்தியு பிலாத்துவின் அதிகாரத்தில் பாடுபட்டுச் சிலுவையில் அறையப்பட்டு, இறந்து, அடக்கம் செய்யப்பட்டார். பாதாளத்தில் இறங்கி, மூன்றாம் நாள் இறந்தோரிடமிருந்து உயிர்த்தெழுந்தார். விண்ணகத்துக்கு எழுந்தருளி, எல்லாம் வல்ல தந்தையாகிய கடவுளின் வலப் பக்கத்தில் வீற்றிருக்கின்றார். அங்கிருந்து வாழ்வோருக்கும் இறந்தோருக்கும் தீர்ப்பு வழங்க வருவார். தூய ஆவியாரை நம்புகின்றேன். புனித, கத்தோலிக்கத் திரு அவையை நம்புகின்றேன். புனிதர்களின் உறவு ஒன்றிப்பை நம்புகின்றேன். பாவ மன்னிப்பை நம்புகின்றேன். உடலின் உயிர்ப்பை நம்புகின்றேன். நிலைவாழ்வை நம்புகின்றேன். ஆமென்.`
+  },
+  {
+    id: 't4',
+    title: "மங்கள வார்த்தை மன்றாட்டு",
+    category: "Traditional",
+    language: 'tamil',
+    content: `அருள் மிகப் பெற்ற மரியே வாழ்க ஆண்டவர் உம்முடனே பெண்களுக்குள் ஆசி பெற்றவர் நீரே. உம்முடைய திருவயிற்றின் கனியாகிய இயேசுவும் ஆசி பெற்றவரே. தூய மரியே இறைவனின் தாயே பாவிகளாய் இருக்கிற எங்களுக்காக இப்பொழுதும் எங்கள் இறப்பின் வேளையிலும் வேண்டிக்கொள்ளும். ஆமென்.`
+  },
+  {
+    id: 't5',
+    title: "பத்துக்கட்டளைகள்",
+    category: "Traditional",
+    language: 'tamil',
+    content: `1. நாமே உன் கடவுளாகிய ஆண்டவர் எம்மைத் தவிர வேறு தெய்வங்கள் உனக்கு இருத்தல் ஆகாது.
+2. உன் கடவுளாகிய ஆண்டவரின் பெயரை வீணாக பயன்படுத்தாதே.
+3. ஓய்வு நாளை தூயதாக கடைபிடிப்பதில் கருத்தாய் இரு.
+4. உன் தந்தையையும் தாயையும் மதித்து நட. 
+5. கொலை செய்யாதே. 
+6. விபச்சாரம் செய்யாதே. 
+7.களவு செய்யாதே. 
+8. பிறருக்கு எதிராக பொய் சான்று சொல்லாதே. 
+9. பிறர் மனைவி மீது ஆசை கொள்ளாதே. 
+10. பிறருக்கு உரியது எதையும் கவர்ந்திட விரும்பாதே.`
+  },
+  {
+    id: 't6',
+    title: "திருச்சபையின் ஒழுங்கு முறைகள்",
+    category: "Traditional",
+    language: 'tamil',
+    content: `1. ஞாயிற்றுக்கிழமைகளிலும் கடன் திரு நாட்களிலும் திருப்பலியில் முழுமையாய் பங்கேற்க வேண்டும் இந்நாட்களின் புனிதத்தை பாதிக்க கூடிய செயல்பாடுகளை தவிர்க்க வேண்டும்.
+2. ஆண்டிற்கு ஒரு முறையாவது தகுந்த தயாரிப்புடன் ஒப்புரவு அருள் சாதனத்தில் பங்கேற்க வேண்டும்.
+3. பாஸ்கா காலத்தில் ஒப்புரவு அருள்சாதனத்தில் பங்கேற்று நற்கருணை உட்கொள்ள வேண்டும்.
+4. திருச்சபை குறிப்பிட்டுள்ள நாட்களில் இறைச்சி உண்ணாதிருக்க வேண்டும்; நோன்பு நாட்களில் ஒருவேளை மட்டும் முழு உணவு உண்ணலாம்.
+5. குறைந்த வயதிலும் திருமண தடை உள்ள உறவினரோடும் திருமணம் செய்யாதிருக்க வேண்டும்.
+6. திருச்சபையின் தேவைகளை நிறைவேற்ற நம்மால் முடிந்த உதவி செய்ய வேண்டும்.`
   }
 ];
 
 const Prayer = () => {
   const observerRef = useRef(null);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [language, setLanguage] = useState('english');
   const [selectedPrayer, setSelectedPrayer] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -425,10 +491,41 @@ const handleAddPrayerSubmit = async (e) => {
             box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
           }
           
+          .language-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+          .language-button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .language-button.active {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+          }
+
           .prayer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-            gap: clamp(1rem, 3vw, 1.5rem);
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+            gap: 1rem;
             margin-bottom: clamp(2rem, 5vw, 3rem);
             width: 100%;
             max-width: 80rem;
@@ -437,7 +534,7 @@ const handleAddPrayerSubmit = async (e) => {
           .prayer-card {
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 1rem;
-            padding: clamp(1rem, 3vw, 1.5rem);
+            padding: 1rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
@@ -459,7 +556,7 @@ const handleAddPrayerSubmit = async (e) => {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             gap: 0.5rem;
           }
           
@@ -469,24 +566,29 @@ const handleAddPrayerSubmit = async (e) => {
           
           .prayer-category-text {
             color: #8b5cf6;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 500;
           }
           
           .prayer-title {
-            font-size: clamp(1.125rem, 3vw, 1.25rem);
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             color: #6d28d9;
             font-family: serif;
           }
           
           .prayer-preview {
             color: #334155;
-            font-size: 0.875rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
             flex-grow: 1;
+            /* Limit to 3 lines visually if supported, else height will restrict */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
           }
           
           .prayer-read-more {
@@ -495,7 +597,7 @@ const handleAddPrayerSubmit = async (e) => {
             background-color: transparent;
             border: none;
             cursor: pointer;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             margin-top: auto;
           }
           
@@ -931,6 +1033,22 @@ const handleAddPrayerSubmit = async (e) => {
             </p>
           </div>
 
+          {/* Language Toggle */}
+          <div className="language-toggle">
+            <button
+              onClick={() => setLanguage('english')}
+              className={`language-button ${language === 'english' ? 'active' : ''}`}
+            >
+              English
+            </button>
+            <button
+              onClick={() => setLanguage('tamil')}
+              className={`language-button ${language === 'tamil' ? 'active' : ''}`}
+            >
+              தமிழ்
+            </button>
+          </div>
+
           {/* Category Filter */}
           <div className="category-buttons">
             {categories.map(category => (
@@ -944,12 +1062,14 @@ const handleAddPrayerSubmit = async (e) => {
             ))}
           </div>
 
-          {/* Prayer Grid */}
           <div 
             id="prayer-grid"
             className="prayer-grid scroll-stagger-children smooth-scroll-section"
           >
-            {prayersList.filter(prayer => activeCategory === 'All' ? true : prayer.category === activeCategory).map(prayer => (
+            {prayersList
+              .filter(prayer => prayer.language === language)
+              .filter(prayer => activeCategory === 'All' ? true : prayer.category === activeCategory)
+              .map(prayer => (
               <div key={prayer.id} className="prayer-card" onClick={() => setSelectedPrayer(prayer)}>
                 <div className="prayer-category">
                   <div className="prayer-category-icon">
@@ -960,8 +1080,9 @@ const handleAddPrayerSubmit = async (e) => {
                 
                 <h3 className="prayer-title">{prayer.title}</h3>
                 <p className="prayer-preview">
-                  {prayer.content.split('\n').slice(0, 3).join('\n')}
-                  {prayer.content.split('\n').length > 3 && '...'}
+                  {prayer.content.length > 50 
+                    ? prayer.content.substring(0, 50) + '...' 
+                    : prayer.content}
                 </p>
                 <button className="prayer-read-more">
                   Read Full Prayer →

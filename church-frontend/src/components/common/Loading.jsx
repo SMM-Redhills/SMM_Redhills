@@ -1,4 +1,5 @@
 import React from 'react';
+import smmLogo from '../../assets/img/smm_logo.png';
 
 const Loading = ({ 
   message = "Loading...", 
@@ -72,9 +73,11 @@ const Loading = ({
           {renderLoader()}
           <p className="text-gray-600 font-medium">{message}</p>
           <div className="text-center">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
-              <div className="text-white font-bold text-sm"></div>
-            </div>
+            <img 
+              src={smmLogo} 
+              alt="Church Logo" 
+              className="w-20 h-20 mx-auto mb-4 object-contain" 
+            />
             <p className="text-sm text-gray-500">Saint Mary Magdalene</p>
           </div>
         </div>
