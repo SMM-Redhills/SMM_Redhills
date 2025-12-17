@@ -18,7 +18,7 @@ const BannerSlider = () => {
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1200&h=400&fit=crop',
+      image: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=1200&h=400&fit=crop',
       title: 'Prayer Services',
       subtitle: 'Find spiritual guidance and support'
     },

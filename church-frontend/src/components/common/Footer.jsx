@@ -109,7 +109,7 @@ const Footer = ({ onNavigate = () => {} }) => {
       <div style={{borderTop: '1px solid #374151', padding: '1rem 0'}}>
         <div style={{maxWidth: '80rem', margin: '0 auto', padding: '0 1rem', textAlign: 'center'}}>
           <p style={{color: '#94a3b8', fontSize: '0.875rem', margin: 0}}>
-            © 2024 Saint Mary Magdalene Church. All rights reserved created and Developed by Roosso P.
+            © 2024 Saint Mary Magdalene Church. All rights reserved. Created and developed by Roosso P.
           </p>
         </div>
       </div>
