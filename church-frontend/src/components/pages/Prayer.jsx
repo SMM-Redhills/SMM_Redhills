@@ -524,8 +524,8 @@ const handleAddPrayerSubmit = async (e) => {
 
           .prayer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
             margin-bottom: clamp(2rem, 5vw, 3rem);
             width: 100%;
             max-width: 80rem;
@@ -534,7 +534,7 @@ const handleAddPrayerSubmit = async (e) => {
           .prayer-card {
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 1rem;
-            padding: 1rem;
+            padding: 2rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;

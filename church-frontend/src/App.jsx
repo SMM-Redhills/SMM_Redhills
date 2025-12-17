@@ -24,6 +24,12 @@ import PrayerForm from './components/prayer/PrayerForm.jsx';
 import PrayerRequest from './components/prayer/PrayerRequest.jsx';
 import PrayerServices from './components/prayer/PrayerServices.jsx';
 
+// Church Group components
+import YouthGroup from './components/pages/YouthGroup.jsx';
+import VincentDePaul from './components/pages/VincentDePaul.jsx';
+import LegionOfMary from './components/pages/LegionOfMary.jsx';
+import StJosephGroup from './components/pages/StJosephGroup.jsx';
+
 // Admin component
 import AdminDashboard from './components/AdminDashboard.jsx';
 import ReactAdmin from './components/ReactAdmin.jsx';
@@ -154,6 +160,16 @@ const App = () => {
       case 'parish':
       case 'archdiocese':
         return <About onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
+      
+      // Group pages
+      case 'youth-group':
+        return <YouthGroup onNavigate={handleNavigation} />;
+      case 'vincent-de-paul':
+        return <VincentDePaul onNavigate={handleNavigation} />;
+      case 'legion-of-mary':
+        return <LegionOfMary onNavigate={handleNavigation} />;
+      case 'st-joseph-group':
+        return <StJosephGroup onNavigate={handleNavigation} />;
       
       case 'news-events':
         return <News onNavigate={handleNavigation} scrollToSection={scrollToSection} />;

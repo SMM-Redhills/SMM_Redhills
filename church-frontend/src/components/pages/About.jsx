@@ -71,12 +71,12 @@ const About = ({ onNavigate, scrollToSection }) => {
             <div className="church-story-grid">
               <div className="scroll-slide-left church-story-text">
                 <h2>Our History</h2>
-                <p>
+                {/* <p>
                   Saint Mary Magdalene church is a sacred place of worship dedicated to the beloved disciple who was the first witness to Christ's resurrection. Our church serves as a spiritual home for the faithful community in Redhills, Chennai.
                 </p>
                 <p>
                   Built with devotion and faith, our church stands as a testament to the enduring love and redemption that Saint Mary Magdalene represents. We welcome all who seek spiritual guidance, community, and the transformative power of God's love.
-                </p>
+                </p> */}
                 <p style={{ marginTop: '1rem', fontStyle: 'italic', color: '#475569' }}>
                   "இந்த திருச்சபை மாதவரத்திலிருந்து பிரிக்கப்பட்டு 1978 இல் கட்டப்பட்டது. இது பிரான்சிஸ்கன் மிஷனரிகளிடம் ஒப்படைக்கப்பட்டது. இந்த திருச்சபைக்கான நிலம் 1983 ஆம் ஆண்டு திருச்சபை ஜான் கொட்டாரம் அவர்களால் வாங்கப்பட்டது. புனித மேரி மகதலேனாவின் நினைவாக திருச்சபை தேவாலயம் 18 02 1985 அன்று பேராயர் மேதகு டாக்டர் ஆர் அருளப்பா அவர்களால் புனிதப்படுத்தப்பட்டது. இந்த தேவாலயத்தின் முதல் திருச்சபை பாதிரியார் அருட்தந்தை தாமஸ் முண்டக்கல் ஆவார்."
                 </p>
@@ -100,8 +100,24 @@ const About = ({ onNavigate, scrollToSection }) => {
                 <div className="group-text scroll-slide-right">
                   <h3>Youth Group (Illaignar Ani)</h3>
                   <p>
-                    Our Youth Group is the energetic heartbeat of the parish. Comprising young men and women dedicated to spiritual growth and social service, they are actively involved in liturgy, choir, and community outreach. The group organizes youth retreats, cultural events, and charitable drives, empowering the next generation to be leaders in faith and society.
+                    Our Youth Group is the energetic heartbeat of the parish, dedicated to spiritual growth and social service.
                   </p>
+                  <button 
+                    onClick={() => onNavigate('youth-group')} 
+                    style={{
+                      marginTop: '1rem',
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: '#0284c7',
+                      color: 'white',
+                      fontWeight: '600',
+                      borderRadius: '0.5rem',
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    Learn More
+                  </button>
                 </div>
               </div>
             </section>
@@ -115,8 +131,24 @@ const About = ({ onNavigate, scrollToSection }) => {
                 <div className="group-text scroll-slide-left">
                   <h3>Vincent de Paul Society</h3>
                   <p>
-                    Following the footsteps of St. Vincent de Paul, this society is the charitable arm of our parish. Members dedicate themselves to serving the poor, the sick, and the marginalized within our community. Through home visits, financial aid, and provision of essential supplies, they strive to see and serve Christ in the needy, ensuring no one is left behind.
+                    The charitable arm of our parish, serving the poor, the sick, and the marginalized within our community.
                   </p>
+                  <button 
+                    onClick={() => onNavigate('vincent-de-paul')} 
+                    style={{
+                      marginTop: '1rem',
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: '#059669',
+                      color: 'white',
+                      fontWeight: '600',
+                      borderRadius: '0.5rem',
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    Learn More
+                  </button>
                 </div>
               </div>
             </section>
@@ -130,8 +162,24 @@ const About = ({ onNavigate, scrollToSection }) => {
                 <div className="group-text scroll-slide-right">
                   <h3>Mariyin Senai (Legion of Mary)</h3>
                   <p>
-                    The Legion of Mary is a lay apostolic association of Catholics who, with the sanction of the Church and under the powerful leadership of Mary Immaculate, serve the Church and their neighbor. Our members participate in weekly prayer meetings, visit families to encourage rosary recitation, and engage in evangelization efforts to bring souls closer to Jesus through Mary.
+                    A lay apostolic association serving the Church and neighbor under the leadership of Mary Immaculate.
                   </p>
+                  <button 
+                    onClick={() => onNavigate('legion-of-mary')} 
+                    style={{
+                      marginTop: '1rem',
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: '#2563eb',
+                      color: 'white',
+                      fontWeight: '600',
+                      borderRadius: '0.5rem',
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    Learn More
+                  </button>
                 </div>
               </div>
             </section>
@@ -145,8 +193,24 @@ const About = ({ onNavigate, scrollToSection }) => {
                 <div className="group-text scroll-slide-left">
                   <h3>Valanar Sabai (St. Joseph's Group)</h3>
                   <p>
-                    Dedicated to St. Joseph (Punitha Valanar), this group fosters spirituality and brotherhood among the men of the parish. Emulating the virtues of St. Joseph—humility, hard work, and protection of the family—members support the church's maintenance, organize the Feast of St. Joseph, and assist in various parish developmental activities.
+                    Fostering spirituality and brotherhood among men, emulating the virtues of St. Joseph.
                   </p>
+                  <button 
+                    onClick={() => onNavigate('st-joseph-group')} 
+                    style={{
+                      marginTop: '1rem',
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: '#ca8a04',
+                      color: 'white',
+                      fontWeight: '600',
+                      borderRadius: '0.5rem',
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    Learn More
+                  </button>
                 </div>
               </div>
             </section>
