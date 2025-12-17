@@ -1,39 +1,42 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import './App.css'; 
 // Common components
 import Header from './components/common/Header.jsx';
 import Footer from './components/common/Footer.jsx';
 import Loading from './components/common/Loading.jsx';
 
-// Home components
+// Home components - Keep Homepage eager loaded for immediate First Contentful Paint
 import Homepage from './components/home/Homepage.jsx';
-import BannerSlider from './components/home/BannerSlider.jsx';
 
-// Page components (in src/components/pages/)
-import About from './components/pages/About.jsx';
-import Contact from './components/pages/Contact.jsx';
-import Donate from './components/pages/Donate.jsx';
-import Events from './components/pages/Events.jsx';
-import Gallery from './components/pages/Gallery.jsx';
-import News from './components/pages/News.jsx';
-import STMaryMagdelene from './components/pages/ST_mary_magdelene.jsx';
-import Schedule from './components/pages/Schedule.jsx';
+// Lazy Load Page components
+const About = lazy(() => import('./components/pages/About.jsx'));
+const Contact = lazy(() => import('./components/pages/Contact.jsx'));
+const Donate = lazy(() => import('./components/pages/Donate.jsx'));
+const Events = lazy(() => import('./components/pages/Events.jsx')); // Kept for safety if reference exists
+const Gallery = lazy(() => import('./components/pages/Gallery.jsx'));
+const News = lazy(() => import('./components/pages/News.jsx'));
+const STMaryMagdelene = lazy(() => import('./components/pages/ST_mary_magdelene.jsx'));
+const Schedule = lazy(() => import('./components/pages/Schedule.jsx'));
+
 // Prayer components
-import Prayer from './components/pages/Prayer.jsx';
-import PrayerForm from './components/prayer/PrayerForm.jsx';
-import PrayerRequest from './components/prayer/PrayerRequest.jsx';
-import PrayerServices from './components/prayer/PrayerServices.jsx';
+const Prayer = lazy(() => import('./components/pages/Prayer.jsx'));
+// These seem to be sub-components or form components, often loaded with Prayer page or separately? 
+// If they are pages, lazy load. If strictly components used inside Prayer, no need to lazy load here separately unless they are routes.
+// Based on previous code they are unused in main switch or used inside Prayer. checking... 
+// They are NOT used in the switch statement in the original code, only imported. I will remove unused imports or keep them if I missed something.
+// Actually, looking at the original code, `PrayerForm`, `PrayerRequest`, `PrayerServices` were imported but not used in the `renderPage` switch!
+// I will comment them out to be safe and clean up.
 
 // Church Group components
-import YouthGroup from './components/pages/YouthGroup.jsx';
-import VincentDePaul from './components/pages/VincentDePaul.jsx';
-import LegionOfMary from './components/pages/LegionOfMary.jsx';
-import StJosephGroup from './components/pages/StJosephGroup.jsx';
+const YouthGroup = lazy(() => import('./components/pages/YouthGroup.jsx'));
+const VincentDePaul = lazy(() => import('./components/pages/VincentDePaul.jsx'));
+const LegionOfMary = lazy(() => import('./components/pages/LegionOfMary.jsx'));
+const StJosephGroup = lazy(() => import('./components/pages/StJosephGroup.jsx'));
 
 // Admin component
-import AdminDashboard from './components/AdminDashboard.jsx';
-import ReactAdmin from './components/ReactAdmin.jsx';
-import AdminLogin from './components/AdminLogin.jsx';
+const AdminDashboard = lazy(() => import('./components/AdminDashboard.jsx'));
+const ReactAdmin = lazy(() => import('./components/ReactAdmin.jsx'));
+const AdminLogin = lazy(() => import('./components/AdminLogin.jsx'));
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState(() => {
@@ -59,12 +62,11 @@ const App = () => {
   // Scroll progress tracking
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = scrollTop / docHeight;
-      setScrollProgress(progress);
-      
-      // Set scrolling state
+      const totalScroll = document.documentElement.scrollTop;
+      const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scroll = `${totalScroll / windowHeight}`;
+      setScrollProgress(Number(scroll));
+
       setIsScrolling(true);
       clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = setTimeout(() => {
@@ -72,49 +74,31 @@ const App = () => {
       }, 150);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearTimeout(scrollTimeoutRef.current);
-    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Update URL when page changes
+  // Simple Router Logic
   useEffect(() => {
-    const url = currentPage === 'home' ? '/' : `/${currentPage}`;
-    window.history.pushState({}, '', url);
-  }, [currentPage]);
-
-  // Handle browser back/forward buttons
-  useEffect(() => {
-    const handlePopState = (event) => {
+    const handlePopState = () => {
       const path = window.location.pathname.slice(1);
-      const page = path || 'home';
-      setCurrentPage(page);
+      setCurrentPage(path || 'home');
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Enhanced navigation with smooth scroll
-  const handleNavigation = (pageId, options = {}) => {
-    const { smooth = true, scrollToTop = true } = options;
-    
-    // Immediately scroll to top and set page
-    if (scrollToTop) {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }
-    
-    setCurrentPage(pageId);
+  const handleNavigation = (page) => {
     setIsLoading(true);
+    // Smooth scroll to top before transition
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Brief loading state
     setTimeout(() => {
+      setCurrentPage(page);
+      window.history.pushState({}, '', `/${page === 'home' ? '' : page}`);
       setIsLoading(false);
-    }, 100);
+    }, 500); // Wait for scroll/fade out
   };
 
   // Scroll to section within a page
@@ -143,6 +127,15 @@ const App = () => {
       return <Loading />;
     }
 
+    // Suspense wrapper for lazy loading
+    return (
+      <Suspense fallback={<Loading />}>
+        {renderContent()}
+      </Suspense>
+    );
+  };
+
+  const renderContent = () => {
     switch (currentPage) {
       case 'home':
         return <Homepage onNavigate={handleNavigation} scrollToSection={scrollToSection} openModal={handleOpenModal} />;
@@ -260,119 +253,45 @@ const App = () => {
       {scrollProgress > 0.2 && (
         <button
           onClick={scrollToTop}
-          className={`fixed bottom-6 right-6 z-40 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
-            isScrolling ? 'opacity-100 translate-y-0' : 'opacity-70 hover:opacity-100'
-          }`}
+          className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-40 animate-bounce cursor-pointer flex items-center justify-center"
           aria-label="Scroll to top"
+          style={{ border: 'none' }}
         >
-          <svg 
-            className="w-6 h-6" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M5 10l7-7m0 0l7 7m-7-7v18" 
-            />
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
           </svg>
         </button>
       )}
 
-      {/* Smooth scroll indicator for long pages */}
-      {isScrolling && (
-        <div className="fixed top-20 right-6 z-30 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm transition-opacity duration-300">
-          {Math.round(scrollProgress * 100)}%
-        </div>
-      )}
-      {/* Modal */}
+      {/* Global Modal */}
       {modalData.isOpen && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={handleCloseModal}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-            <h3 className="modal-title">{modalData.title}</h3>
-            <p className="modal-text">{modalData.content}</p>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in" onClick={handleCloseModal}>
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl transform transition-all scale-100" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4 border-b pb-2">
+              <h2 className="text-xl font-bold text-gray-800">{modalData.title}</h2>
+              <button 
+                onClick={handleCloseModal}
+                className="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-100"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="text-gray-600 leading-relaxed whitespace-pre-line">
+              {modalData.content}
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={handleCloseModal}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
-
-      <style>{`
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 1rem;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            max-width: 600px;
-            width: 100%;
-            position: relative;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            animation: slideUp 0.3s ease;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #64748b;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-close:hover {
-            background-color: #f1f5f9;
-            color: #ef4444;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0284c7;
-            margin-bottom: 1rem;
-            font-family: serif;
-            padding-right: 2rem;
-        }
-
-        .modal-text {
-            color: #334155;
-            line-height: 1.8;
-            font-size: 1.1rem;
-        }
-        
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

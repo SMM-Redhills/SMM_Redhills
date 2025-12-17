@@ -23,7 +23,10 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['lucide-react'] // framer-motion appeared unused but good to keep if added later
+        }
       }
     }
   }
