@@ -35,7 +35,7 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
   return (
     <>
       {/* Top Info Bar */}
-      <div style={{backgroundColor: '#0ea5e9', color: 'white', padding: '0.75rem 1rem', fontSize: '0.875rem'}}>
+      {/* <div style={{backgroundColor: '#0ea5e9', color: 'white', padding: '0.75rem 1rem', fontSize: '0.875rem'}}>
         <div style={{maxWidth: '80rem', margin: '0 auto', display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
@@ -52,7 +52,7 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Header */}
       <header style={{position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#ffffff', boxShadow: isScrolled ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none', transition: 'all 0.3s ease'}}>

@@ -239,7 +239,7 @@ const Homepage = ({ openModal }) => {
                 <Youtube className="quick-link-icon" />
                 <h3 className="quick-link-title">YouTube Channel</h3>
                 <p className="quick-link-description">Watch our services and spiritual content online</p>
-                <button className="quick-link-button" onClick={() => window.open('https://www.youtube.com', '_blank')}>View Channel →</button>
+                <button className="quick-link-button" onClick={() => window.open('https://m.youtube.com/@st.marymagdaleneredhills4475', '_blank')}>View Channel →</button>
               </div>
               <div className="hover-lift quick-link-card">
                 <Camera className="quick-link-icon" />
