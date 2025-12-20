@@ -2,14 +2,15 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer
+from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide
 from .serializers import (
     ContactMessageSerializer, PrayerRequestSerializer, NewsSerializer, 
-    EventSerializer, GallerySerializer, ScheduleSerializer, PrayerSerializer
+    EventSerializer, GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer
 )
 
 def is_staff(user):
@@ -30,6 +31,7 @@ def admin_stats(request):
         'gallery_items': Gallery.objects.count(),
         'schedules': Schedule.objects.count(),
         'prayers': Prayer.objects.count(),
+        'banner_slides': BannerSlide.objects.count(),
     }
     return Response(stats)
 
@@ -48,16 +50,34 @@ class AdminNewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
     permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 class AdminEventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 class AdminGalleryViewSet(viewsets.ModelViewSet):
     queryset = Gallery.objects.all()
     serializer_class = GallerySerializer
     permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 class AdminScheduleViewSet(viewsets.ModelViewSet):
     queryset = Schedule.objects.all()
@@ -68,6 +88,17 @@ class AdminPrayerViewSet(viewsets.ModelViewSet):
     queryset = Prayer.objects.all()
     serializer_class = PrayerSerializer
     permission_classes = [IsAdminUser]
+
+class AdminBannerSlideViewSet(viewsets.ModelViewSet):
+    queryset = BannerSlide.objects.all()
+    serializer_class = BannerSlideSerializer
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 @api_view(['PATCH'])
 @permission_classes([IsAdminUser])

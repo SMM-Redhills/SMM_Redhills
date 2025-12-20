@@ -1,38 +1,44 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { churchAPI } from '../../services/api';
 import { MapPin } from 'lucide-react';
 
 const BannerSlider = () => {
   const DEFAULT_SLIDES = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1200&h=400&fit=crop',
-      title: 'Welcome to Our Church',
-      subtitle: 'Join us for worship and community'
+      image: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=1920&h=800&fit=crop',
+      title: 'Welcome to Saint Mary Magdalene Church',
+      subtitle: 'A place of faith, hope, and love in Redhills'
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1200&h=400&fit=crop',
-      title: 'Upcoming Events',
-      subtitle: 'Check our latest events and activities'
+      image: 'https://images.unsplash.com/photo-1519491050282-cf00c82424cf?w=1920&h=800&fit=crop',
+      title: 'Holy Mass & Worship',
+      subtitle: 'Join us for daily Mass and Sunday celebrations'
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=1200&h=400&fit=crop',
-      title: 'Prayer Services',
-      subtitle: 'Find spiritual guidance and support'
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&h=800&fit=crop',
+      title: 'Prayer & Devotion',
+      subtitle: 'Find peace and spiritual guidance in our community'
     },
     {
       id: 4,
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop',
-      title: 'Community Gallery',
-      subtitle: 'View our recent photos and memories'
+      image: 'https://images.unsplash.com/photo-1445445290350-18a3b86e0b5a?w=1920&h=800&fit=crop',
+      title: 'Community & Fellowship',
+      subtitle: 'Be part of our vibrant parish family'
     },
     {
       id: 5,
-      image: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=1200&h=400&fit=crop',
-      title: 'Mass & Confession',
-      subtitle: 'Partake in the Holy Eucharist and Reconciliation'
+      image: 'https://images.unsplash.com/photo-1508185159346-bb1c7fc1d2c7?w=1920&h=800&fit=crop',
+      title: 'Sacraments & Blessings',
+      subtitle: 'Experience the grace of God through our sacraments'
+    },
+    {
+      id: 6,
+      image: 'https://images.unsplash.com/photo-1543465077-db45d34b88a5?w=1920&h=800&fit=crop',
+      title: 'Youth & Family Ministry',
+      subtitle: 'Growing together in faith across generations'
     }
   ];
 
@@ -45,11 +51,11 @@ const BannerSlider = () => {
   useEffect(() => {
     const fetchSlides = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/banner-slides/');
-        if (response.data && response.data.length > 0) {
-          setSlides(response.data);
+        const response = await churchAPI.getBannerSlides();
+        const data = response.data.results || response.data;
+        if (data && data.length > 0) {
+          setSlides(data);
         } else {
-            // Fallback to default slides
             setSlides(DEFAULT_SLIDES); 
         }
       } catch (error) {
@@ -127,12 +133,14 @@ const BannerSlider = () => {
       {/* Slides */}
       <div style={{position: 'relative', width: '100%', height: '100%', minHeight: '400px'}}>
         {slides.map((slide, index) => {
-           // Handle image URL: if it starts with http, use it, else prepend backend URL
-           // Assuming common setup, but safe to check. 
-           // Usually django returns full URL if configured right, or relative path.
-           // Since we are checking, let's assume if it doesn't start with http, we might need to add domain.
-           // However, let's check what backend returns. Usually REST Framework returns absolute URL if request is passed context.
-           const imageUrl = slide.image;
+           const getFullImageUrl = (slide) => {
+             const url = slide.media_url || slide.image_url || slide.image;
+             if (!url) return '';
+             if (typeof url !== 'string') return '';
+             if (url.startsWith('http')) return url;
+             return `http://localhost:8000${url}`;
+           };
+           const imageUrl = getFullImageUrl(slide);
            
            return (
           <div

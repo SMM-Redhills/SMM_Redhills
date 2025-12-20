@@ -1,13 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Calendar, MapPin, Clock, Users } from 'lucide-react';
-import { assignedColors } from '../../utils/sectionColors';
-
-const sampleEvents = [
-  { id: 1, title: 'Saint Mary Magdalene Feast Day', date: '22/07/2025', time: '07:00 AM', location: 'Main church', description: 'Annual celebration with special masses and procession', type: 'Celebration' },
-  { id: 2, title: 'Easter Sunday Mass', date: '20/04/2025', time: '07:00 AM', location: 'Main church', description: 'Celebrate the resurrection of our Lord Jesus Christ', type: 'Mass' },
-  { id: 3, title: 'Community Outreach Program', date: '15/09/2025', time: '10:00 AM', location: 'Community Center', description: 'Serving the local community with food and support', type: 'Service' },
-  { id: 4, title: 'Youth Prayer Meeting', date: '10/08/2025', time: '06:00 PM', location: 'Parish Hall', description: 'Monthly gathering for young adults in faith', type: 'Prayer' }
-];
+import { churchAPI } from '../../services/api';
+import { adminAPI } from '../../services/adminApi';
 
 const Events = ({ onNavigate, scrollToSection }) => {
   const [events, setEvents] = useState([]);
@@ -27,11 +21,18 @@ const Events = ({ onNavigate, scrollToSection }) => {
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     setIsAdmin(!!adminToken);
-  }, [events]);
-
-  useEffect(() => {
-    setEvents(sampleEvents);
+    fetchEvents();
   }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await churchAPI.getEvents();
+      const data = response.data.results || response.data;
+      setEvents(data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
 
   // Initialize scroll animations
   useEffect(() => {
@@ -318,6 +319,19 @@ const Events = ({ onNavigate, scrollToSection }) => {
               <span style={{color: '#0ea5e9', fontSize: '0.875rem', fontWeight: '500', backgroundColor: '#e0f2fe', padding: '0.25rem 0.75rem', borderRadius: '1rem'}}>{selectedEvent.type}</span>
             </div>
             <h2 style={{fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#0284c7', fontFamily: 'serif', textAlign: 'center'}}>{selectedEvent.title}</h2>
+            {(selectedEvent.media_url || selectedEvent.image_url || selectedEvent.image) && (
+              <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+                <img 
+                  src={selectedEvent.media_url || selectedEvent.image_url || selectedEvent.image} 
+                  alt={selectedEvent.title} 
+                  style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', borderRadius: '0.5rem' }} 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/600x400?text=Event+Image+Not+Found';
+                  }}
+                />
+              </div>
+            )}
             <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem', textAlign: 'center'}}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}>
                 <span style={{color: '#64748b', fontSize: '0.875rem'}}>📅 {selectedEvent.date} at {selectedEvent.time}</span>

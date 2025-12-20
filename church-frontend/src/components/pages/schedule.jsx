@@ -1,23 +1,37 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Clock, Heart, Users, Book, Cross, Calendar, Bell, Star } from 'lucide-react';
+import { churchAPI } from '../../services/api';
+import { adminAPI } from '../../services/adminApi';
 
 const Schedule = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [scheduleItems, setScheduleItems] = useState([]);
   const observerRef = useRef(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
-    service_name: '',
+    title: '',
     time: '',
     day: '',
     description: '',
+    location: '',
     type: 'Mass'
   });
-  const [scheduleItems, setScheduleItems] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     setIsAdmin(!!adminToken);
+    fetchSchedules();
   }, []);
+
+  const fetchSchedules = async () => {
+    try {
+      const response = await churchAPI.getSchedule();
+      const data = response.data.results || response.data;
+      setScheduleItems(data);
+    } catch (error) {
+      console.error('Error fetching schedules:', error);
+    }
+  };
 
   // Initialize scroll animations
   useEffect(() => {
@@ -65,25 +79,14 @@ const Schedule = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.service_name && formData.time && formData.day) {
+    if (formData.title && formData.time && formData.day) {
       try {
-        const response = await fetch('http://localhost:8000/api/schedule/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
-          },
-          body: JSON.stringify(formData)
-        });
+        const response = await adminAPI.createItem('schedule', formData);
         
-        if (response.ok) {
-          const newItem = {
-            id: Date.now(),
-            ...formData
-          };
-          setScheduleItems([newItem, ...scheduleItems]);
+        if (response.status === 201) {
+          fetchSchedules(); // Refresh from backend
           setShowAddForm(false);
-          setFormData({ service_name: '', time: '', day: '', description: '', type: 'Mass' });
+          setFormData({ title: '', time: '', day: '', description: '', location: '', type: 'Mass' });
           alert('Schedule item added successfully!');
         } else {
           alert('Error adding schedule item. Please try again.');
@@ -318,9 +321,9 @@ const Schedule = () => {
               <div className="form-group">
                 <input
                   type="text"
-                  name="service_name"
+                  name="title"
                   placeholder="Service Name"
-                  value={formData.service_name}
+                  value={formData.title}
                   onChange={handleInputChange}
                   required
                   className="form-input"

@@ -45,6 +45,7 @@ class News(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     image = models.ImageField(upload_to='news/', blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True)
     date = models.DateField()
     category = models.CharField(max_length=50, default='General')
     is_published = models.BooleanField(default=True)
@@ -62,6 +63,7 @@ class Event(models.Model):
     date = models.DateTimeField()
     location = models.CharField(max_length=200, default="Main Church")
     image = models.ImageField(upload_to='events/', blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -80,7 +82,8 @@ class Gallery(models.Model):
     description = models.TextField(blank=True)
     media_type = models.CharField(max_length=10, choices=MEDIA_TYPES, default='image')
     image = models.ImageField(upload_to='gallery/', blank=True, null=True)
-    video_url = models.URLField(blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True)
+    video_url = models.URLField(max_length=500, blank=True, null=True)
     category = models.CharField(max_length=50, default='General')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -127,9 +130,10 @@ class Prayer(models.Model):
         return self.title
 class BannerSlide(models.Model):
     title = models.CharField(max_length=200)
-    subtitle = models.CharField(max_length=300)
+    subtitle = models.CharField(max_length=300, blank=True)
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='banners/')
+    image = models.ImageField(upload_to='banners/', blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True)
     order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

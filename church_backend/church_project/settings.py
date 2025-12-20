@@ -79,10 +79,23 @@ WSGI_APPLICATION = "church_project.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# Commented out SQLite
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+# PostgreSQL Configuration
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'church_db',
+        'USER': 'postgres',
+        'PASSWORD': '2452',  # the one you set using ALTER ROLE
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

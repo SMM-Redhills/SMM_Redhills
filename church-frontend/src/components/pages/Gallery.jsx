@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Camera, Video, Heart, Users } from 'lucide-react';
-import { assignedColors } from '../../utils/sectionColors';
-
-const sampleGalleryItems = [
-  { id: 1, title: 'church Front View', image: '/assets/images/smm.jpg', media_type: 'image', category: 'Architecture' },
-  { id: 2, title: 'Saint Mary Magdalene Feast', image: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=600', media_type: 'image', category: 'Celebrations' },
-  { id: 3, title: 'Sunday Mass Service', image: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=600', media_type: 'image', category: 'Worship' },
-  { id: 4, title: 'Community Gathering', image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600', media_type: 'image', category: 'Community' },
-  { id: 5, title: 'Prayer Meeting', image: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=600', media_type: 'image', category: 'Prayer' },
-  { id: 6, title: 'Youth Ministry', image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600', media_type: 'image', category: 'Youth' }
-];
+import { churchAPI } from '../../services/api';
+import { adminAPI } from '../../services/adminApi';
 
 const Gallery = ({ onNavigate, scrollToSection }) => {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -22,13 +14,24 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
     category: 'Community',
     media_type: 'image'
   });
-  const [galleryItems, setGalleryItems] = useState(sampleGalleryItems);
+  const [galleryItems, setGalleryItems] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     setIsAdmin(!!adminToken);
+    fetchGallery();
   }, []);
+
+  const fetchGallery = async () => {
+    try {
+      const response = await churchAPI.getGallery();
+      const data = response.data.results || response.data;
+      setGalleryItems(data);
+    } catch (error) {
+      console.error('Error fetching gallery:', error);
+    }
+  };
 
   const categories = ['All', 'Architecture', 'Celebrations', 'Worship', 'Community', 'Prayer', 'Youth'];
 
@@ -81,26 +84,15 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
     e.preventDefault();
     if (formData.title && (formData.image || formData.video_url)) {
       try {
-        const response = await fetch('http://localhost:8000/api/gallery/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
-          },
-          body: JSON.stringify({
-            ...formData,
-            image_url: formData.media_type === 'image' ? formData.image : null,
-            video_url: formData.media_type === 'video' ? formData.video_url : null
-          })
-        });
+        const payload = {
+          ...formData,
+          image: formData.media_type === 'image' ? formData.image : null,
+          video_url: formData.media_type === 'video' ? formData.video_url : null
+        };
+        const response = await adminAPI.createItem('gallery', payload);
         
-        if (response.ok) {
-          const newItem = {
-            id: Date.now(),
-            ...formData,
-            image: formData.media_type === 'image' ? formData.image : 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600'
-          };
-          setGalleryItems([newItem, ...galleryItems]);
+        if (response.status === 201) {
+          fetchGallery(); // Refresh from backend
           setShowAddForm(false);
           setFormData({ title: '', image: '', video_url: '', category: 'Community', media_type: 'image' });
           alert('Gallery item added successfully!');
@@ -560,16 +552,29 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
                   className="gallery-item scroll-scale-in hover-lift"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className="gallery-item-image-container">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="gallery-item-image"
-                    />
+                  <div className="gallery-item-image-container" style={{ aspectRatio: '16/9' }}>
+                    {item.media_type === 'video' ? (
+                      <div className="gallery-item-image" style={{ background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Video style={{ width: '3rem', height: '3rem', color: 'white' }} />
+                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', fontSize: '0.75rem', color: 'white' }}>Video Link</div>
+                      </div>
+                    ) : (
+                      <img
+                        src={item.media_url || item.image_url || item.image}
+                        alt={item.title}
+                        className="gallery-item-image"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                        }}
+                      />
+                    )}
                     <div className="gallery-item-overlay">
                       <div>
                         {item.media_type === 'video' ? (
-                          <Video style={{ width: '3rem', height: '3rem', color: 'white' }} />
+                          <a href={item.media_url} target="_blank" rel="noopener noreferrer">
+                            <Video style={{ width: '3rem', height: '3rem', color: 'white' }} />
+                          </a>
                         ) : (
                           <Camera style={{ width: '3rem', height: '3rem', color: 'white' }} />
                         )}

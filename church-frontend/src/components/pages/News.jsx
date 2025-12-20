@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Clock, Users, Cross } from 'lucide-react';
-import { assignedColors } from '../../utils/sectionColors';
-
-const sampleNews = [
-  { id: 1, title: "Saint Mary Magdalene Feast Day Celebration", date: "22/07/2025", content: "Join us for the annual feast day of Saint Mary Magdalene with special masses, procession, and community celebration.", category: "Celebration" },
-  { id: 2, title: "church Renovation Completed", date: "10/06/2025", content: "Major renovation and restoration works on stained glass windows and altar have been completed, enhancing our worship space.", category: "Updates" },
-  { id: 3, title: "New Prayer Group Formation", date: "15/05/2025", content: "We are forming a new prayer group dedicated to Saint Mary Magdalene. All parishioners are welcome to join.", category: "Community" }
-];
+import { churchAPI } from '../../services/api';
 
 const News = ({ onNavigate, scrollToSection }) => {
   const [news, setNews] = useState([]);
@@ -24,17 +18,18 @@ const News = ({ onNavigate, scrollToSection }) => {
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     setIsAdmin(!!adminToken);
+    fetchNews();
   }, []);
 
-  useEffect(() => {
-    // Sort news by creation date (newest first)
-    const sortedNews = [...sampleNews].sort((a, b) => {
-      const dateA = new Date(a.created_at || a.date);
-      const dateB = new Date(b.created_at || b.date);
-      return dateB - dateA;
-    });
-    setNews(sortedNews);
-  }, []);
+  const fetchNews = async () => {
+    try {
+      const response = await churchAPI.getNews();
+      const data = response.data.results || response.data;
+      setNews(data);
+    } catch (error) {
+      console.error('Error fetching news:', error);
+    }
+  };
 
   // Initialize scroll animations
   useEffect(() => {
@@ -565,8 +560,16 @@ const News = ({ onNavigate, scrollToSection }) => {
               </div>
               <div className="detail-date">{selectedNews.date}</div>
               <h2 className="detail-title">{selectedNews.title}</h2>
-              {selectedNews.image_url && (
-                <img src={selectedNews.image_url} alt={selectedNews.title} className="detail-image" />
+              {(selectedNews.media_url || selectedNews.image_url || selectedNews.image) && (
+                <img 
+                  src={selectedNews.media_url || selectedNews.image_url || selectedNews.image} 
+                  alt={selectedNews.title} 
+                  className="detail-image" 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/600x400?text=Image+Not+Found';
+                  }}
+                />
               )}
               <div className="detail-content">
                 {selectedNews.content}

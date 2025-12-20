@@ -196,6 +196,8 @@ Amen.`
 ];
 
 const Prayer = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [prayersList, setPrayersList] = useState([]);
   const observerRef = useRef(null);
   const [activeCategory, setActiveCategory] = useState('All');
   const [language, setLanguage] = useState('english');
@@ -218,17 +220,29 @@ const Prayer = () => {
     category: 'Traditional',
     language: 'english'
   });
-  const [prayersList, setPrayersList] = useState(prayers);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     setIsAdmin(!!adminToken);
+    fetchPrayers();
   }, []);
 
-  // Initialize scroll animations
+  const fetchPrayers = async () => {
+    try {
+      const response = await churchAPI.getPrayers();
+      const data = response.data.results || response.data;
+      if (data.length > 0) {
+        setPrayersList(data);
+      } else {
+        setPrayersList(prayers); // Initial fallback
+      }
+    } catch (error) {
+      console.error('Error fetching prayers:', error);
+      setPrayersList(prayers); // Initial fallback
+    }
+  };
+
   useEffect(() => {
-    // Create intersection observer for scroll animations
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -243,7 +257,6 @@ const Prayer = () => {
       }
     );
 
-    // Observe all elements with scroll animation classes
     const animatedElements = document.querySelectorAll(
       '.scroll-fade-in, .scroll-slide-up, .scroll-slide-left, .scroll-slide-right, .scroll-scale-in, .scroll-stagger-children'
     );
@@ -252,19 +265,18 @@ const Prayer = () => {
       observerRef.current.observe(el);
     });
 
-    // Cleanup function
     return () => {
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
     };
-  }, []);
-  
+  }, [prayersList]);
+
   const categories = ['All', 'Traditional', 'Saint Devotion', 'Daily Prayers', 'Special Intentions'];
   
   const filteredPrayers = activeCategory === 'All' 
-    ? prayers 
-    : prayers.filter(prayer => prayer.category === activeCategory);
+    ? prayersList.filter(p => p.language === language)
+    : prayersList.filter(prayer => prayer.category === activeCategory && prayer.language === language);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

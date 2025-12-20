@@ -11,7 +11,8 @@ router.register(r'news', admin_views.AdminNewsViewSet)
 router.register(r'events', admin_views.AdminEventViewSet)
 router.register(r'gallery', admin_views.AdminGalleryViewSet)
 router.register(r'schedule', admin_views.AdminScheduleViewSet)
-router.register(r'prayers', admin_views.AdminPrayerViewSet)  # This was missing!
+router.register(r'prayers', admin_views.AdminPrayerViewSet)
+router.register(r'banner-slides', admin_views.AdminBannerSlideViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

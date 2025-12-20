@@ -13,7 +13,7 @@ const adminApi = axios.create({
 adminApi.interceptors.request.use((config) => {
   const token = localStorage.getItem('adminToken');
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Token ${token}`;
   }
   return config;
 });
@@ -63,6 +63,16 @@ export const adminAPI = {
   createPrayer: (data) => adminApi.post('/admin/prayers/', data),
   updatePrayer: (id, data) => adminApi.put(`/admin/prayers/${id}/`, data),
   deletePrayer: (id) => adminApi.delete(`/admin/prayers/${id}/`),
+
+  // Generic methods
+  listItems: (endpoint) => adminApi.get(`/admin/${endpoint}/`),
+  createItem: (endpoint, data) => {
+    const isFormData = data instanceof FormData;
+    return adminApi.post(`/admin/${endpoint}/`, data, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }
+    });
+  },
+  deleteItem: (endpoint, id) => adminApi.delete(`/admin/${endpoint}/${id}/`),
 };
 
 export default adminApi;

@@ -21,6 +21,7 @@ export const churchAPI = {
   getGallery: () => api.get('/gallery/'),
   getSchedule: () => api.get('/schedule/'),
   getPrayers: () => api.get('/prayers/'),
+  getBannerSlides: () => api.get('/banner-slides/'),
 };
 
 export default api;

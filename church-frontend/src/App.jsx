@@ -221,22 +221,30 @@ const App = () => {
     }
   };
 
+  // Check if current page is admin
+  const isAdminPage = currentPage === 'admin' || currentPage === 'react-admin';
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Scroll Progress Bar */}
-      <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
-        <div 
-          className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ease-out"
-          style={{ width: `${scrollProgress * 100}%` }}
-        />
-      </div>
+      {/* Scroll Progress Bar - hide on admin */}
+      {!isAdminPage && (
+        <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
+          <div 
+            className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ease-out"
+            style={{ width: `${scrollProgress * 100}%` }}
+          />
+        </div>
+      )}
 
-      <Header 
-        currentPage={currentPage} 
-        onNavigate={handleNavigation}
-        scrollToSection={scrollToSection}
-        isScrolling={isScrolling}
-      />
+      {/* Header - hide on admin */}
+      {!isAdminPage && (
+        <Header 
+          currentPage={currentPage} 
+          onNavigate={handleNavigation}
+          scrollToSection={scrollToSection}
+          isScrolling={isScrolling}
+        />
+      )}
       
       <main 
         ref={mainContentRef}
@@ -247,10 +255,13 @@ const App = () => {
         {renderPage()}
       </main>
       
-      <Footer onNavigate={handleNavigation} scrollToSection={scrollToSection} />
+      {/* Footer - hide on admin */}
+      {!isAdminPage && (
+        <Footer onNavigate={handleNavigation} scrollToSection={scrollToSection} />
+      )}
 
-      {/* Scroll to Top Button */}
-      {scrollProgress > 0.2 && (
+      {/* Scroll to Top Button - hide on admin */}
+      {!isAdminPage && scrollProgress > 0.2 && (
         <button
           onClick={scrollToTop}
           className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-40 animate-bounce cursor-pointer flex items-center justify-center"

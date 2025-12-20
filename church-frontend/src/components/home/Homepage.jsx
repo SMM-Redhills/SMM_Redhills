@@ -1,9 +1,32 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Calendar, Clock, Users, Book, Heart, Youtube, Camera, MapPin } from 'lucide-react';
 import BannerSlider from './BannerSlider';
+import { churchAPI } from '../../services/api';
 
 const Homepage = ({ openModal }) => {
+  const [news, setNews] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [schedules, setSchedules] = useState([]);
   const observerRef = useRef(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [newsRes, eventsRes, scheduleRes] = await Promise.all([
+        churchAPI.getNews(),
+        churchAPI.getEvents(),
+        churchAPI.getSchedule()
+      ]);
+      setNews((newsRes.data.results || newsRes.data).slice(0, 3));
+      setEvents((eventsRes.data.results || eventsRes.data).slice(0, 4));
+      setSchedules((scheduleRes.data.results || scheduleRes.data).slice(0, 4));
+    } catch (error) {
+      console.error('Error fetching homepage data:', error);
+    }
+  };
 
   const tamilHistory = "இந்த திருச்சபை மாதவரத்திலிருந்து பிரிக்கப்பட்டு 1978 இல் கட்டப்பட்டது. இது பிரான்சிஸ்கன் மிஷனரிகளிடம் ஒப்படைக்கப்பட்டது. இந்த திருச்சபைக்கான நிலம் 1983 ஆம் ஆண்டு திருச்சபை ஜான் கொட்டாரம் அவர்களால் வாங்கப்பட்டது. புனித மேரி மகதலேனாவின் நினைவாக திருச்சபை தேவாலயம் 18 02 1985 அன்று பேராயர் மேதகு டாக்டர் ஆர் அருளப்பா அவர்களால் புனிதப்படுத்தப்பட்டது. இந்த தேவாலயத்தின் முதல் திருச்சபை பாதிரியார் அருட்தந்தை தாமஸ் முண்டக்கல் ஆவார்.";
 
@@ -17,8 +40,6 @@ const Homepage = ({ openModal }) => {
       );
     }
   };
-
-
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
@@ -48,7 +69,7 @@ const Homepage = ({ openModal }) => {
         observerRef.current.disconnect();
       }
     };
-  }, []);
+  }, [news, events, schedules]);
 
   const assignedColors = {
     church: '#f0f9ff',
@@ -190,34 +211,58 @@ const Homepage = ({ openModal }) => {
           >
             <h2 className="scroll-slide-up section-title">Our Schedule</h2>
             <div className="scroll-stagger-children schedule-grid">
-              <div className="hover-lift schedule-card">
-                <Clock className="schedule-icon" />
-                <h3 className="schedule-card-title">Visiting Hours</h3>
-                <p className="schedule-card-time">Daily: 6:00 AM - 8:00 PM</p>
-                <button className="schedule-button">More details...</button>
-              </div>
-              <div className="hover-lift schedule-card">
-                <Users className="schedule-icon" />
-                <h3 className="schedule-card-title">Mass Schedule</h3>
-                <div className="mass-times">
-                  <p>Sunday: 8:00 AM - 10:00 AM</p>
-                  <p>Evening: 6:00 PM - 7:30 PM</p>
-                  <p>Weekdays: 6:00 AM</p>
-                </div>
-                <button className="schedule-button">More details...</button>
-              </div>
-              <div className="hover-lift schedule-card">
-                <Heart className="schedule-icon" />
-                <h3 className="schedule-card-title">Special Devotions</h3>
-                <p className="schedule-card-time">Various times throughout the week</p>
-                <button className="schedule-button">More details...</button>
-              </div>
-              <div className="hover-lift schedule-card">
-                <Book className="schedule-icon" />
-                <h3 className="schedule-card-title">Eucharistic Adoration</h3>
-                <p className="schedule-card-time">Special hours for prayer and reflection</p>
-                <button className="schedule-button">More details...</button>
-              </div>
+              {schedules.length > 0 ? (
+                schedules.map((s, index) => (
+                  <div key={s.id} className="hover-lift schedule-card">
+                    <Clock className="schedule-icon" />
+                    <h3 className="schedule-card-title">{s.title}</h3>
+                    <p className="schedule-card-time">{s.day}: {s.time}</p>
+                    <p className="schedule-card-time" style={{fontSize: '0.8rem'}}>{s.location}</p>
+                    <button className="schedule-button">More details...</button>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="hover-lift schedule-card">
+                    <Clock className="schedule-icon" />
+                    <h3 className="schedule-card-title">Visiting Hours</h3>
+                    <p className="schedule-card-time">Daily: 6:00 AM - 8:00 PM</p>
+                    <button className="schedule-button">More details...</button>
+                  </div>
+                  <div className="hover-lift schedule-card">
+                    <Users className="schedule-icon" />
+                    <h3 className="schedule-card-title">Mass Schedule</h3>
+                    <div className="mass-times">
+                      <p>Sunday: 8:00 AM - 10:00 AM</p>
+                      <p>Evening: 6:00 PM - 7:30 PM</p>
+                      <p>Weekdays: 6:00 AM</p>
+                    </div>
+                    <button className="schedule-button">More details...</button>
+                  </div>
+                </>
+              )}
+            </div>
+          </section>
+
+          {/* Latest Updates Section */}
+          <section
+            id="latest-updates"
+            className="scroll-fade-in smooth-scroll-section latest-updates-section"
+            style={{ backgroundColor: '#fff' }}
+          >
+            <h2 className="scroll-slide-up section-title">Latest Updates</h2>
+            <div className="scroll-stagger-children news-grid-home">
+              {news.length > 0 ? (
+                news.map((n, index) => (
+                  <div key={n.id} className="hover-lift home-news-card">
+                    <div className="home-news-date">{new Date(n.date).toLocaleDateString()}</div>
+                    <h3 className="home-news-title">{n.title}</h3>
+                    <p className="home-news-text">{n.content.substring(0, 100)}...</p>
+                  </div>
+                ))
+              ) : (
+                <p style={{textAlign: 'center', color: '#64748b'}}>No recent updates at the moment.</p>
+              )}
             </div>
           </section>
 
@@ -515,6 +560,39 @@ const Homepage = ({ openModal }) => {
 
         .read-more-button:hover {
           color: #0284c7;
+        }
+
+        /* News Section Home */
+        .news-grid-home {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 2rem;
+        }
+
+        .home-news-card {
+          background: #f8fafc;
+          padding: 1.5rem;
+          border-radius: 1rem;
+          border: 1px solid #e2e8f0;
+        }
+
+        .home-news-date {
+          font-size: 0.8rem;
+          color: #0ea5e9;
+          margin-bottom: 0.5rem;
+        }
+
+        .home-news-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #1e293b;
+          margin-bottom: 0.75rem;
+        }
+
+        .home-news-text {
+          font-size: 0.9rem;
+          color: #64748b;
+          line-height: 1.5;
         }
 
         /* Schedule Section */
