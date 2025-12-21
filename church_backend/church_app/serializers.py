@@ -44,10 +44,15 @@ class GallerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Gallery
-        fields = ['id', 'title', 'description', 'media_type', 'image', 'image_url', 'video_url', 'category', 'created_at', 'media_url']
+        fields = ['id', 'title', 'description', 'media_type', 'image', 'image_url', 'video', 'video_url', 'category', 'created_at', 'media_url']
 
     def get_media_url(self, obj):
         if obj.media_type == 'video':
+            if obj.video:
+                request = self.context.get('request')
+                if request:
+                    return request.build_absolute_uri(obj.video.url)
+                return obj.video.url
             return obj.video_url
         if obj.image:
             request = self.context.get('request')

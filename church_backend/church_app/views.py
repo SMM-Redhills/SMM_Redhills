@@ -32,13 +32,28 @@ class NewsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = News.objects.filter(is_published=True)
     serializer_class = NewsSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 class EventViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 class GalleryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Gallery.objects.all()
     serializer_class = GallerySerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 class ScheduleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Schedule.objects.all()
@@ -51,6 +66,11 @@ class PrayerViewSet(viewsets.ReadOnlyModelViewSet):
 class BannerSlideViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = BannerSlide.objects.filter(is_active=True)
     serializer_class = BannerSlideSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 class ParishGroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ParishGroup.objects.all()

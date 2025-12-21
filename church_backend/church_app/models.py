@@ -83,6 +83,7 @@ class Gallery(models.Model):
     media_type = models.CharField(max_length=10, choices=MEDIA_TYPES, default='image')
     image = models.ImageField(upload_to='gallery/', blank=True, null=True)
     image_url = models.URLField(max_length=500, blank=True, null=True)
+    video = models.FileField(upload_to='gallery_videos/', blank=True, null=True)
     video_url = models.URLField(max_length=500, blank=True, null=True)
     category = models.CharField(max_length=50, default='General')
     created_at = models.DateTimeField(auto_now_add=True)

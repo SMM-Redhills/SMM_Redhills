@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Video, Heart, Users } from 'lucide-react';
+import { Camera, Video, Heart, Users, X } from 'lucide-react';
 import { churchAPI } from '../../services/api';
 import { adminAPI } from '../../services/adminApi';
 
@@ -16,6 +16,7 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
   });
   const [galleryItems, setGalleryItems] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState(null);
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
@@ -33,51 +34,28 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
     }
   };
 
-  const categories = ['All', 'Architecture', 'Celebrations', 'Worship', 'Community', 'Prayer', 'Youth'];
+  const categories = [
+    'All', 
+    'Architecture', 
+    'Celebrations', 
+    'Worship', 
+    'Community', 
+    'Prayer', 
+    'Youth',
+    'General',
+    ...new Set(galleryItems.map(item => item.category).filter(cat => ![
+      'All', 'Architecture', 'Celebrations', 'Worship', 'Community', 'Prayer', 'Youth', 'General'
+    ].includes(cat)))
+  ];
 
   const filteredItems = activeCategory === 'All'
     ? galleryItems
     : galleryItems.filter(item => item.category === activeCategory);
 
-  // Initialize scroll animations
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate');
-          }
-        });
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px',
-      }
-    );
-
-    const animatedElements = document.querySelectorAll(
-      '.scroll-fade-in, .scroll-slide-up, .scroll-slide-left, .scroll-slide-right, .scroll-scale-in, .scroll-stagger-children'
-    );
-
-    animatedElements.forEach((el) => {
-      observerRef.current.observe(el);
-    });
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (observerRef.current) {
-      const newElements = document.querySelectorAll('.gallery-item');
-      newElements.forEach((el) => {
-        el.classList.remove('animate');
-        observerRef.current.observe(el);
-      });
-    }
+    // Basic visibility ensure
+    const elements = document.querySelectorAll('.gallery-item');
+    elements.forEach(el => el.style.opacity = '1');
   }, [filteredItems]);
 
   const handleSubmit = async (e) => {
@@ -92,7 +70,7 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
         const response = await adminAPI.createItem('gallery', payload);
         
         if (response.status === 201) {
-          fetchGallery(); // Refresh from backend
+          fetchGallery();
           setShowAddForm(false);
           setFormData({ title: '', image: '', video_url: '', category: 'Community', media_type: 'image' });
           alert('Gallery item added successfully!');
@@ -114,485 +92,307 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
   return (
     <>
       <style jsx>{`
-          .gallery-section {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-          }
-          
-          /* Hero Section */
-          .gallery-hero {
-            position: relative;
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
-            color: white;
-            padding: 4rem 1rem;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-          }
-          
-          .hero-container {
-            position: relative;
-            max-width: 72rem;
-            margin: 0 auto;
-            text-align: center;
-          }
-          
-          .hero-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-          }
-          
-          .hero-title {
-            font-size: 3rem;
-            font-weight: 700;
-            line-height: 1.1;
-            text-align: center;
-            font-family: serif;
-            color: white;
-          }
-          
-          .hero-subtitle {
-            display: block;
-            font-size: 1.5rem;
-            font-weight: 300;
-            color: white;
-          }
-          
-          .hero-description {
-            font-size: 1.125rem;
-            margin-bottom: 2rem;
-            max-width: 48rem;
-            margin: 0 auto 2rem auto;
-            line-height: 1.7;
-            text-align: center;
-            color: white;
-          }
-          
-          /* Gallery Container */
-          .gallery-container {
-            width: 100%;
-            padding: 4rem 1rem;
-            background-color: rgb(254, 243, 199);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-          
-          .content-container {
-            max-width: 80rem;
-            width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-          
-          .category-filter {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-          }
-          
-          .category-button {
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            color: #0284c7;
-            border: 2px solid #0284c7;
-            cursor: pointer;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          }
-          
-          .category-button:hover {
-            background-color: #0284c7;
-            color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-          }
-          
-          .category-button.active {
-            background-color: #0284c7;
-            color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-          }
-          
-          .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-            width: 100%;
-          }
-          
-          .gallery-item {
-            background-color: #ffffff;
-            border-radius: 1rem;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-          }
-          
-          .gallery-item-image-container {
-            position: relative;
-            overflow: hidden;
-          }
-          
-          .gallery-item-image {
-            width: 100%;
-            height: 16rem;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-          }
-          
-          .gallery-item-overlay {
-            position: absolute;
-            inset: 0;
-            background-color: rgba(159, 150, 150, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-          }
-          
-          .gallery-item:hover .gallery-item-overlay {
-            opacity: 1;
-          }
-          
-          .gallery-item:hover .gallery-item-image {
-            transform: scale(1.05);
-          }
-          
-          .gallery-item-content {
-            padding: 1rem;
-          }
-          
-          .gallery-item-meta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-          }
-          
-          .gallery-item-category {
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #0ea5e9;
-            background-color: rgba(14, 165, 233, 0.1);
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-          }
-          
-          .gallery-item-type {
-            font-size: 0.75rem;
-            color: #020a15ff;
-            font-weight: 500;
-          }
-          
-          .gallery-item-title {
-            font-weight: 600;
-            margin: 0;
-            color: #1e293b;
-            font-size: 1rem;
-          }
-          
-          /* CTA Section */
-          .cta-section {
-            width: 100%;
-            padding: 4rem 1rem;
-            background-color: #f0fdf4;
-            display: flex;
-            justify-content: center;
-          }
-          
-          .cta-container {
-            max-width: 80rem;
-            width: 100%;
-            margin: 0 auto;
-          }
-          
-          .cta-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            width: 100%;
-          }
-          
-          .cta-card {
-            background-color: #ffffff;
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-          }
-          
-          .cta-icon {
-            width: 4rem;
-            height: 4rem;
-            color: #0ea5e9;
-            margin: 0 auto 1rem auto;
-            display: block;
-          }
-          
-          .cta-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            font-family: serif;
-            color: #1e293b;
-          }
-          
-          .cta-description {
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-            color: #475569;
-            font-size: 1rem;
-          }
-          
-          .cta-button {
-            background-color: #0ea5e9;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-          }
-          
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-          }
-          
-          .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-          }
-          
-          .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #1f2937;
-          }
-          
-          .form-group {
-            margin-bottom: 1rem;
-          }
-          
-          .form-input, .form-select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            color: #1f2937;
-          }
-          
-          .form-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-          }
-          
-          .btn-cancel {
-            padding: 0.5rem 1rem;
-            background-color: #6b7280;
-            color: white;
-            border: none;
-            border-radius: 0.375rem;
-            cursor: pointer;
-          }
-          
-          .btn-submit {
-            padding: 0.5rem 1rem;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 0.375rem;
-            cursor: pointer;
-          }
-          
-          /* Animation classes */
-          .scroll-fade-in {
-            opacity: 0;
-            transition: opacity 0.6s ease;
-          }
-          
-          .scroll-fade-in.animate {
-            opacity: 1;
-          }
-          
-          .scroll-slide-up {
-            transform: translateY(20px);
-            opacity: 0;
-            transition: transform 0.6s ease, opacity 0.6s ease;
-          }
-          
-          .scroll-slide-up.animate {
-            transform: translateY(0);
-            opacity: 1;
-          }
-          
-          .scroll-slide-left {
-            transform: translateX(-20px);
-            opacity: 0;
-            transition: transform 0.6s ease, opacity 0.6s ease;
-          }
-          
-          .scroll-slide-left.animate {
-            transform: translateX(0);
-            opacity: 1;
-          }
-          
-          .scroll-slide-right {
-            transform: translateX(20px);
-            opacity: 0;
-            transition: transform 0.6s ease, opacity 0.6s ease;
-          }
-          
-          .scroll-slide-right.animate {
-            transform: translateX(0);
-            opacity: 1;
-          }
-          
-          .scroll-scale-in {
-            transform: scale(0.9);
-            opacity: 0;
-            transition: transform 0.6s ease, opacity 0.6s ease;
-          }
-          
-          .scroll-scale-in.animate {
-            transform: scale(1);
-            opacity: 1;
-          }
-          
-          .scroll-stagger-children > * {
-            opacity: 0;
-            transition: all 0.6s ease;
-          }
-          
-          .scroll-stagger-children.animate > * {
-            opacity: 1;
-          }
-          
-          /* Hover effects */
-          .hover-lift {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-          }
-          
-          .hover-lift:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-          }
-          
-          .focus-smooth:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.5);
-          }
-        `}
-      </style>
-      
-      <section id="gallery-section" className="gallery-section">
-        {/* Hero Section */}
-        <div className="gallery-hero scroll-fade-in smooth-scroll-section">
+        .gallery-section {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          background-color: #ffffff;
+        }
+        
+        .gallery-hero {
+          position: relative;
+          background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+          color: white;
+          padding: 4rem 1rem;
+          text-align: center;
+        }
+        
+        .hero-container {
+          max-width: 72rem;
+          margin: 0 auto;
+        }
+        
+        .hero-title {
+          font-size: 3.5rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          font-family: serif;
+        }
+        
+        .hero-subtitle {
+          font-size: 1.5rem;
+          font-weight: 300;
+          opacity: 0.9;
+        }
+        
+        .gallery-container {
+          padding: 4rem 1rem;
+          background-color: #fef3c7;
+        }
+        
+        .content-container {
+          max-width: 80rem;
+          margin: 0 auto;
+        }
+        
+        .category-filter {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 0.75rem;
+          margin-bottom: 3rem;
+        }
+        
+        .category-button {
+          padding: 0.6rem 1.25rem;
+          border-radius: 9999px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          background: white;
+          color: #0284c7;
+          border: 2px solid #0284c7;
+          cursor: pointer;
+        }
+        
+        .category-button:hover, .category-button.active {
+          background: #0284c7;
+          color: white;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+        
+        .gallery-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 2rem;
+        }
+        
+        .gallery-item {
+          background: white;
+          border-radius: 1.25rem;
+          overflow: hidden;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+        }
+        
+        .gallery-item:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gallery-item-image-container {
+          position: relative;
+          aspect-ratio: 16/9;
+          overflow: hidden;
+          background: #f1f5f9;
+        }
+        
+        .gallery-item-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.6s ease;
+        }
+        
+        .gallery-item:hover .gallery-item-image {
+          transform: scale(1.1);
+        }
+        
+        .gallery-item-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transition: all 0.3s ease;
+          cursor: pointer;
+          backdrop-filter: blur(2px);
+        }
+        
+        .gallery-item:hover .gallery-item-overlay {
+          opacity: 1;
+        }
+        
+        .gallery-item-content {
+          padding: 1.25rem;
+        }
+        
+        .gallery-item-meta {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0.5rem;
+        }
+        
+        .gallery-item-category {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #0284c7;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        
+        .gallery-item-title {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #1e293b;
+          margin: 0;
+        }
+
+        /* --- Media Viewer Modal --- */
+        .viewer-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.95);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          padding: 2rem;
+          backdrop-filter: blur(8px);
+          animation: fadeIn 0.3s ease;
+        }
+
+        .viewer-container {
+          position: relative;
+          max-width: 90vw;
+          max-height: 90vh;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .viewer-close {
+          position: absolute;
+          top: -3.5rem;
+          right: 0;
+          background: #ef4444;
+          color: white;
+          border: none;
+          width: 3rem;
+          height: 3rem;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .viewer-close:hover {
+          transform: scale(1.1) rotate(90deg);
+          background: #dc2626;
+        }
+
+        .viewer-media {
+          max-width: 100%;
+          max-height: 80vh;
+          border-radius: 1rem;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+          object-fit: contain;
+          background: black;
+        }
+
+        .viewer-title {
+          color: white;
+          margin-top: 1.5rem;
+          font-size: 1.5rem;
+          font-weight: 600;
+          font-family: serif;
+          text-align: center;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+          from { transform: scale(0.9); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- Animations --- */
+        .scroll-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        .scroll-slide-up { animation: slideUp 0.8s ease-out forwards; }
+        .scroll-scale-in { animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        @keyframes slideUp {
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+          .hero-title { font-size: 2.5rem; }
+          .viewer-overlay { padding: 1rem; }
+          .viewer-close { top: 0.5rem; right: 0.5rem; width: 2.5rem; height: 2.5rem; }
+          .viewer-title { font-size: 1.1rem; margin-top: 1rem; }
+        }
+      `}</style>
+
+      <section className="gallery-section">
+        <div className="gallery-hero">
           <div className="hero-container">
-            <div className="hero-header scroll-slide-up">
-              <h1 className="hero-title">Our Gallery</h1>
-            </div>
-            <p className="hero-subtitle scroll-slide-up">
-              Capturing moments of faith, fellowship, and community
-            </p>
+            <h1 className="hero-title">Our Gallery</h1>
+            <p className="hero-subtitle">Capturing moments of faith, fellowship, and community</p>
           </div>
         </div>
 
-        {/* Gallery Container */}
         <div className="gallery-container">
           <div className="content-container">
-            {/* Category Filter */}
-            <div className="category-filter scroll-fade-in">
-              {categories.map((category, index) => (
+            <div className="category-filter">
+              {categories.map((cat) => (
                 <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`category-button hover-lift focus-smooth ${activeCategory === category ? 'active' : ''}`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`category-button ${activeCategory === cat ? 'active' : ''}`}
                 >
-                  {category}
+                  {cat}
                 </button>
               ))}
             </div>
 
-            {/* Gallery Grid */}
-            <div className="gallery-grid scroll-stagger-children">
-              {filteredItems.map((item, index) => (
+            <div className="gallery-grid">
+              {filteredItems.map((item, idx) => (
                 <div
                   key={item.id}
-                  className="gallery-item scroll-scale-in hover-lift"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="gallery-item"
+                  style={{ opacity: 1 }}
                 >
-                  <div className="gallery-item-image-container" style={{ aspectRatio: '16/9' }}>
+                  <div className="gallery-item-image-container">
                     {item.media_type === 'video' ? (
-                      <div className="gallery-item-image" style={{ background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Video style={{ width: '3rem', height: '3rem', color: 'white' }} />
-                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', fontSize: '0.75rem', color: 'white' }}>Video Link</div>
+                      <div className="gallery-item-image" style={{ background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Video size={48} color="white" />
                       </div>
                     ) : (
                       <img
-                        src={item.media_url || item.image_url || item.image}
+                        src={item.media_url || item.image_url || (item.image ? (item.image.startsWith('http') ? item.image : `http://${window.location.hostname}:8000${item.image.startsWith('/') ? '' : '/'}${item.image}`) : '')}
                         alt={item.title}
                         className="gallery-item-image"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                        style={{ opacity: 1 }}
+                        onError={(e) => { 
+                          console.log('Image load error:', e.target.src);
+                          if (!e.target.src.includes('placeholder')) {
+                            e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found'; 
+                          }
                         }}
                       />
                     )}
-                    <div className="gallery-item-overlay">
-                      <div>
-                        {item.media_type === 'video' ? (
-                          <a href={item.media_url} target="_blank" rel="noopener noreferrer">
-                            <Video style={{ width: '3rem', height: '3rem', color: 'white' }} />
-                          </a>
-                        ) : (
-                          <Camera style={{ width: '3rem', height: '3rem', color: 'white' }} />
-                        )}
-                      </div>
+                    <div className="gallery-item-overlay" onClick={() => setSelectedMedia(item)}>
+                      {item.media_type === 'video' ? <Video size={48} color="white" /> : <Camera size={48} color="white" />}
                     </div>
                   </div>
                   <div className="gallery-item-content">
                     <div className="gallery-item-meta">
-                      <span className="gallery-item-category">
-                        {item.category}
-                      </span>
-                      <span className="gallery-item-type">
-                        {item.media_type === 'video' ? 'Video' : 'Photo'}
-                      </span>
+                      <span className="gallery-item-category">{item.category}</span>
                     </div>
-                    <h3 className="gallery-item-title">
-                      {item.title}
-                    </h3>
+                    <h3 className="gallery-item-title">{item.title}</h3>
                   </div>
                 </div>
               ))}
@@ -600,126 +400,31 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="cta-section scroll-fade-in smooth-scroll-section">
-          <div className="cta-container">
-            <div className="cta-grid scroll-stagger-children">
-              <div className="cta-card hover-lift">
-                <Heart className="cta-icon scroll-scale-in" />
-                <h2 className="cta-title scroll-slide-up">
-                  Share Your Moments
-                </h2>
-                <p className="cta-description scroll-slide-up">
-                  Have photos from our events? We'd love to feature them in our gallery.
-                </p>
-                <button className="cta-button hover-lift focus-smooth">
-                  Submit Photos
-                </button>
-              </div>
-
-              <div className="cta-card hover-lift">
-                <Users className="cta-icon scroll-scale-in" />
-                <h2 className="cta-title scroll-slide-up">
-                  Join Our Events
-                </h2>
-                <p className="cta-description scroll-slide-up">
-                  Be part of these memorable moments. Check out our upcoming events.
-                </p>
-                <button className="cta-button hover-lift focus-smooth">
-                  View Events
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Add Gallery Item Modal */}
-        {showAddForm && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <h3 className="modal-title">Add Gallery Item</h3>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <input
-                    type="text"
-                    name="title"
-                    placeholder="Title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    required
-                    className="form-input"
-                  />
-                </div>
-                <div className="form-group">
-                  <select
-                    name="media_type"
-                    value={formData.media_type}
-                    onChange={handleInputChange}
-                    className="form-select"
-                  >
-                    <option value="image">Photo</option>
-                    <option value="video">Video</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className="form-select"
-                  >
-                    <option value="Community">Community</option>
-                    <option value="Architecture">Architecture</option>
-                    <option value="Celebrations">Celebrations</option>
-                    <option value="Worship">Worship</option>
-                    <option value="Prayer">Prayer</option>
-                    <option value="Youth">Youth</option>
-                  </select>
-                </div>
-                {formData.media_type === 'image' ? (
-                  <div className="form-group">
-                    <input
-                      type="url"
-                      name="image"
-                      placeholder="Image URL"
-                      value={formData.image}
-                      onChange={handleInputChange}
-                      required
-                      className="form-input"
-                    />
-                  </div>
-                ) : (
-                  <div className="form-group">
-                    <input
-                      type="url"
-                      name="video_url"
-                      placeholder="Video URL"
-                      value={formData.video_url}
-                      onChange={handleInputChange}
-                      required
-                      className="form-input"
-                    />
-                  </div>
-                )}
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowAddForm(false);
-                      setFormData({ title: '', image: '', video_url: '', category: 'Community', media_type: 'image' });
-                    }}
-                    className="btn-cancel"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn-submit"
-                  >
-                    Add Item
-                  </button>
-                </div>
-              </form>
+        {/* Media Viewer Modal */}
+        {selectedMedia && (
+          <div className="viewer-overlay" onClick={() => setSelectedMedia(null)}>
+            <div className="viewer-container" onClick={(e) => e.stopPropagation()}>
+              <button className="viewer-close" onClick={() => setSelectedMedia(null)}>
+                <X size={24} />
+              </button>
+              
+              {selectedMedia.media_type === 'video' ? (
+                <video 
+                  className="viewer-media"
+                  src={selectedMedia.media_url || selectedMedia.video_url || (selectedMedia.video ? (selectedMedia.video.startsWith('http') ? selectedMedia.video : `http://${window.location.hostname}:8000${selectedMedia.video.startsWith('/') ? '' : '/'}${selectedMedia.video}`) : '')}
+                  autoPlay
+                  controls
+                  playsInline
+                />
+              ) : (
+                <img 
+                  className="viewer-media"
+                  src={selectedMedia.image ? (selectedMedia.image.startsWith('http') ? selectedMedia.image : `http://localhost:8000${selectedMedia.image.startsWith('/') ? '' : '/'}${selectedMedia.image}`) : (selectedMedia.image_url || selectedMedia.media_url)}
+                  alt={selectedMedia.title}
+                />
+              )}
+              
+              <h3 className="viewer-title">{selectedMedia.title}</h3>
             </div>
           </div>
         )}

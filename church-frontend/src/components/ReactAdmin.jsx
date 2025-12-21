@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { adminAPI } from '../services/adminApi';
-import { PenSquare, Trash2, Plus, X } from 'lucide-react';
+import { PenSquare, Trash2, Plus, X, CheckCircle } from 'lucide-react';
 
 const ReactAdmin = () => {
   const [activeModel, setActiveModel] = useState('contactmessage');
@@ -10,6 +10,7 @@ const ReactAdmin = () => {
   const [formData, setFormData] = useState({});
   const [editingItem, setEditingItem] = useState(null);
   const [parishGroups, setParishGroups] = useState([]);
+  const [viewingMessage, setViewingMessage] = useState(null);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -85,8 +86,8 @@ const ReactAdmin = () => {
         Object.keys(formData).forEach(key => {
           const value = formData[key];
           if (value !== undefined && value !== null) {
-            // If field is file type (image/logo) but value is string (existing URL), DO NOT send it.
-            if ((key === 'image' || key === 'logo') && !(value instanceof File)) {
+            // If field is file type (image/logo/video) but value is string (existing URL), DO NOT send it.
+            if ((key === 'image' || key === 'logo' || key === 'video') && !(value instanceof File)) {
                 return;
             }
             // For date fields, ensure proper formatting if needed, but standard input value is usually fine.
@@ -130,6 +131,18 @@ const ReactAdmin = () => {
     setShowAddForm(true);
   };
 
+  const handleMarkRead = async (item) => {
+    setViewingMessage(item);
+    if (!item.is_read) {
+      try {
+        await adminAPI.markMessageRead(item.id);
+        fetchData();
+      } catch (error) {
+        console.error('Error marking message as read:', error);
+      }
+    }
+  };
+
   const renderAddForm = () => {
     const getFormFields = () => {
       switch(activeModel) {
@@ -160,7 +173,8 @@ const ReactAdmin = () => {
             { name: 'media_type', type: 'select', options: ['image', 'video'], required: true },
             { name: 'image', type: 'file', label: 'Upload Image', condition: (data) => data.media_type === 'image' },
             { name: 'image_url', type: 'text', placeholder: 'Image URL', condition: (data) => data.media_type === 'image' },
-            { name: 'video_url', type: 'text', placeholder: 'Video URL', condition: (data) => data.media_type === 'video', required: true },
+            { name: 'video', type: 'file', label: 'Upload Video', condition: (data) => data.media_type === 'video' },
+            { name: 'video_url', type: 'text', placeholder: 'Or Video URL', condition: (data) => data.media_type === 'video' },
             { name: 'category', type: 'select', options: ['Architecture', 'Celebrations', 'Worship', 'Community', 'Prayer', 'Youth', 'General'], required: true }
           ];
         case 'schedule':
@@ -230,7 +244,9 @@ const ReactAdmin = () => {
               // Disable logic
               const isDisabled = 
                 (isImageUrl && formData.image) || 
-                (isImageUpload && formData.image_url);
+                (isImageUpload && formData.image_url) ||
+                (field.name === 'video_url' && formData.video) ||
+                (field.name === 'video' && formData.video_url);
 
               return (
                 <div key={field.name} style={{marginBottom: '1.5rem'}}>
@@ -260,11 +276,19 @@ const ReactAdmin = () => {
                       {formData[field.name] && formData[field.name] instanceof File && (
                         <div style={{marginTop: '0.5rem'}}>
                           <p style={{fontSize: '0.75rem', color: '#6b7280'}}>Preview:</p>
-                          <img 
-                            src={URL.createObjectURL(formData[field.name])} 
-                            alt="Preview" 
-                            style={{maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem'}} 
-                          />
+                          {field.name === 'video' ? (
+                            <video 
+                              src={URL.createObjectURL(formData[field.name])} 
+                              controls
+                              style={{maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem'}} 
+                            />
+                          ) : (
+                            <img 
+                              src={URL.createObjectURL(formData[field.name])} 
+                              alt="Preview" 
+                              style={{maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem'}} 
+                            />
+                          )}
                         </div>
                       )}
                     </div>
@@ -345,7 +369,232 @@ const ReactAdmin = () => {
     );
   };
 
+  const renderMessageModal = () => {
+    if (!viewingMessage) return null;
+    
+    return (
+      <div className="modal-overlay" style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '1rem'
+      }} onClick={() => setViewingMessage(null)}>
+        <div className="modal-content" style={{
+          backgroundColor: 'white',
+          padding: '2rem',
+          borderRadius: '0.75rem',
+          width: '100%',
+          maxWidth: '600px',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          position: 'relative'
+        }} onClick={e => e.stopPropagation()}>
+          <button 
+            onClick={() => setViewingMessage(null)}
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#6b7280'
+            }}
+          >
+            <X size={24} />
+          </button>
+          
+          <h3 style={{fontSize: '1.5rem', fontWeight: '700', color: '#111827', marginBottom: '1.5rem', borderBottom: '2px solid #3b82f6', paddingBottom: '0.5rem'}}>
+            Message Details
+          </h3>
+          
+          <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+            <div style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem'}}>
+              <span style={{fontWeight: '600', color: '#4b5563'}}>From:</span>
+              <span style={{color: '#111827'}}>{viewingMessage.name}</span>
+            </div>
+            <div style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem'}}>
+              <span style={{fontWeight: '600', color: '#4b5563'}}>Email:</span>
+              <a href={`mailto:${viewingMessage.email}`} style={{color: '#2563eb', textDecoration: 'none'}}>{viewingMessage.email}</a>
+            </div>
+            <div style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem'}}>
+              <span style={{fontWeight: '600', color: '#4b5563'}}>Phone:</span>
+              <span style={{color: '#111827'}}>{viewingMessage.phone || 'N/A'}</span>
+            </div>
+            <div style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem'}}>
+              <span style={{fontWeight: '600', color: '#4b5563'}}>Subject:</span>
+              <span style={{fontWeight: '600', color: '#111827'}}>{viewingMessage.subject}</span>
+            </div>
+            <div style={{marginTop: '1rem', padding: '1.5rem', backgroundColor: '#f9fafb', borderRadius: '0.5rem', border: '1px solid #e5e7eb'}}>
+              <span style={{display: 'block', fontWeight: '600', color: '#4b5563', marginBottom: '0.5rem'}}>Message content:</span>
+              <p style={{color: '#374151', lineHeight: '1.6', whiteSpace: 'pre-wrap', margin: 0}}>
+                {viewingMessage.message}
+              </p>
+            </div>
+          </div>
+          
+          <div style={{marginTop: '2rem', display: 'flex', justifyContent: 'flex-end'}}>
+            <button 
+              onClick={() => setViewingMessage(null)}
+              style={{
+                padding: '0.6rem 1.5rem',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.375rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderGalleryGrid = () => {
+    if (loading) return <div>Loading...</div>;
+    if (!data.length) return <div>No data found</div>;
+
+    return (
+      <div style={{
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
+        gap: '1.5rem',
+        padding: '0.5rem'
+      }}>
+        {data.map(item => {
+          const imageUrl = item.image 
+            ? (typeof item.image === 'string' && item.image.startsWith('http') ? item.image : `http://localhost:8000${item.image}`)
+            : item.image_url;
+            
+          const isVideo = item.media_type === 'video';
+          const videoUrl = item.video 
+             ? (typeof item.video === 'string' && item.video.startsWith('http') ? item.video : `http://localhost:8000${item.video}`)
+             : item.video_url;
+
+          return (
+            <div key={item.id} style={{
+              backgroundColor: 'white',
+              borderRadius: '0.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              border: '1px solid #e5e7eb',
+              transition: 'transform 0.2s, box-shadow 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'none';
+              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+            }}
+            >
+              <div style={{height: '160px', overflow: 'hidden', backgroundColor: '#f3f4f6', position: 'relative'}}>
+                {isVideo ? (
+                   <video 
+                     src={videoUrl} 
+                     controls 
+                     style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                   />
+                ) : (
+                  <img 
+                    src={imageUrl || 'https://via.placeholder.com/300?text=No+Image'} 
+                    alt={item.title} 
+                    style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                    onError={(e) => { e.target.src='https://via.placeholder.com/300?text=Error'; }}
+                  />
+                )}
+                <div style={{
+                  position: 'absolute', 
+                  top: '0.5rem', 
+                  right: '0.5rem', 
+                  backgroundColor: 'rgba(0,0,0,0.6)', 
+                  color: 'white', 
+                  padding: '0.25rem 0.5rem', 
+                  borderRadius: '0.25rem',
+                  fontSize: '0.75rem',
+                  fontWeight: '600'
+                }}>
+                  {item.category}
+                </div>
+              </div>
+              
+              <div style={{padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem'}}>
+                  <h3 style={{fontWeight: '600', color: '#111827', fontSize: '1rem', margin: 0}}>{item.title}</h3>
+                </div>
+                
+                {item.description && (
+                  <p style={{
+                    color: '#6b7280', 
+                    fontSize: '0.875rem', 
+                    marginBottom: '1rem',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}>
+                    {item.description}
+                  </p>
+                )}
+                
+                <div style={{marginTop: 'auto', display: 'flex', gap: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #f3f4f6'}}>
+                  <button 
+                    onClick={() => handleEdit(item)}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.25rem',
+                      padding: '0.5rem',
+                      backgroundColor: '#eff6ff',
+                      color: '#2563eb',
+                      border: '1px solid #bfdbfe',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.875rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                     <PenSquare size={14} /> Edit
+                  </button>
+                  <button 
+                    onClick={() => deleteItem(item.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '0.5rem',
+                      backgroundColor: '#fef2f2',
+                      color: '#dc2626',
+                      border: '1px solid #fecaca',
+                      borderRadius: '0.375rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                     <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const renderTable = () => {
+    if (activeModel === 'gallery') return renderGalleryGrid();
+
     if (loading) return (
       <div style={{padding: '3rem', textAlign: 'center', color: '#6b7280'}}>
         <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>⏳</div>
@@ -377,21 +626,34 @@ const ReactAdmin = () => {
       if (col === 'id') return { ...baseStyle, width: '60px', textAlign: 'center', fontWeight: '600', color: '#6b7280' };
       if (col === 'title') return { ...baseStyle, minWidth: '150px', maxWidth: '200px', fontWeight: '500' };
       if (col === 'subtitle' || col === 'description' || col === 'content') return { ...baseStyle, maxWidth: '180px' };
-      if (col === 'image' || col === 'image_url' || col === 'media_url' || col === 'video_url') return { ...baseStyle, maxWidth: '200px' };
+      if (col === 'image' || col === 'image_url' || col === 'media_url' || col === 'video_url' || col === 'video') return { ...baseStyle, maxWidth: '200px' };
       if (col === 'order') return { ...baseStyle, width: '80px', textAlign: 'center' };
       if (col === 'is_active' || col === 'is_published' || col === 'is_read' || col === 'is_public') return { ...baseStyle, width: '80px', textAlign: 'center' };
       return baseStyle;
     };
 
     // Render cell content based on column type
-    const renderCellContent = (col, value) => {
+    const renderCellContent = (col, value, item) => {
       if (value === null || value === undefined) return <span style={{color: '#9ca3af', fontStyle: 'italic'}}>—</span>;
       
       // Boolean fields
       if (typeof value === 'boolean') {
-        return value ? 
-          <span style={{color: '#10b981', fontWeight: '600'}}>✓ Yes</span> : 
-          <span style={{color: '#ef4444'}}>✗ No</span>;
+        const isUnreadMessage = col === 'is_read' && value === false && activeModel === 'contactmessage';
+        return (
+          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center'}}>
+            {value ? 
+              <span style={{color: '#10b981', fontWeight: '600'}}>✓ Yes</span> : 
+              <span style={{color: '#ef4444'}}>✗ No</span>}
+            {isUnreadMessage && (
+               <button 
+                 onClick={() => handleMarkRead(item)} 
+                 style={{padding: '2px 8px', fontSize: '10px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+               >
+                 Read
+               </button>
+            )}
+          </div>
+        );
       }
       
       // Image/URL fields - show thumbnail or truncated URL
@@ -414,7 +676,7 @@ const ReactAdmin = () => {
       }
       
       // URL fields - truncate and show as link
-      if (col === 'image_url' || col === 'video_url') {
+      if (col === 'image_url' || col === 'video_url' || col === 'video') {
         if (!value) return <span style={{color: '#9ca3af', fontStyle: 'italic'}}>—</span>;
         return (
           <a 
@@ -488,11 +750,39 @@ const ReactAdmin = () => {
               >
                 {columns.map(col => (
                   <td key={col} style={getColumnStyle(col)}>
-                    {renderCellContent(col, item[col])}
+                    {renderCellContent(col, item[col], item)}
                   </td>
                 ))}
                 <td style={{padding: '0.75rem 1rem', borderBottom: '1px solid #e5e7eb'}}>
                   <div style={{display: 'flex', gap: '0.5rem', justifyContent: 'center'}}>
+                    {activeModel === 'contactmessage' && !item.is_read && (
+                      <button
+                        onClick={() => handleMarkRead(item)}
+                        title="Mark as Read"
+                        style={{
+                          color: '#10b981',
+                          backgroundColor: '#ecfdf5',
+                          border: '1px solid #a7f3d0',
+                          borderRadius: '0.375rem',
+                          padding: '0.4rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'all 0.15s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#10b981';
+                          e.currentTarget.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#ecfdf5';
+                          e.currentTarget.style.color = '#10b981';
+                        }}
+                      >
+                        <CheckCircle size={16} />
+                      </button>
+                    )}
                     {/* Edit Button */}
                     <button 
                       onClick={() => handleEdit(item)}
@@ -668,6 +958,7 @@ const ReactAdmin = () => {
         </div>
       </div>
       {showAddForm && renderAddForm()}
+      {viewingMessage && renderMessageModal()}
     </div>
   );
 };

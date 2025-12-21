@@ -27,7 +27,7 @@ export const adminAPI = {
   
   // Contact Messages
   getContactMessages: () => adminApi.get('/admin/contact-messages/'),
-  markMessageRead: (id) => adminApi.patch(`/admin/messages/${id}/mark-read/`),
+  markMessageRead: (id) => adminApi.patch(`/admin/mark-message-read/${id}/`),
   deleteMessage: (id) => adminApi.delete(`/admin/contact-messages/${id}/`),
   
   // Prayer Requests
