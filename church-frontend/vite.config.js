@@ -12,7 +12,10 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '.trycloudflare.com'
-    ]
+    ],
+    hmr: {
+        clientPort: 443
+    }
   },
   resolve: {
     alias: {

@@ -124,12 +124,12 @@ const App = () => {
   // Page rendering based on current page state
   const renderPage = () => {
     if (isLoading) {
-      return <Loading />;
+      return <Loading fullScreen={true} message="Loading..." />;
     }
 
     // Suspense wrapper for lazy loading
     return (
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<Loading fullScreen={true} message="Loading..." />}>
         {renderContent()}
       </Suspense>
     );

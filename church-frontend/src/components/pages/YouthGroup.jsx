@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { churchAPI } from '../../services/api';
 import { Sparkles, Calendar, Users, Heart, Music, ArrowRight } from 'lucide-react';
 
 const YouthGroup = ({ onNavigate }) => {
@@ -22,6 +23,25 @@ const YouthGroup = ({ onNavigate }) => {
     return () => observer.disconnect();
   }, []);
 
+  const [groupData, setGroupData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await churchAPI.getGroup('youth');
+        console.log("Youth Group Data:", response.data);
+        if (response.data && response.data.results && response.data.results.length > 0) {
+             setGroupData(response.data.results[0]); 
+        } else if (response.data && !Array.isArray(response.data)) {
+             setGroupData(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch group data", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', fontFamily: 'sans-serif' }}>
       {/* Hero Section */}
@@ -41,12 +61,18 @@ const YouthGroup = ({ onNavigate }) => {
         <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
         
         <div style={{ position: 'relative', zIndex: 10, maxWidth: '800px', margin: '0 auto' }}>
-          <div style={{ 
-            display: 'inline-flex', padding: '1rem', 
-            background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', 
-            borderRadius: '50%', marginBottom: '1.5rem', boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-          }}>
-            <Sparkles size={40} color="white" />
+          <div style={{ marginBottom: '1.5rem' }}>
+            {groupData?.logo ? (
+                <img src={groupData.logo} alt="Logo" style={{ width: '128px', height: '128px', objectFit: 'contain', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' }} />
+            ) : (
+                <div style={{ 
+                  display: 'inline-flex', padding: '1rem', 
+                  background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', 
+                  borderRadius: '50%', boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+                }}>
+                   <Sparkles size={40} color="white" />
+                </div>
+            )}
           </div>
           <h1 className="scroll-slide-up" style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem', textShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
             Youth Group
@@ -66,11 +92,33 @@ const YouthGroup = ({ onNavigate }) => {
             <Users color="#0284c7" /> Who We Are
           </h2>
           <p style={{ color: '#475569', lineHeight: 1.8, fontSize: '1.1rem' }}>
-            Our Youth Group comprises young men and women dedicated to spiritual growth and social service. 
+            {groupData?.description || `Our Youth Group comprises young men and women dedicated to spiritual growth and social service. 
             Actively involved in liturgy, choir, and community outreach, we organize retreats, cultural events, 
-            and charitable drives, empowering the next generation to be leaders in faith and society.
+            and charitable drives, empowering the next generation to be leaders in faith and society.`}
           </p>
         </div>
+
+        {/* What We Have Done Section */}
+        {groupData?.activities && groupData.activities.length > 0 && (
+             <div style={{ backgroundColor: 'white', borderRadius: '1.5rem', padding: '3rem', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)', marginBottom: '3rem' }}>
+              <h2 style={{ fontSize: '1.75rem', fontWeight: '700', color: '#0f172a', marginBottom: '1.5rem'}}>
+                 What We Have Done
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
+                  {groupData.activities.map(activity => (
+                      <div key={activity.id} style={{ border: '1px solid #e2e8f0', borderRadius: '1rem', overflow: 'hidden' }}>
+                          {activity.media_url && (
+                             <img src={activity.media_url} alt={activity.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
+                          )}
+                          <div style={{ padding: '1.5rem' }}>
+                             <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '0.5rem', color: '#334155' }}>{activity.title}</h3>
+                             <p style={{ color: '#475569', fontSize: '0.95rem' }}>{activity.description}</p>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+            </div>
+        )}
 
         {/* Feature Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>

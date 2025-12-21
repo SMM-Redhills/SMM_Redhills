@@ -13,6 +13,8 @@ router.register(r'gallery', admin_views.AdminGalleryViewSet)
 router.register(r'schedule', admin_views.AdminScheduleViewSet)
 router.register(r'prayers', admin_views.AdminPrayerViewSet)
 router.register(r'banner-slides', admin_views.AdminBannerSlideViewSet)
+router.register(r'groups', admin_views.AdminParishGroupViewSet)
+router.register(r'group-activities', admin_views.AdminGroupActivityViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

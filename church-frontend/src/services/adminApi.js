@@ -72,6 +72,12 @@ export const adminAPI = {
       headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }
     });
   },
+  updateItem: (endpoint, id, data) => {
+    const isFormData = data instanceof FormData;
+    return adminApi.put(`/admin/${endpoint}/${id}/`, data, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }
+    });
+  },
   deleteItem: (endpoint, id) => adminApi.delete(`/admin/${endpoint}/${id}/`),
 };
 

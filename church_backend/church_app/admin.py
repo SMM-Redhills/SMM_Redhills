@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide
+from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
@@ -53,6 +53,21 @@ class BannerSlideAdmin(admin.ModelAdmin):
     list_filter = ['is_active', 'created_at']
     search_fields = ['title', 'subtitle']
     list_editable = ['order', 'is_active']
+
+class GroupActivityInline(admin.StackedInline):
+    model = GroupActivity
+    extra = 1
+
+@admin.register(ParishGroup)
+class ParishGroupAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    inlines = [GroupActivityInline]
+
+@admin.register(GroupActivity)
+class GroupActivityAdmin(admin.ModelAdmin):
+    list_display = ['title', 'group', 'date']
+    list_filter = ['group', 'date']
+    search_fields = ['title', 'description']
 
 # Customize admin site
 admin.site.site_header = "Saint Mary Magdalene Church Admin"

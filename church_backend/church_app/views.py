@@ -3,10 +3,11 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide
+from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 from .serializers import (
     ContactMessageSerializer, PrayerRequestSerializer, NewsSerializer, 
-    EventSerializer, GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer
+    EventSerializer, GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer,
+    ParishGroupSerializer, GroupActivitySerializer
 )
 
 # Form submission views
@@ -50,6 +51,15 @@ class PrayerViewSet(viewsets.ReadOnlyModelViewSet):
 class BannerSlideViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = BannerSlide.objects.filter(is_active=True)
     serializer_class = BannerSlideSerializer
+
+class ParishGroupViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ParishGroup.objects.all()
+    serializer_class = ParishGroupSerializer
+    lookup_field = 'name'
+
+class GroupActivityViewSet(viewsets.ModelViewSet):
+    queryset = GroupActivity.objects.all()
+    serializer_class = GroupActivitySerializer
 
 # Admin Dashboard View
 def admin_dashboard(request):

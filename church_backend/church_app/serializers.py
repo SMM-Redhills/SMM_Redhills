@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide
+from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,3 +81,23 @@ class BannerSlideSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.image.url)
             return obj.image.url
         return obj.image_url
+
+class GroupActivitySerializer(serializers.ModelSerializer):
+    media_url = serializers.SerializerMethodField()
+    class Meta:
+        model = GroupActivity
+        fields = ['id', 'group', 'title', 'description', 'image', 'date', 'media_url']
+    
+    def get_media_url(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+
+class ParishGroupSerializer(serializers.ModelSerializer):
+    activities = GroupActivitySerializer(many=True, read_only=True)
+    class Meta:
+        model = ParishGroup
+        fields = ['id', 'name', 'description', 'logo', 'activities']

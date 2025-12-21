@@ -7,10 +7,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide
+from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 from .serializers import (
     ContactMessageSerializer, PrayerRequestSerializer, NewsSerializer, 
-    EventSerializer, GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer
+    EventSerializer, GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer,
+    ParishGroupSerializer, GroupActivitySerializer
 )
 
 def is_staff(user):
@@ -99,6 +100,17 @@ class AdminBannerSlideViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+
+class AdminParishGroupViewSet(viewsets.ModelViewSet):
+    queryset = ParishGroup.objects.all()
+    serializer_class = ParishGroupSerializer
+    permission_classes = [IsAdminUser]
+
+class AdminGroupActivityViewSet(viewsets.ModelViewSet):
+    queryset = GroupActivity.objects.all()
+    serializer_class = GroupActivitySerializer
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
 @api_view(['PATCH'])
 @permission_classes([IsAdminUser])

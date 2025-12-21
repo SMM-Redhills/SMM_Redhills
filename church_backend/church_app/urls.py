@@ -11,6 +11,8 @@ router.register(r'gallery', views.GalleryViewSet)
 router.register(r'schedule', views.ScheduleViewSet)
 router.register(r'prayers', views.PrayerViewSet)  # Public endpoint
 router.register(r'banner-slides', views.BannerSlideViewSet)
+router.register(r'groups', views.ParishGroupViewSet)
+router.register(r'group-activities', views.GroupActivityViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),  # Public API endpoints

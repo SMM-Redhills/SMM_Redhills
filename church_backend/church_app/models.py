@@ -143,3 +143,30 @@ class BannerSlide(models.Model):
 
     def __str__(self):
         return self.title
+
+class ParishGroup(models.Model):
+    GROUP_CHOICES = [
+        ('youth', 'Youth Group'),
+        ('vincent', 'Vincent de Paul'),
+        ('legion', 'Legion of Mary'),
+        ('joseph', 'St. Joseph Group'),
+    ]
+    name = models.CharField(max_length=50, choices=GROUP_CHOICES, unique=True)
+    description = models.TextField(blank=True, help_text="Leave blank to use default static content")
+    logo = models.ImageField(upload_to='group_logos/', blank=True, null=True)
+    
+    def __str__(self):
+        return self.get_name_display()
+
+class GroupActivity(models.Model):
+    group = models.ForeignKey(ParishGroup, on_delete=models.CASCADE, related_name='activities')
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    image = models.ImageField(upload_to='group_activities/', blank=True, null=True)
+    date = models.DateField()
+
+    class Meta:
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"{self.group} - {self.title}"

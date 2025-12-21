@@ -1,11 +1,12 @@
 import React from 'react';
 import smmLogo from '../../assets/img/smm_logo.png';
+import './Loading.css'; // Import the CSS file for dot-spinner
 
 const Loading = ({ 
   message = "Loading...", 
   size = "medium", 
   fullScreen = false,
-  variant = "spinner" 
+  variant = "dotspinner" // Changed default to dotspinner
 }) => {
   // Size variants
   const sizeClasses = {
@@ -13,6 +14,20 @@ const Loading = ({
     medium: "w-10 h-10", 
     large: "w-16 h-16"
   };
+
+  // Dot Spinner Component (Premium Uiverse.io loader)
+  const DotSpinner = () => (
+    <div className="dot-spinner">
+      <div className="dot-spinner__dot"></div>
+      <div className="dot-spinner__dot"></div>
+      <div className="dot-spinner__dot"></div>
+      <div className="dot-spinner__dot"></div>
+      <div className="dot-spinner__dot"></div>
+      <div className="dot-spinner__dot"></div>
+      <div className="dot-spinner__dot"></div>
+      <div className="dot-spinner__dot"></div>
+    </div>
+  );
 
   // Spinner Component
   const Spinner = ({ className }) => (
@@ -53,6 +68,8 @@ const Loading = ({
 
   const renderLoader = () => {
     switch (variant) {
+      case 'dotspinner':
+        return <DotSpinner />;
       case 'cross':
         return <CrossSpinner className={sizeClasses[size]} />;
       case 'dots':
@@ -61,25 +78,43 @@ const Loading = ({
         return <PulseLoader />;
       case 'bar':
         return <LoadingBar />;
-      default:
+      case 'spinner':
         return <Spinner className={sizeClasses[size]} />;
+      default:
+        return <DotSpinner />;
     }
   };
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-white bg-opacity-90 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="flex flex-col items-center space-y-4">
+      <div 
+        className="loading-fullscreen-overlay"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          overflow: 'hidden'
+        }}
+      >
+        <div 
+          className="flex flex-col items-center space-y-6"
+          style={{
+            textAlign: 'center',
+            maxWidth: '90%'
+          }}
+        >
           {renderLoader()}
           <p className="text-gray-600 font-medium">{message}</p>
-          <div className="text-center">
-            <img 
-              src={smmLogo} 
-              alt="Church Logo" 
-              className="w-20 h-20 mx-auto mb-4 object-contain" 
-            />
-            <p className="text-sm text-gray-500">Saint Mary Magdalene</p>
-          </div>
         </div>
       </div>
     );

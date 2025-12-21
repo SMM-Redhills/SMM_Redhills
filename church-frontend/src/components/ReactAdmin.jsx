@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { adminAPI } from '../services/adminApi';
+import { PenSquare, Trash2, Plus, X } from 'lucide-react';
 
 const ReactAdmin = () => {
   const [activeModel, setActiveModel] = useState('contactmessage');
@@ -7,6 +8,20 @@ const ReactAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({});
+  const [editingItem, setEditingItem] = useState(null);
+  const [parishGroups, setParishGroups] = useState([]);
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const response = await adminAPI.listItems('groups');
+        setParishGroups(response.data.results || response.data);
+      } catch (error) {
+        console.error("Failed to fetch groups", error);
+      }
+    };
+    fetchGroups();
+  }, []);
 
   const models = [
     { key: 'contactmessage', name: 'Contact Messages', api: 'contact-messages' },
@@ -16,7 +31,9 @@ const ReactAdmin = () => {
     { key: 'gallery', name: 'Gallery', api: 'gallery', canAdd: true },
     { key: 'schedule', name: 'Schedule', api: 'schedule', canAdd: true },
     { key: 'prayers', name: 'Prayers', api: 'prayers', canAdd: true },
-    { key: 'banner-slides', name: 'Banner Slides', api: 'banner-slides', canAdd: true }
+    { key: 'banner-slides', name: 'Banner Slides', api: 'banner-slides', canAdd: true },
+    { key: 'groups', name: 'Parish Groups', api: 'groups', canAdd: true },
+    { key: 'group-activities', name: 'Group Activities', api: 'group-activities', canAdd: true }
   ];
 
   useEffect(() => {
@@ -52,42 +69,65 @@ const ReactAdmin = () => {
     }
   };
 
-  const handleAddItem = async (e) => {
+  const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     try {
       const model = models.find(m => m.key === activeModel);
       
       let dataToSend;
+      // Check if any field is a File
       const hasFile = Object.values(formData).some(val => val instanceof File);
       
-      if (hasFile) {
+      if (hasFile || editingItem) { // Always use FormData for updates to be safe, or logic below
+        // Actually, always use FormData if file field exists in model? 
+        // Safer to just check data.
         dataToSend = new FormData();
         Object.keys(formData).forEach(key => {
-          if (formData[key] !== undefined && formData[key] !== null) {
-            dataToSend.append(key, formData[key]);
+          const value = formData[key];
+          if (value !== undefined && value !== null) {
+            // If field is file type (image/logo) but value is string (existing URL), DO NOT send it.
+            if ((key === 'image' || key === 'logo') && !(value instanceof File)) {
+                return;
+            }
+            // For date fields, ensure proper formatting if needed, but standard input value is usually fine.
+            dataToSend.append(key, value);
           }
         });
       } else {
         dataToSend = formData;
       }
 
-      const response = await adminAPI.createItem(model.api, dataToSend);
+      let response;
+      if (editingItem) {
+         response = await adminAPI.updateItem(model.api, editingItem, dataToSend);
+      } else {
+         response = await adminAPI.createItem(model.api, dataToSend);
+      }
       
       if (response.status === 201 || response.status === 200) {
         setShowAddForm(false);
         setFormData({});
+        setEditingItem(null);
         fetchData();
-        alert('Item added successfully!');
+        alert(editingItem ? 'Item updated successfully!' : 'Item added successfully!');
       } else {
-        alert('Error adding item. Please try again.');
+        alert('Error saving item. Please try again.');
       }
     } catch (error) {
-      console.error('Error adding item:', error);
+      console.error('Error saving item:', error);
       const errorMessage = error.response?.data 
         ? JSON.stringify(error.response.data) 
         : 'Unknown error occurred';
-      alert(`Error adding item: ${errorMessage}`);
+      alert(`Error saving item: ${errorMessage}`);
     }
+  };
+
+  const handleEdit = (item) => {
+    // For date fields, we might need to format '2025-12-21' etc.
+    // But input type='date' expects YYYY-MM-DD which API usually provides.
+    setFormData({...item}); 
+    setEditingItem(item.id);
+    setShowAddForm(true);
   };
 
   const renderAddForm = () => {
@@ -148,6 +188,24 @@ const ReactAdmin = () => {
             { name: 'order', type: 'number', placeholder: 'Display Order' },
             { name: 'is_active', type: 'checkbox', label: 'Is Active' }
           ];
+        case 'groups':
+          return [
+            { name: 'name', type: 'select', options: ['youth', 'vincent', 'legion', 'joseph'], required: true },
+            { name: 'description', type: 'textarea', placeholder: 'Description' },
+            { name: 'logo', type: 'file', label: 'Upload Logo' }
+          ];
+        case 'group-activities':
+          const groupOptions = parishGroups.map(g => ({ 
+             value: g.id, 
+             label: (g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : 'Unknown') 
+          }));
+          return [
+             { name: 'group', type: 'select', label: 'Select Group', options: groupOptions, required: true },
+             { name: 'title', type: 'text', placeholder: 'Activity Title', required: true },
+             { name: 'description', type: 'textarea', placeholder: 'Description' },
+             { name: 'image', type: 'file', label: 'Upload Image' },
+             { name: 'date', type: 'date', required: true }
+          ];
         default:
           return [];
       }
@@ -158,8 +216,10 @@ const ReactAdmin = () => {
     return (
       <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50}}>
         <div style={{backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
-          <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#000000'}}>Add New {models.find(m => m.key === activeModel)?.name}</h3>
-          <form onSubmit={handleAddItem}>
+          <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#000000'}}>
+             {editingItem ? 'Edit' : 'Add New'} {models.find(m => m.key === activeModel)?.name}
+          </h3>
+          <form onSubmit={handleSubmit}>
             {fields.map(field => {
               if (field.condition && !field.condition(formData)) return null;
 
@@ -223,10 +283,13 @@ const ReactAdmin = () => {
                       onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
                       style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem'}}
                     >
-                      <option value="">Select {field.name}</option>
-                      {field.options.map(option => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
+                      <option value="">Select {field.label || field.name}</option>
+                      {field.options.map((option, idx) => {
+                        const isObject = typeof option === 'object' && option !== null;
+                        const value = isObject ? option.value : option;
+                        const label = isObject ? option.label : option;
+                        return <option key={idx} value={value}>{label}</option>;
+                      })}
                     </select>
                   ) : (
                     <div>
@@ -263,17 +326,17 @@ const ReactAdmin = () => {
             <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
               <button
                 type="button"
-                onClick={() => {setShowAddForm(false); setFormData({});}}
+                onClick={() => {setShowAddForm(false); setFormData({}); setEditingItem(null);}}
                 style={{padding: '0.5rem 1rem', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                onClick={handleAddItem}
+                onClick={handleSubmit}
                 style={{padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
               >
-                Add
+                {editingItem ? 'Save Changes' : 'Add'}
               </button>
             </div>
           </form>
@@ -332,7 +395,7 @@ const ReactAdmin = () => {
       }
       
       // Image/URL fields - show thumbnail or truncated URL
-      if (col === 'image' || col === 'media_url') {
+      if (col === 'image' || col === 'media_url' || col === 'logo') {
         if (!value) return <span style={{color: '#9ca3af', fontStyle: 'italic'}}>—</span>;
         const imageUrl = typeof value === 'string' && value.startsWith('http') ? value : `http://localhost:8000${value}`;
         return (
@@ -428,25 +491,63 @@ const ReactAdmin = () => {
                     {renderCellContent(col, item[col])}
                   </td>
                 ))}
-                <td style={{padding: '0.75rem 1rem', borderBottom: '1px solid #e5e7eb', textAlign: 'center'}}>
-                  <button 
-                    onClick={() => deleteItem(item.id)}
-                    style={{
-                      color: 'white',
-                      backgroundColor: '#ef4444',
-                      border: 'none',
-                      borderRadius: '0.375rem',
-                      padding: '0.375rem 0.75rem',
-                      fontSize: '0.75rem',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#dc2626'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
-                  >
-                    🗑️ Delete
-                  </button>
+                <td style={{padding: '0.75rem 1rem', borderBottom: '1px solid #e5e7eb'}}>
+                  <div style={{display: 'flex', gap: '0.5rem', justifyContent: 'center'}}>
+                    {/* Edit Button */}
+                    <button 
+                      onClick={() => handleEdit(item)}
+                      title="Edit"
+                      style={{
+                        color: '#2563eb',
+                        backgroundColor: '#eff6ff',
+                        border: '1px solid #bfdbfe',
+                        borderRadius: '0.375rem',
+                        padding: '0.4rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.15s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#2563eb';
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#eff6ff';
+                        e.currentTarget.style.color = '#2563eb';
+                      }}
+                    >
+                      <PenSquare size={16} />
+                    </button>
+
+                    <button 
+                      onClick={() => deleteItem(item.id)}
+                      title="Delete"
+                      style={{
+                        color: '#dc2626',
+                        backgroundColor: '#fef2f2',
+                        border: '1px solid #fecaca',
+                        borderRadius: '0.375rem',
+                        padding: '0.4rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.15s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#dc2626';
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#fef2f2';
+                        e.currentTarget.style.color = '#dc2626';
+                      }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -540,7 +641,7 @@ const ReactAdmin = () => {
               </h2>
               {models.find(m => m.key === activeModel)?.canAdd && (
                 <button
-                  onClick={() => setShowAddForm(true)}
+                  onClick={() => { setEditingItem(null); setFormData({}); setShowAddForm(true); }}
                   style={{
                     backgroundColor: '#10b981',
                     color: 'white',

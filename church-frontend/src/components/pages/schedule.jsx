@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Clock, Heart, Users, Book, Cross, Calendar, Bell, Star } from 'lucide-react';
+import { Clock, Heart, Users, Book, Cross, Calendar, Bell, Star, Plus, Trash2 } from 'lucide-react';
 import { churchAPI } from '../../services/api';
 import { adminAPI } from '../../services/adminApi';
 
@@ -30,6 +30,27 @@ const Schedule = () => {
       setScheduleItems(data);
     } catch (error) {
       console.error('Error fetching schedules:', error);
+    }
+  };
+
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '';
+    const [hours, minutes] = timeStr.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours));
+    date.setMinutes(parseInt(minutes));
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      try {
+        await adminAPI.deleteItem('schedule', id);
+        fetchSchedules(); // Refresh list
+      } catch (error) {
+        console.error('Error deleting item:', error);
+        alert('Failed to delete item');
+      }
     }
   };
 
@@ -144,7 +165,7 @@ const Schedule = () => {
             
             <div className="overview-card hover-lift">
               <Users className="card-icon" />
-              <h3 className="card-title">Mass Schedule</h3>
+              <h3 className="card-title">Schedules</h3>
               <p className="card-text">
                 Sunday: 8:00 AM - 10:00 AM<br/>
                 Evening: 6:00 PM - 7:30 PM<br/>
@@ -164,7 +185,7 @@ const Schedule = () => {
 
         {/* Detailed Mass Schedule */}
         <section className="mass-schedule-section scroll-fade-in">
-          <h2 className="section-title scroll-slide-up">Mass Schedule</h2>
+          <h2 className="section-title scroll-slide-up">Schedules</h2>
           <div className="mass-schedule-grid scroll-stagger-children">
             
             {/* Sunday Schedule */}
@@ -174,14 +195,29 @@ const Schedule = () => {
                 <h3 className="card-heading">Sunday</h3>
               </div>
               <div className="schedule-list">
-                <div className="schedule-item">
-                  <span className="item-name">Morning Mass</span>
-                  <span className="item-time">8:00 AM - 10:00 AM</span>
-                </div>
-                <div className="schedule-item">
-                  <span className="item-name">Evening Mass</span>
-                  <span className="item-time">6:00 PM - 7:30 PM</span>
-                </div>
+                {scheduleItems.filter(i => i.day === 'sunday').length > 0 ? (
+                  scheduleItems.filter(i => i.day === 'sunday').map(item => (
+                    <div key={item.id} className="schedule-item">
+                      <div>
+                        <span className="item-name block">{item.title}</span>
+                        {item.description && <span className="text-sm text-gray-500">{item.description}</span>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="item-time">{formatTime(item.time)}</span>
+                        {isAdmin && (
+                          <button 
+                            onClick={() => handleDelete(item.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 italic text-center py-2">No Sunday services scheduled</p>
+                )}
               </div>
             </div>
 
@@ -192,14 +228,31 @@ const Schedule = () => {
                 <h3 className="card-heading">Weekdays</h3>
               </div>
               <div className="schedule-list">
-                <div className="schedule-item">
-                  <span className="item-name">Monday - Friday</span>
-                  <span className="item-time">6:00 AM</span>
-                </div>
-                <div className="schedule-item">
-                  <span className="item-name">Saturday</span>
-                  <span className="item-time">6:00 AM</span>
-                </div>
+                 {scheduleItems.filter(i => i.day !== 'sunday').length > 0 ? (
+                  scheduleItems.filter(i => i.day !== 'sunday').map(item => (
+                    <div key={item.id} className="schedule-item">
+                       <div>
+                        <span className="item-name block">{item.title} 
+                          <span className="text-xs font-normal text-gray-500 ml-2">({item.day})</span>
+                        </span>
+                        {item.description && <span className="text-sm text-gray-500">{item.description}</span>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="item-time">{formatTime(item.time)}</span>
+                        {isAdmin && (
+                          <button 
+                            onClick={() => handleDelete(item.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 italic text-center py-2">No Weekday services scheduled</p>
+                )}
               </div>
             </div>
 
@@ -232,15 +285,15 @@ const Schedule = () => {
               <Heart className="service-icon" />
               <h3 className="service-title">Eucharistic Adoration</h3>
               <div className="service-time">
-                <div className="service-day">Every Friday</div>
-                <div className="service-hour">7:00 PM - 8:00 PM</div>
+                <div className="service-day">Every Sunday</div>
+                <div className="service-hour">8:00 AM</div>
               </div>
               <p className="service-description">
                 Join us for an hour of prayer and reflection before the Blessed Sacrament
               </p>
             </div>
 
-            <div className="service-card hover-lift">
+            {/* <div className="service-card hover-lift">
               <Book className="service-icon" />
               <h3 className="service-title">Rosary Prayer</h3>
               <div className="service-time">
@@ -250,9 +303,9 @@ const Schedule = () => {
               <p className="service-description">
                 Daily recitation of the Holy Rosary before evening activities
               </p>
-            </div>
+            </div> */}
 
-            <div className="service-card hover-lift">
+            {/* <div className="service-card hover-lift">
               <Users className="service-icon" />
               <h3 className="service-title">Novena Prayers</h3>
               <div className="service-time">
@@ -262,9 +315,9 @@ const Schedule = () => {
               <p className="service-description">
                 Special devotional prayers to Saint Mary Magdalene
               </p>
-            </div>
+            </div> */}
 
-            <div className="service-card hover-lift">
+            {/* <div className="service-card hover-lift">
               <Bell className="service-icon" />
               <h3 className="service-title">Confession</h3>
               <div className="service-time">
@@ -274,9 +327,9 @@ const Schedule = () => {
               <p className="service-description">
                 Sacrament of Reconciliation available throughout the day
               </p>
-            </div>
+            </div> */}
 
-            <div className="service-card hover-lift">
+            {/* <div className="service-card hover-lift">
               <Star className="service-icon" />
               <h3 className="service-title">First Friday Devotion</h3>
               <div className="service-time">
@@ -286,7 +339,7 @@ const Schedule = () => {
               <p className="service-description">
                 Special devotion to the Sacred Heart of Jesus
               </p>
-            </div>
+            </div> */}
           </div>
         </section>
 
@@ -311,6 +364,8 @@ const Schedule = () => {
 
         </div>
       </div>
+
+
 
       {/* Add Schedule Modal */}
       {showAddForm && (
@@ -343,15 +398,23 @@ const Schedule = () => {
                 </select>
               </div>
               <div className="form-row">
-                <input
-                  type="text"
+                <select
                   name="day"
-                  placeholder="Day (e.g., Sunday, Daily)"
                   value={formData.day}
                   onChange={handleInputChange}
                   required
                   className="form-input"
-                />
+                >
+                  <option value="">Select Day</option>
+                  <option value="sunday">Sunday</option>
+                  <option value="monday">Monday</option>
+                  <option value="tuesday">Tuesday</option>
+                  <option value="wednesday">Wednesday</option>
+                  <option value="thursday">Thursday</option>
+                  <option value="friday">Friday</option>
+                  <option value="saturday">Saturday</option>
+                  <option value="daily">Daily</option>
+                </select>
                 <input
                   type="time"
                   name="time"
@@ -758,7 +821,6 @@ const Schedule = () => {
           width: 90%;
           max-width: 500px;
           max-height: 80vh;
-          overflow-y: auto;
         }
 
         .modal-title {
