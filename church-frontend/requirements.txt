@@ -1,0 +1,17 @@
+# Frontend Dependencies (Managed by npm)
+# Run 'npm install' to install these
+
+axios
+lucide-react
+react
+react-dom
+react-google-recaptcha
+react-google-recaptcha-v3
+react-router-dom
+
+# Dev Dependencies
+vite
+tailwindcss
+postcss
+autoprefixer
+eslint
