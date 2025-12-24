@@ -81,20 +81,18 @@ class GroupActivityViewSet(viewsets.ModelViewSet):
     queryset = GroupActivity.objects.all()
     serializer_class = GroupActivitySerializer
 
-# Admin Dashboard View
-def admin_dashboard(request):
-    if not request.user.is_staff:
-        return JsonResponse({'error': 'Access denied'}, status=403)
-    
-    stats = {
-        'contact_messages': ContactMessage.objects.filter(is_read=False).count(),
-        'prayer_requests': PrayerRequest.objects.count(),
-        'news_count': News.objects.count(),
-        'events_count': Event.objects.count(),
-        'gallery_count': Gallery.objects.count(),
-    }
-    
-    
-    
-    from django.http import HttpResponse
-    return HttpResponse(dashboard_html)
+# Admin Dashboard View (Legacy/Broken - use admin_views.admin_dashboard_view)
+# def admin_dashboard(request):
+#     if not request.user.is_staff:
+#         return JsonResponse({'error': 'Access denied'}, status=403)
+#     
+#     stats = {{
+#         'contact_messages': ContactMessage.objects.filter(is_read=False).count(),
+#         'prayer_requests': PrayerRequest.objects.count(),
+#         'news_count': News.objects.count(),
+#         'events_count': Event.objects.count(),
+#         'gallery_count': Gallery.objects.count(),
+#     }}
+#     
+#     from django.http import HttpResponse
+#     return HttpResponse(dashboard_html)

@@ -177,7 +177,8 @@ def admin_dashboard_view(request):
             <div class="nav-links">
                 <a href="/admin/">Django Admin</a>
                 <a href="/api/admin-dashboard/">Dashboard</a>
-                <a href="http://localhost:5173/admin">Frontend Admin</a>
+                <a href="https://smmc.netlify.app/admin">Frontend Admin</a>
+                <!-- <a href="http://localhost:5173/admin">Frontend Admin</a> -->
                 <a href="/admin/logout/">Logout</a>
             </div>
 

@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com,harvard-oral-entirely-pound.trycloudflare.com").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com,harvard-oral-entirely-pound.trycloudflare.com,raise-stating-accessory-higher.trycloudflare.com").split(",")
 
 
 # Application definition
@@ -147,18 +147,27 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Vite dev server
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://raise-stating-accessory-higher.trycloudflare.com",
     "https://harvard-oral-entirely-pound.trycloudflare.com",
+    "https://smmc.netlify.app",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True # Commented out to use specific allowed origins below
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ["*",
+CSRF_TRUSTED_ORIGINS = [
     "https://galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com",
     "https://harvard-oral-entirely-pound.trycloudflare.com",
+    "https://raise-stating-accessory-higher.trycloudflare.com",
+    "https://smmc.netlify.app",
+    "http://localhost:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",    
 ]
 
 # REST Framework settings

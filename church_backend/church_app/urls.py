@@ -18,7 +18,7 @@ urlpatterns = [
     path('', include(router.urls)),  # Public API endpoints
     path('submit-contact/', views.submit_contact, name='submit_contact'),
     path('submit-prayer/', views.submit_prayer_request, name='submit_prayer'),
-    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-dashboard/', auth_views.admin_profile, name='admin_dashboard'), # Redirect to profile for now as views.admin_dashboard is broken
     
     # Auth endpoints
     path('auth/login/', auth_views.admin_login, name='admin_login'),
