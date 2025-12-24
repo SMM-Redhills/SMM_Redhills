@@ -305,7 +305,7 @@ const About = ({ onNavigate, scrollToSection }) => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .about-main {
           min-height: 100vh;
           background-color: #ffffff;

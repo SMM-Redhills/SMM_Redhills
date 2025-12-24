@@ -16,7 +16,7 @@ const Events = lazy(() => import('./components/pages/Events.jsx')); // Kept for 
 const Gallery = lazy(() => import('./components/pages/Gallery.jsx'));
 const News = lazy(() => import('./components/pages/News.jsx'));
 const STMaryMagdelene = lazy(() => import('./components/pages/ST_mary_magdelene.jsx'));
-const Schedule = lazy(() => import('./components/pages/Schedule.jsx'));
+const ChurchSchedule = lazy(() => import('./components/pages/ChurchSchedule.jsx'));
 
 // Prayer components
 const Prayer = lazy(() => import('./components/pages/Prayer.jsx'));
@@ -193,7 +193,7 @@ const App = () => {
         return <Prayer onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
       
       case 'schedule':
-        return <Schedule onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
+        return <ChurchSchedule onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
       
       case 'contact':
         return <Contact onNavigate={handleNavigation} scrollToSection={scrollToSection} />;

@@ -3,7 +3,7 @@ import { Clock, Heart, Users, Book, Cross, Calendar, Bell, Star, Plus, Trash2 } 
 import { churchAPI } from '../../services/api';
 import { adminAPI } from '../../services/adminApi';
 
-const Schedule = () => {
+const ChurchSchedule = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [scheduleItems, setScheduleItems] = useState([]);
   const observerRef = useRef(null);
@@ -455,7 +455,7 @@ const Schedule = () => {
       )}
 
       {/* Add custom styles for animations */}
-      <style jsx>{`
+      <style>{`
         /* Container and Layout Styles */
         .schedule-container {
           min-height: 100vh;
@@ -949,4 +949,4 @@ const Schedule = () => {
   );
 };
 
-export default Schedule;
+export default ChurchSchedule;

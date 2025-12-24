@@ -91,7 +91,7 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
 
   return (
     <>
-      <style jsx>{`
+      <style>{`
         .gallery-section {
           width: 100%;
           display: flex;
