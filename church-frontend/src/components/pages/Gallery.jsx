@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Camera, Video, Heart, Users, X } from 'lucide-react';
-import { churchAPI } from '../../services/api';
+import { churchAPI, BASE_URL } from '../../services/api';
 import { adminAPI } from '../../services/adminApi';
 
 const Gallery = ({ onNavigate, scrollToSection }) => {
@@ -372,7 +372,7 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
                       </div>
                     ) : (
                       <img
-                        src={item.media_url || item.image_url || (item.image ? (item.image.startsWith('http') ? item.image : `http://${window.location.hostname}:8000${item.image.startsWith('/') ? '' : '/'}${item.image}`) : '')}
+                        src={item.media_url || item.image_url || (item.image ? (item.image.startsWith('http') ? item.image : `${BASE_URL}${item.image.startsWith('/') ? '' : '/'}${item.image}`) : '')}
                         alt={item.title}
                         className="gallery-item-image"
                         style={{ opacity: 1 }}
@@ -411,7 +411,7 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
               {selectedMedia.media_type === 'video' ? (
                 <video 
                   className="viewer-media"
-                  src={selectedMedia.media_url || selectedMedia.video_url || (selectedMedia.video ? (selectedMedia.video.startsWith('http') ? selectedMedia.video : `http://${window.location.hostname}:8000${selectedMedia.video.startsWith('/') ? '' : '/'}${selectedMedia.video}`) : '')}
+                  src={selectedMedia.media_url || selectedMedia.video_url || (selectedMedia.video ? (selectedMedia.video.startsWith('http') ? selectedMedia.video : `${BASE_URL}${selectedMedia.video.startsWith('/') ? '' : '/'}${selectedMedia.video}`) : '')}
                   autoPlay
                   controls
                   playsInline
@@ -419,7 +419,7 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
               ) : (
                 <img 
                   className="viewer-media"
-                  src={selectedMedia.image ? (selectedMedia.image.startsWith('http') ? selectedMedia.image : `http://localhost:8000${selectedMedia.image.startsWith('/') ? '' : '/'}${selectedMedia.image}`) : (selectedMedia.image_url || selectedMedia.media_url)}
+                  src={selectedMedia.image ? (selectedMedia.image.startsWith('http') ? selectedMedia.image : `${BASE_URL}${selectedMedia.image.startsWith('/') ? '' : '/'}${selectedMedia.image}`) : (selectedMedia.image_url || selectedMedia.media_url)}
                   alt={selectedMedia.title}
                 />
               )}

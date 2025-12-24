@@ -100,7 +100,7 @@ const Homepage = ({ openModal }) => {
             <div className="church-grid">
               <div className="scroll-slide-left church-image-container">
                 <img
-                  src="public/assets/images/smm.jpg"
+                  src="/assets/images/smm.jpg"
                   className="church-image"
                 />
               </div>
@@ -133,7 +133,7 @@ const Homepage = ({ openModal }) => {
             <div className="about-content">
               <div className="scroll-slide-left about-image-container">
                 <img
-                  src="public/assets/images/mary2.jpg"
+                  src="/assets/images/mary2.jpg"
                   alt="Saint Mary Magdalene"
                   className="about-image"
                 />
@@ -178,7 +178,7 @@ const Homepage = ({ openModal }) => {
             <div className="scroll-stagger-children history-grid">
               <div className="hover-lift history-card" onClick={() => handleReadMore('saint')}>
                 <img
-                  src="public/assets/images/mary1.jpg"
+                  src="/assets/images/mary1.jpg"
                   alt="Saint Mary Magdalene"
                   className="history-image"
                 />
@@ -190,7 +190,7 @@ const Homepage = ({ openModal }) => {
               </div>
               <div className="hover-lift history-card" onClick={() => handleReadMore('heritage')}>
                 <img
-                  src="public/assets/images/smm.jpg"
+                  src="/assets/images/smm.jpg"
                   alt="church Heritage"
                   className="history-image"
                 />

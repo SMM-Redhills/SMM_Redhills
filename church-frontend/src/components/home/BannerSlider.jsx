@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { churchAPI } from '../../services/api';
+import { churchAPI, BASE_URL } from '../../services/api';
 import { MapPin } from 'lucide-react';
 
 const BannerSlider = () => {
@@ -138,7 +138,7 @@ const BannerSlider = () => {
              if (!url) return '';
              if (typeof url !== 'string') return '';
              if (url.startsWith('http')) return url;
-             return `http://localhost:8000${url}`;
+             return `${BASE_URL}${url}`;
            };
            const imageUrl = getFullImageUrl(slide);
            
