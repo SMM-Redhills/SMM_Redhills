@@ -6,3 +6,6 @@ Pillow
 python-dotenv
 djangorestframework-simplejwt==5.3.0
 gunicorn
+whitenoise
+dj-database-url
+
