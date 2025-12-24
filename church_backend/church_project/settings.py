@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com,harvard-oral-entirely-pound.trycloudflare.com").split(",")
 
 
 # Application definition
@@ -149,12 +149,17 @@ MEDIA_ROOT = BASE_DIR / "media"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite dev server
     "http://127.0.0.1:5173",
-    "https://your-cloudflare-url.trycloudflare.com",  # Replace with your actual Cloudflare URL
+    "https://harvard-oral-entirely-pound.trycloudflare.com",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = ["*",
+    "https://galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com",
+    "https://harvard-oral-entirely-pound.trycloudflare.com",
+]
 
 # REST Framework settings
 REST_FRAMEWORK = {

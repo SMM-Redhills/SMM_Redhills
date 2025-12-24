@@ -146,7 +146,8 @@ const LegionOfMary = ({ onNavigate }) => {
 
         {/* CTA */}
         <div className="scroll-slide-up" style={{ textAlign: 'center', backgroundColor: '#eff6ff', padding: '3rem', borderRadius: '1.5rem', border: '1px dashed #bfdbfe' }}>
-           <h3 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1eff00', marginBottom: '1rem', color: '#1e40af' }}>Join Our Legion</h3>
+{/* <h3 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1eff00', marginBottom: '1rem', color: '#1e40af' }}>Join Our Legion</h3> */}
+           <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#1e40af' }}>Join Our Legion</h3>
            <p style={{ color: '#1e3a8a', marginBottom: '2rem', maxWidth: '500px', margin: '0 auto 2rem' }}>
              Become an active member in serving the Blessed Mother. All Catholics are welcome to join.
            </p>
