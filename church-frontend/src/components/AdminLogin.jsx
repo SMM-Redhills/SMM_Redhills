@@ -14,6 +14,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
     setError('');
 
     try {
+      /* Commenting out old direct fetch
       const response = await fetch('http://localhost:8000/api/auth/login/', {
         method: 'POST',
         headers: {
@@ -24,16 +25,24 @@ const AdminLogin = ({ onLoginSuccess }) => {
       
       if (response.ok) {
         const data = await response.json();
-        const userData = { username: credentials.username, token: data.token || data.access };
-        localStorage.setItem('adminToken', data.token || data.access);
-        localStorage.setItem('adminUser', JSON.stringify(userData));
-        onLoginSuccess(userData);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Invalid username or password');
+        ... 
       }
+      */
+
+      // New code using centralized adminAPI
+      const response = await adminAPI.login(credentials);
+      
+      const data = response.data;
+      const userData = { username: credentials.username, token: data.token || data.access };
+      localStorage.setItem('adminToken', data.token || data.access);
+      localStorage.setItem('adminUser', JSON.stringify(userData));
+      onLoginSuccess(userData);
     } catch (error) {
-      setError('Login failed. Please check your connection.');
+      if (error.response) {
+        setError(error.response.data.error || 'Invalid username or password');
+      } else {
+        setError('Login failed. Please check your connection.');
+      }
     } finally {
       setLoading(false);
     }

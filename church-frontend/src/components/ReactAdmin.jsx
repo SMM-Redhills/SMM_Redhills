@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { adminAPI } from '../services/adminApi';
+import { BASE_URL } from '../services/api';
 import { PenSquare, Trash2, Plus, X, CheckCircle } from 'lucide-react';
 
 const ReactAdmin = () => {
@@ -470,12 +471,12 @@ const ReactAdmin = () => {
       }}>
         {data.map(item => {
           const imageUrl = item.image 
-            ? (typeof item.image === 'string' && item.image.startsWith('http') ? item.image : `http://localhost:8000${item.image}`)
+            ? (typeof item.image === 'string' && item.image.startsWith('http') ? item.image : `${BASE_URL}${item.image}`)
             : item.image_url;
             
           const isVideo = item.media_type === 'video';
           const videoUrl = item.video 
-             ? (typeof item.video === 'string' && item.video.startsWith('http') ? item.video : `http://localhost:8000${item.video}`)
+             ? (typeof item.video === 'string' && item.video.startsWith('http') ? item.video : `${BASE_URL}${item.video}`)
              : item.video_url;
 
           return (
@@ -659,7 +660,7 @@ const ReactAdmin = () => {
       // Image/URL fields - show thumbnail or truncated URL
       if (col === 'image' || col === 'media_url' || col === 'logo') {
         if (!value) return <span style={{color: '#9ca3af', fontStyle: 'italic'}}>—</span>;
-        const imageUrl = typeof value === 'string' && value.startsWith('http') ? value : `http://localhost:8000${value}`;
+        const imageUrl = typeof value === 'string' && value.startsWith('http') ? value : `${BASE_URL}${value}`;
         return (
           <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
             <img 

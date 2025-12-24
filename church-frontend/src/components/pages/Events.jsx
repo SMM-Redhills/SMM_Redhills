@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Calendar, MapPin, Clock, Users } from 'lucide-react';
-import { churchAPI } from '../../services/api';
+import { churchAPI, BASE_URL } from '../../services/api';
 import { adminAPI } from '../../services/adminApi';
 
 const Events = ({ onNavigate, scrollToSection }) => {
@@ -270,7 +270,22 @@ const Events = ({ onNavigate, scrollToSection }) => {
                   onClick={async () => {
                     if (formData.title && formData.description && formData.date && formData.time && formData.location) {
                       try {
+                        /* Commenting out old direct fetch
                         const response = await fetch('http://localhost:8000/api/events/', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Token ${localStorage.getItem('adminToken')}`,
+                          },
+                          body: JSON.stringify({
+                            ...formData,
+                            datetime: `${formData.date}T${formData.time}`
+                          })
+                        });
+                        */
+
+                        // New code using dynamic BASE_URL
+                        const response = await fetch(`${BASE_URL}/api/events/`, {
                           method: 'POST',
                           headers: {
                             'Content-Type': 'application/json',
