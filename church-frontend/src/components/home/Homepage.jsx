@@ -3,7 +3,7 @@ import { Calendar, Clock, Users, Book, Heart, Youtube, Camera, MapPin } from 'lu
 import BannerSlider from './BannerSlider';
 import { churchAPI } from '../../services/api';
 
-const Homepage = ({ openModal }) => {
+const Homepage = ({ openModal, onNavigate }) => {
   const [news, setNews] = useState([]);
   const [events, setEvents] = useState([]);
   const [schedules, setSchedules] = useState([]);
@@ -218,7 +218,7 @@ const Homepage = ({ openModal }) => {
                     <h3 className="schedule-card-title">{s.title}</h3>
                     <p className="schedule-card-time">{s.day}: {s.time}</p>
                     <p className="schedule-card-time" style={{fontSize: '0.8rem'}}>{s.location}</p>
-                    <button className="schedule-button">More details...</button>
+                    <button className="schedule-button" onClick={() => onNavigate('schedule')}>More details...</button>
                   </div>
                 ))
               ) : (
@@ -227,7 +227,7 @@ const Homepage = ({ openModal }) => {
                     <Clock className="schedule-icon" />
                     <h3 className="schedule-card-title">Visiting Hours</h3>
                     <p className="schedule-card-time">Daily: 6:00 AM - 8:00 PM</p>
-                    <button className="schedule-button">More details...</button>
+                    <button className="schedule-button" onClick={() => onNavigate('schedule')}>More details...</button>
                   </div>
                   <div className="hover-lift schedule-card">
                     <Users className="schedule-icon" />
@@ -237,7 +237,7 @@ const Homepage = ({ openModal }) => {
                       <p>Evening: 6:00 PM - 7:30 PM</p>
                       <p>Weekdays: 6:00 AM</p>
                     </div>
-                    <button className="schedule-button">More details...</button>
+                    <button className="schedule-button" onClick={() => onNavigate('schedule')}>More details...</button>
                   </div>
                 </>
               )}
@@ -274,37 +274,37 @@ const Homepage = ({ openModal }) => {
           >
             <h2 className="scroll-slide-up section-title">Quick Links</h2>
             <div className="scroll-stagger-children quick-links-grid">
-              <div className="hover-lift quick-link-card">
+              <div className="hover-lift quick-link-card" onClick={() => onNavigate('news-events')} style={{ cursor: 'pointer' }}>
                 <Calendar className="quick-link-icon" />
                 <h3 className="quick-link-title">News & Events</h3>
                 <p className="quick-link-description">Stay updated with our latest news and upcoming events</p>
                 <button className="quick-link-button">Read More →</button>
               </div>
-              <div className="hover-lift quick-link-card">
+              <div className="hover-lift quick-link-card" onClick={() => window.open('https://m.youtube.com/@st.marymagdaleneredhills4475', '_blank')} style={{ cursor: 'pointer' }}>
                 <Youtube className="quick-link-icon" />
                 <h3 className="quick-link-title">YouTube Channel</h3>
                 <p className="quick-link-description">Watch our services and spiritual content online</p>
-                <button className="quick-link-button" onClick={() => window.open('https://m.youtube.com/@st.marymagdaleneredhills4475', '_blank')}>View Channel →</button>
+                <button className="quick-link-button">View Channel →</button>
               </div>
-              <div className="hover-lift quick-link-card">
+              <div className="hover-lift quick-link-card" onClick={() => onNavigate('gallery')} style={{ cursor: 'pointer' }}>
                 <Camera className="quick-link-icon" />
                 <h3 className="quick-link-title">Our Gallery</h3>
                 <p className="quick-link-description">Explore photos and videos from our church community</p>
                 <button className="quick-link-button">View Gallery →</button>
               </div>
-              <div className="hover-lift quick-link-card">
+              <div className="hover-lift quick-link-card" onClick={() => onNavigate('prayers')} style={{ cursor: 'pointer' }}>
                 <Book className="quick-link-icon" />
                 <h3 className="quick-link-title">Our Prayers</h3>
                 <p className="quick-link-description">Find prayers in English and Tamil for your spiritual journey</p>
                 <button className="quick-link-button">View Prayers →</button>
               </div>
-              <div className="hover-lift quick-link-card">
+              <div className="hover-lift quick-link-card" onClick={() => window.open('https://maps.app.goo.gl/4zitN6vtu4G89oXz6', '_blank')} style={{ cursor: 'pointer' }}>
                 <MapPin className="quick-link-icon" />
                 <h3 className="quick-link-title">Our Location</h3>
                 <p className="quick-link-description">Visit us at Redhills, Chennai - Find directions</p>
-                <button className="quick-link-button" onClick={() => window.open('https://maps.app.goo.gl/4zitN6vtu4G89oXz6', '_blank')}>View Location →</button>
+                <button className="quick-link-button">View Location →</button>
               </div>
-              <div className="hover-lift quick-link-card">
+              <div className="hover-lift quick-link-card" onClick={() => onNavigate('contact')} style={{ cursor: 'pointer' }}>
                 <Heart className="quick-link-icon" />
                 <h3 className="quick-link-title">Contact Us</h3>
                 <p className="quick-link-description">Get in touch with us for any queries or support</p>

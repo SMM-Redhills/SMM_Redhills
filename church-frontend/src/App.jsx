@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import ReactDOM from 'react-dom';
 import './App.css'; 
 // Common components
 import Header from './components/common/Header.jsx';
@@ -225,77 +226,81 @@ const App = () => {
   const isAdminPage = currentPage === 'admin' || currentPage === 'react-admin';
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Scroll Progress Bar - hide on admin */}
-      {!isAdminPage && (
-        <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
-          <div 
-            className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ease-out"
-            style={{ width: `${scrollProgress * 100}%` }}
+    <>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        {/* Scroll Progress Bar - hide on admin */}
+        {!isAdminPage && (
+          <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
+            <div 
+              className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ease-out"
+              style={{ width: `${scrollProgress * 100}%` }}
+            />
+          </div>
+        )}
+
+        {/* Header - hide on admin */}
+        {!isAdminPage && (
+          <Header 
+            currentPage={currentPage} 
+            onNavigate={handleNavigation}
+            scrollToSection={scrollToSection}
+            isScrolling={isScrolling}
           />
-        </div>
-      )}
-
-      {/* Header - hide on admin */}
-      {!isAdminPage && (
-        <Header 
-          currentPage={currentPage} 
-          onNavigate={handleNavigation}
-          scrollToSection={scrollToSection}
-          isScrolling={isScrolling}
-        />
-      )}
-      
-      <main 
-        ref={mainContentRef}
-        className={`flex-1 transition-all duration-500 ease-in-out ${
-          isLoading ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
-        }`}
-      >
-        {renderPage()}
-      </main>
-      
-      {/* Footer - hide on admin */}
-      {!isAdminPage && (
-        <Footer onNavigate={handleNavigation} scrollToSection={scrollToSection} />
-      )}
-
-      {/* Scroll to Top Button - hide on admin */}
-      {!isAdminPage && scrollProgress > 0.2 && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-40 animate-bounce cursor-pointer flex items-center justify-center"
-          aria-label="Scroll to top"
-          style={{ border: 'none' }}
+        )}
+        
+        <main 
+          ref={mainContentRef}
+          className={`flex-1 transition-all duration-500 ease-in-out ${
+            isLoading ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
+          }`}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-          </svg>
-        </button>
-      )}
+          {renderPage()}
+        </main>
+        
+        {/* Footer - hide on admin */}
+        {!isAdminPage && (
+          <Footer onNavigate={handleNavigation} scrollToSection={scrollToSection} />
+        )}
 
-      {/* Global Modal */}
+        {/* Scroll to Top Button - hide on admin */}
+        {!isAdminPage && scrollProgress > 0.2 && (
+          <button
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-40 animate-bounce cursor-pointer flex items-center justify-center"
+            aria-label="Scroll to top"
+            style={{ border: 'none' }}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Global Modal - Outside flex container for proper overlay positioning */}
+
       {modalData.isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in" onClick={handleCloseModal}>
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl transform transition-all scale-100" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4 border-b pb-2">
-              <h2 className="text-xl font-bold text-gray-800">{modalData.title}</h2>
+        <div className="custom-modal-overlay" onClick={handleCloseModal}>
+          <div className="custom-modal-container" onClick={e => e.stopPropagation()}>
+            <div className="custom-modal-header">
+              <h2 className="custom-modal-title">{modalData.title}</h2>
               <button 
                 onClick={handleCloseModal}
-                className="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-100"
+                className="custom-modal-close-icon"
+                aria-label="Close modal"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <div className="text-gray-600 leading-relaxed whitespace-pre-line">
+            <div className="custom-modal-body">
               {modalData.content}
             </div>
-            <div className="mt-6 flex justify-end">
+            <div className="custom-modal-footer">
               <button 
                 onClick={handleCloseModal}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium"
+                className="custom-modal-close-btn"
               >
                 Close
               </button>
@@ -303,7 +308,7 @@ const App = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
