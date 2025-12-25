@@ -182,8 +182,10 @@ CSRF_TRUSTED_ORIGINS = [
     "https://smmc.netlify.app",
     "http://localhost:5173",
     "http://localhost:8000",
-    "http://127.0.0.1:8000",    
+    "http://127.0.0.1:8000",
+    "https://smm-redhills-1.onrender.com",
 ]
+
 
 # REST Framework settings
 REST_FRAMEWORK = {
