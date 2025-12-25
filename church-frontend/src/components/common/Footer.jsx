@@ -30,7 +30,7 @@ const Footer = ({ onNavigate = () => {} }) => {
               />
               <div>
                 <h3 style={{fontSize: '1.125rem', fontFamily: 'serif', fontWeight: 'bold', color: 'white', margin: 0}}>Saint Mary Magdalene</h3>
-                <p style={{fontSize: '0.875rem', color: '#94a3b8', margin: 0}}>church of St. Thomas</p>
+                <p style={{fontSize: '0.875rem', color: '#94a3b8', margin: 0}}>Church, Redhills</p>
               </div>
             </div>
             <p style={{color: '#94a3b8', fontSize: '0.875rem', lineHeight: '1.6', textAlign: 'center'}}>
