@@ -1,10 +1,8 @@
 // src/services/api.js
 import axios from 'axios';
-// const API_BASE_URL = 'http://localhost:8000/api
-// export const BASE_URL = 'http://localhost:8000'; // Old hardcoded URL
-export const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://smm-redhills-1.onrender.com';
 
-// export const BASE_URL = 'http://localhost:8000'; // Unsupported in production / fallback commented out
+// Update to local backend URL
+export const BASE_URL = 'http://localhost:8000';
 const API_BASE_URL = `${BASE_URL}/api`;
 
 const api = axios.create({

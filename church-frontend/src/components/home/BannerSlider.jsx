@@ -134,10 +134,19 @@ const BannerSlider = () => {
       <div style={{position: 'relative', width: '100%', height: '100%', minHeight: '400px'}}>
         {slides.map((slide, index) => {
            const getFullImageUrl = (slide) => {
-             const url = slide.media_url || slide.image_url || slide.image;
+             // Try all possible field names for the image
+             const url = slide.image || slide.media_url || slide.image_url;
+             
              if (!url) return '';
              if (typeof url !== 'string') return '';
-             if (url.startsWith('http')) return url;
+             
+             // If it's already a full URL (e.g. Cloudinary), return it
+             if (url.startsWith('http') || url.startsWith('//')) return url;
+             
+             // If it matches a Cloudinary pattern but missing protocol
+             if (url.includes('cloudinary.com')) return `https://${url}`;
+             
+             // Fallback for local development media files
              return `${BASE_URL}${url}`;
            };
            const imageUrl = getFullImageUrl(slide);

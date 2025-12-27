@@ -1,9 +1,7 @@
 import axios from 'axios';
-// const API_BASE_URL = 'http://localhost:8000/api';
-// const API_BASE_URL = 'http://localhost:8000/api'; // Old hardcoded URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://smm-redhills-1.onrender.com/api';
 
-// const API_BASE_URL = 'http://localhost:8000/api'; // Unsupported in production / fallback commented out
+// Environment variable determines URL (VITE_API_BASE_URL for production, fallback for local)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
 const adminApi = axios.create({
   baseURL: API_BASE_URL,
@@ -20,6 +18,18 @@ adminApi.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Force logout on token error
+adminApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401 && error.response.data.detail === 'Invalid token.') {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/admin/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const adminAPI = {
   // Auth
@@ -66,19 +76,38 @@ export const adminAPI = {
   createPrayer: (data) => adminApi.post('/admin/prayers/', data),
   updatePrayer: (id, data) => adminApi.put(`/admin/prayers/${id}/`, data),
   deletePrayer: (id) => adminApi.delete(`/admin/prayers/${id}/`),
+  
+  // Banner Slides
+  getBannerSlides: () => adminApi.get('/admin/banner-slides/'),
+  createBannerSlide: (data) => adminApi.post('/admin/banner-slides/', data),
+  updateBannerSlide: (id, data) => adminApi.put(`/admin/banner-slides/${id}/`, data),
+  deleteBannerSlide: (id) => adminApi.delete(`/admin/banner-slides/${id}/`),
+
+  // Parish Groups
+  getGroups: () => adminApi.get('/admin/groups/'),
+  getGroup: (id) => adminApi.get(`/admin/groups/${id}/`),
+  createGroup: (data) => adminApi.post('/admin/groups/', data),
+  updateGroup: (id, data) => adminApi.put(`/admin/groups/${id}/`, data),
+  deleteGroup: (id) => adminApi.delete(`/admin/groups/${id}/`),
+
+  // Group Activities
+  getGroupActivities: (groupId) => adminApi.get(`/admin/groups/${groupId}/activities/`),
+  createGroupActivity: (groupId, data) => adminApi.post(`/admin/groups/${groupId}/activities/`, data),
+  updateGroupActivity: (groupId, activityId, data) => adminApi.put(`/admin/groups/${groupId}/activities/${activityId}/`, data),
+  deleteGroupActivity: (groupId, activityId) => adminApi.delete(`/admin/groups/${groupId}/activities/${activityId}/`),
 
   // Generic methods
   listItems: (endpoint) => adminApi.get(`/admin/${endpoint}/`),
   createItem: (endpoint, data) => {
     const isFormData = data instanceof FormData;
     return adminApi.post(`/admin/${endpoint}/`, data, {
-      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }
+      headers: isFormData ? { 'Content-Type': undefined } : { 'Content-Type': 'application/json' }
     });
   },
   updateItem: (endpoint, id, data) => {
     const isFormData = data instanceof FormData;
     return adminApi.put(`/admin/${endpoint}/${id}/`, data, {
-      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }
+      headers: isFormData ? { 'Content-Type': undefined } : { 'Content-Type': 'application/json' }
     });
   },
   deleteItem: (endpoint, id) => adminApi.delete(`/admin/${endpoint}/${id}/`),

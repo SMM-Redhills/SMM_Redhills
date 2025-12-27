@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import dj_database_url
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -43,7 +46,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    'cloudinary_storage',
     "django.contrib.staticfiles",
+    'cloudinary',
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
@@ -161,19 +166,33 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', '').strip(),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY', '').strip(),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', '').strip(),
+}
+
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET']
+)
+
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "https://raise-stating-accessory-higher.trycloudflare.com",
-    "https://harvard-oral-entirely-pound.trycloudflare.com",
-    "https://smmc.netlify.app",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+#     "http://127.0.0.1:5173",
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "https://raise-stating-accessory-higher.trycloudflare.com",
+#     "https://harvard-oral-entirely-pound.trycloudflare.com",
+#     "https://smmc.netlify.app",
+# ]
 
-# CORS_ALLOW_ALL_ORIGINS = True # Commented out to use specific allowed origins below
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
