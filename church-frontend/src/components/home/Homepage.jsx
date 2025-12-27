@@ -111,13 +111,13 @@ const Homepage = ({ openModal, onNavigate }) => {
                   site valuable, especially if you are planning a pilgrimage to our church.
                 </p>
                 <p className="church-paragraph">
-                  As the heart of our parish, the church serves as the spiritual home to nearly 1,600 families.
-                  It is a vibrant community of faith, welcoming over 200,000 visitors each year.
+                  As the heart of our parish, the church serves as the spiritual home to nearly 400 families.
+                  It is a vibrant community of faith, welcoming over 15000 visitors each year.
                 </p>
-                <p className="church-paragraph">
-                  We offer three daily Masses and more than five hours of confessions each day, along with a
+                {/* <p className="church-paragraph">
+                  We offer one daily Masses and more than five hours of confessions each day, along with a
                   Catholic bookstore to serve the needs of our visitors.
-                </p>
+                </p> */}
               </div>
             </div>
           </section>
