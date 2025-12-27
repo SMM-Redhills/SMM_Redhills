@@ -159,7 +159,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# Using Django's default storage; WhiteNoise middleware still serves files
 
 
 # Media files
