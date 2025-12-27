@@ -1,7 +1,15 @@
 import axios from 'axios';
 
-// Environment variable determines URL (VITE_API_BASE_URL for production, fallback for local)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+// Detect production environment by hostname
+const isProduction = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('netlify.app') || 
+   window.location.hostname.includes('smmc') ||
+   window.location.hostname.includes('smmcredhills'));
+
+// Use Render backend in production, environment variable, or localhost fallback
+const API_BASE_URL = isProduction 
+  ? 'https://smm-redhills-1.onrender.com/api'
+  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api');
 
 const adminApi = axios.create({
   baseURL: API_BASE_URL,
