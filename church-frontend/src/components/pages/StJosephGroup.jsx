@@ -24,6 +24,7 @@ const StJosephGroup = ({ onNavigate }) => {
   }, []);
 
   const [groupData, setGroupData] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,15 +100,41 @@ const StJosephGroup = ({ onNavigate }) => {
               <h2 style={{ fontSize: '1.75rem', fontWeight: '700', color: '#0f172a', marginBottom: '1.5rem'}}>
                  What We Have Done
               </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                   {groupData.activities.map(activity => (
-                      <div key={activity.id} style={{ border: '1px solid #e2e8f0', borderRadius: '1rem', overflow: 'hidden' }}>
-                          {activity.media_url && (
-                             <img src={activity.media_url} alt={activity.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
-                          )}
-                          <div style={{ padding: '1.5rem' }}>
-                             <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '0.5rem', color: '#334155' }}>{activity.title}</h3>
-                             <p style={{ color: '#475569', fontSize: '0.95rem' }}>{activity.description}</p>
+                      <div key={activity.id} style={{ display: 'flex', flexWrap: 'wrap', backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+                          <div style={{ flex: '1 1 300px', minHeight: '250px' }}>
+                              {activity.media_url ? (
+                                 <img src={activity.media_url} alt={activity.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                  <div style={{ width: '100%', height: '100%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
+                                      No Image
+                                  </div>
+                              )}
+                          </div>
+                          <div style={{ flex: '2 1 300px', padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                             <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#1e293b' }}>{activity.title}</h3>
+                             <p style={{ color: '#475569', fontSize: '1.1rem', lineHeight: '1.75', marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                {activity.description}
+                             </p>
+                             <button 
+                                style={{ 
+                                    alignSelf: 'flex-start',
+                                    padding: '0.75rem 1.5rem', 
+                                    backgroundColor: 'transparent', 
+                                    color: '#d97706', 
+                                    border: '1px solid #d97706', 
+                                    borderRadius: '0.5rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => { e.target.style.backgroundColor = '#d97706'; e.target.style.color = 'white'; }}
+                                onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#d97706'; }}
+                                onClick={() => setSelectedActivity(activity)}
+                             >
+                                Read More
+                             </button>
                           </div>
                       </div>
                   ))}
@@ -165,6 +192,79 @@ const StJosephGroup = ({ onNavigate }) => {
         </div>
 
       </div>
+      {/* Activity Details Modal */}
+      {selectedActivity && (
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+            backdropFilter: 'blur(4px)'
+          }}
+          onClick={() => setSelectedActivity(null)}
+        >
+          <div 
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '1.5rem',
+              width: '100%',
+              maxWidth: '600px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              position: 'relative',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ position: 'relative' }}>
+              {selectedActivity.media_url && (
+                <img 
+                  src={selectedActivity.media_url} 
+                  alt={selectedActivity.title} 
+                  style={{ width: '100%', height: '300px', objectFit: 'cover' }} 
+                />
+              )}
+              <button 
+                onClick={() => setSelectedActivity(null)}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  backgroundColor: 'white',
+                  borderRadius: '50%',
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                  zIndex: 10,
+                  fontSize: '1.25rem',
+                  color: '#64748b'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div style={{ padding: '2rem' }}>
+              <h3 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '1rem', color: '#1e293b' }}>
+                {selectedActivity.title}
+              </h3>
+              <p style={{ color: '#475569', lineHeight: '1.8', fontSize: '1.05rem', whiteSpace: 'pre-wrap' }}>
+                {selectedActivity.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

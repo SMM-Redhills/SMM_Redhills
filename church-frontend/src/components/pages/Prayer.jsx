@@ -230,15 +230,19 @@ const Prayer = () => {
   const fetchPrayers = async () => {
     try {
       const response = await churchAPI.getPrayers();
-      const data = response.data.results || response.data;
-      if (data.length > 0) {
-        setPrayersList(data);
-      } else {
-        setPrayersList(prayers); // Initial fallback
-      }
+      const backendPrayers = response.data.results || response.data;
+      // Always keep static prayers and add backend prayers to them
+      // Use 'backend_' prefix for backend prayer IDs to avoid conflicts
+      const formattedBackendPrayers = backendPrayers.map(p => ({
+        ...p,
+        id: `backend_${p.id}`
+      }));
+      // Merge: static prayers first, then backend prayers
+      setPrayersList([...prayers, ...formattedBackendPrayers]);
     } catch (error) {
       console.error('Error fetching prayers:', error);
-      setPrayersList(prayers); // Initial fallback
+      // On error, just show static prayers
+      setPrayersList(prayers);
     }
   };
 
@@ -335,8 +339,12 @@ const handleAddPrayerSubmit = async (e) => {
   if (prayerFormData.title && prayerFormData.content) {
     try {
       const response = await adminAPI.createPrayer(prayerFormData);
-      const newPrayer = response.data;
-      setPrayersList([newPrayer, ...prayersList]);
+      const newPrayer = {
+        ...response.data,
+        id: `backend_${response.data.id}` // Add prefix to avoid ID conflicts
+      };
+      // Add new prayer at the end (after static prayers)
+      setPrayersList([...prayersList, newPrayer]);
       setShowAddPrayerForm(false);
       setPrayerFormData({ title: '', content: '', category: 'Traditional', language: 'english' });
       alert('Prayer added successfully!');

@@ -130,7 +130,7 @@ class Prayer(models.Model):
     def __str__(self):
         return self.title
 class BannerSlide(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, blank=True)
     subtitle = models.CharField(max_length=300, blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='banners/', blank=True, null=True)

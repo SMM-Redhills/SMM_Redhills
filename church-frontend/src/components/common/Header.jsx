@@ -72,7 +72,7 @@ const Header = ({ currentPage = 'home', onNavigate = () => {} }) => {
                 <h1 style={{fontSize: '1.25rem', fontFamily: 'serif', fontWeight: '700', color: '#1e293b', margin: 0}}>
                   Saint Mary Magdalene
                 </h1>
-                <p style={{fontSize: '0.875rem', color: '#64748b', margin: 0}}>church of St. Mary Magdelene </p>
+                <p style={{fontSize: '0.875rem', color: '#64748b', margin: 0}}>church of St. Mary Magdalene </p>
               </div>
             </button>
 

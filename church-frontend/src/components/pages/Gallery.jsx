@@ -36,16 +36,9 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
 
   const categories = [
     'All', 
-    'Architecture', 
+    'Youth', 
     'Celebrations', 
-    'Worship', 
-    'Community', 
-    'Prayer', 
-    'Youth',
-    'General',
-    ...new Set(galleryItems.map(item => item.category).filter(cat => ![
-      'All', 'Architecture', 'Celebrations', 'Worship', 'Community', 'Prayer', 'Youth', 'General'
-    ].includes(cat)))
+    'Worship'
   ];
 
   const filteredItems = activeCategory === 'All'

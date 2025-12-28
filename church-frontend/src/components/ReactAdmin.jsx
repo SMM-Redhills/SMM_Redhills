@@ -176,7 +176,7 @@ const ReactAdmin = () => {
             { name: 'image_url', type: 'text', placeholder: 'Image URL', condition: (data) => data.media_type === 'image' },
             { name: 'video', type: 'file', label: 'Upload Video', condition: (data) => data.media_type === 'video' },
             { name: 'video_url', type: 'text', placeholder: 'Or Video URL', condition: (data) => data.media_type === 'video' },
-            { name: 'category', type: 'select', options: ['Architecture', 'Celebrations', 'Worship', 'Community', 'Prayer', 'Youth', 'General'], required: true }
+            { name: 'category', type: 'select', options: ['Youth', 'General', 'Celebrations', 'Worship'], required: true }
           ];
         case 'schedule':
           return [
@@ -190,12 +190,12 @@ const ReactAdmin = () => {
           return [
             { name: 'title', type: 'text', placeholder: 'Prayer Title', required: true },
             { name: 'content', type: 'textarea', placeholder: 'Prayer Content', required: true },
-            { name: 'category', type: 'text', placeholder: 'Category', required: true },
+            { name: 'category', type: 'select', options: ['General', 'Celebrations', 'Worship', 'Youth'], label: 'Category', required: true },
             { name: 'language', type: 'select', options: ['English', 'Tamil'], required: true }
           ];
         case 'banner-slides':
           return [
-            { name: 'title', type: 'text', placeholder: 'Slide Title', required: true },
+            { name: 'title', type: 'text', placeholder: 'Slide Title' },
             { name: 'subtitle', type: 'text', placeholder: 'Subtitle' },
             { name: 'description', type: 'textarea', placeholder: 'Description' },
             { name: 'image', type: 'file', label: 'Upload Image' },
