@@ -209,6 +209,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://marymagdeleneredhills.in",
     "https://www.marymagdeleneredhills.in",
     "http://www.marymagdeleneredhills.in",
+    "https://api.marymagdeleneredhills.in",
+    "http://api.marymagdeleneredhills.in",
 ]
 
 
