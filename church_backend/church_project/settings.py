@@ -205,6 +205,10 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "https://smm-redhills-1.onrender.com",
+    "https://marymagdeleneredhills.in",
+    "http://marymagdeleneredhills.in",
+    "https://www.marymagdeleneredhills.in",
+    "http://www.marymagdeleneredhills.in",
 ]
 
 
