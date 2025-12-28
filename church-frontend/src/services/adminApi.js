@@ -4,7 +4,8 @@ import axios from 'axios';
 const isProduction = typeof window !== 'undefined' && 
   (window.location.hostname.includes('netlify.app') || 
    window.location.hostname.includes('smmc') ||
-   window.location.hostname.includes('smmcredhills'));
+   window.location.hostname.includes('smmcredhills') ||
+   window.location.hostname.includes('marymagdeleneredhills.in'));
 
 // Use Render backend in production, environment variable, or localhost fallback
 const API_BASE_URL = isProduction 
