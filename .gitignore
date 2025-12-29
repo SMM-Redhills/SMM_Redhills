@@ -121,19 +121,20 @@ lerna-debug.log*
 *.rar
 *.7z
 
-Images (if not needed)
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.bmp
-*.svg
 
-Videos (if not needed)
-*.mp4
-*.avi
-*.mov
-*.wmv
+# Images (if not needed)
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.bmp
+# *.svg
+
+# Videos (if not needed)
+# *.mp4
+# *.avi
+# *.mov
+# *.wmv
 
 # Documents (if not needed)
 # *.pdf
