@@ -6,39 +6,39 @@ const BannerSlider = () => {
   const DEFAULT_SLIDES = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=1920&h=800&fit=crop',
-      title: 'Welcome to Saint Mary Magdalene Church',
-      subtitle: 'A place of faith, hope, and love in Redhills'
+      image: '/assets/images/wishes.jpg',
+      // title: '',
+      // subtitle: ''
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1519491050282-cf00c82424cf?w=1920&h=800&fit=crop',
-      title: 'Holy Mass & Worship',
-      subtitle: 'Join us for daily Mass and Sunday celebrations'
+      image: '/assets/images/church.jpg',
+      // title: '',
+      // subtitle: ''
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&h=800&fit=crop',
-      title: 'Prayer & Devotion',
-      subtitle: 'Find peace and spiritual guidance in our community'
+      image: '/assets/images/redeem.jpeg',
+      // title: '',
+      // subtitle: ''
     },
     {
       id: 4,
-      image: 'https://images.unsplash.com/photo-1445445290350-18a3b86e0b5a?w=1920&h=800&fit=crop',
-      title: 'Community & Fellowship',
-      subtitle: 'Be part of our vibrant parish family'
+      image: '/assets/images/crib.jpg',
+      title: '',
+      subtitle: ''
     },
     {
       id: 5,
-      image: 'https://images.unsplash.com/photo-1508185159346-bb1c7fc1d2c7?w=1920&h=800&fit=crop',
-      title: 'Sacraments & Blessings',
-      subtitle: 'Experience the grace of God through our sacraments'
+      image: '/assets/images/SMMCR1.jpg',
+      title: '',
+      subtitle: ''
     },
     {
       id: 6,
-      image: 'https://images.unsplash.com/photo-1543465077-db45d34b88a5?w=1920&h=800&fit=crop',
-      title: 'Youth & Family Ministry',
-      subtitle: 'Growing together in faith across generations'
+      image: '/assets/images/pic.jpeg',
+      title: '',
+      subtitle: ''
     }
   ];
 
@@ -145,8 +145,11 @@ const BannerSlider = () => {
              
              // If it matches a Cloudinary pattern but missing protocol
              if (url.includes('cloudinary.com')) return `https://${url}`;
+
+             // Local assets in public folder
+             if (url.startsWith('/assets/')) return url;
              
-             // Fallback for local development media files
+             // Fallback for local development media files from backend
              return `${BASE_URL}${url}`;
            };
            const imageUrl = getFullImageUrl(slide);
@@ -182,8 +185,8 @@ const BannerSlider = () => {
                 justifyContent: 'center'
             }}>
               <div style={{textAlign: 'center', color: 'white', padding: '0 1rem', maxWidth: '800px'}}>
-                <h1 className="hero-title" style={{marginBottom: '1rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>{slide.title}</h1>
-                <p className="hero-subtitle" style={{marginBottom: '1.5rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>{slide.subtitle}</p>
+                {slide.title && <h1 className="hero-title" style={{marginBottom: '1rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>{slide.title}</h1>}
+                {slide.subtitle && <p className="hero-subtitle" style={{marginBottom: '1.5rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>{slide.subtitle}</p>}
                 {/* We include the address button only if it's the specific saint mary magdalene slide/layout, OR we keep it generic? 
                     The user asked to "make THIS section ... a slider". 
                     So the content of the slider usually replaces the content of the section.
