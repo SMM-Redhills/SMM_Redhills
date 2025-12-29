@@ -141,7 +141,12 @@ const BannerSlider = () => {
              if (typeof url !== 'string') return '';
              
              // If it's already a full URL (e.g. Cloudinary), return it
-             if (url.startsWith('http') || url.startsWith('//')) return url;
+             if (url.startsWith('http') || url.startsWith('//')) {
+               if (url.includes('cloudinary.com') && url.startsWith('http:')) {
+                 return url.replace('http:', 'https:');
+               }
+               return url;
+             }
              
              // If it matches a Cloudinary pattern but missing protocol
              if (url.includes('cloudinary.com')) return `https://${url}`;
