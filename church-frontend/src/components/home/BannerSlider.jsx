@@ -7,36 +7,36 @@ const BannerSlider = () => {
     {
       id: 1,
       image: '/assets/images/wishes.jpg',
-      // title: '',
-      // subtitle: ''
+      mobile_image: '/assets/images/wishes.jpg',
     },
     {
       id: 2,
       image: '/assets/images/church.jpg',
-      // title: '',
-      // subtitle: ''
+      mobile_image: '/assets/images/smm.jpg',
     },
     {
       id: 3,
       image: '/assets/images/redeem.jpeg',
-      // title: '',
-      // subtitle: ''
+      mobile_image: '/assets/images/SMMCR.jpg',
     },
     {
       id: 4,
       image: '/assets/images/crib.jpg',
+      mobile_image: '/assets/images/crib.jpeg',
       title: '',
       subtitle: ''
     },
     {
       id: 5,
       image: '/assets/images/SMMCR1.jpg',
+      mobile_image: '/assets/images/mary_of_magdala1.png',
       title: '',
       subtitle: ''
     },
     {
       id: 6,
       image: '/assets/images/pic.jpeg',
+      mobile_image: '/assets/images/pic1.jpeg',
       title: '',
       subtitle: ''
     }
@@ -133,9 +133,9 @@ const BannerSlider = () => {
       {/* Slides */}
       <div style={{position: 'relative', width: '100%', height: '100%', minHeight: '400px'}}>
         {slides.map((slide, index) => {
-           const getFullImageUrl = (slide) => {
+           const getFullImageUrl = (imagePath) => {
              // Try all possible field names for the image
-             const url = slide.image || slide.media_url || slide.image_url;
+             const url = imagePath;
              
              if (!url) return '';
              if (typeof url !== 'string') return '';
@@ -157,7 +157,9 @@ const BannerSlider = () => {
              // Fallback for local development media files from backend
              return `${BASE_URL}${url}`;
            };
-           const imageUrl = getFullImageUrl(slide);
+           
+           const desktopImageUrl = getFullImageUrl(slide.image || slide.media_url || slide.image_url);
+           const mobileImageUrl = getFullImageUrl(slide.mobile_image) || desktopImageUrl;
            
            return (
           <div
@@ -173,11 +175,14 @@ const BannerSlider = () => {
               zIndex: index === currentSlide ? 1 : 0
             }}
           >
-            <img
-              src={imageUrl}
-              alt={slide.title}
-              style={{width: '100%', height: '100%', objectFit: 'cover', minHeight: '400px'}}
-            />
+            <picture>
+              <source media="(max-width: 768px)" srcSet={mobileImageUrl} />
+              <img
+                src={desktopImageUrl}
+                alt={slide.title}
+                style={{width: '100%', height: '100%', objectFit: 'cover', minHeight: '400px'}}
+              />
+            </picture>
             <div style={{
                 position: 'absolute', 
                 top: 0, 
