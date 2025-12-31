@@ -113,7 +113,7 @@ const Donate = ({ onNavigate }) => {
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                      </div>
-                     <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#64748b' }}>St. Mary Magdalene Church</span>
+                     <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#64748b' }}>St. Mother Theresa Church</span>
                 </div>
 
                 {/* Row 2: Pic 2 */}
