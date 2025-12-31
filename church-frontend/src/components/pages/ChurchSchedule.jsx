@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Clock, Heart, Users, Book, Cross, Calendar, Bell, Star, Plus, Trash2 } from 'lucide-react';
+import { Clock, Heart, Users, Book, Cross, Calendar, Bell, Star, Plus } from 'lucide-react';
 import { churchAPI } from '../../services/api';
 import { adminAPI } from '../../services/adminApi';
 
@@ -40,18 +40,6 @@ const ChurchSchedule = () => {
     date.setHours(parseInt(hours));
     date.setMinutes(parseInt(minutes));
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      try {
-        await adminAPI.deleteItem('schedule', id);
-        fetchSchedules(); // Refresh list
-      } catch (error) {
-        console.error('Error deleting item:', error);
-        alert('Failed to delete item');
-      }
-    }
   };
 
   // Initialize scroll animations
@@ -200,23 +188,13 @@ const ChurchSchedule = () => {
                     <div key={item.id} className="schedule-item">
                       <div>
                         <span className="item-name block">{item.title}</span>
-                        {item.description && <span className="text-sm text-gray-500">{item.description}</span>}
+                        {item.description && <span className="item-description">{item.description}</span>}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="item-time">{formatTime(item.time)}</span>
-                        {isAdmin && (
-                          <button 
-                            onClick={() => handleDelete(item.id)}
-                            className="text-red-500 hover:text-red-700 p-1"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        )}
-                      </div>
+                      <span className="item-time">{formatTime(item.time)}</span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 italic text-center py-2">No Sunday services scheduled</p>
+                  <p className="no-items-message">No Sunday services scheduled</p>
                 )}
               </div>
             </div>
@@ -233,25 +211,15 @@ const ChurchSchedule = () => {
                     <div key={item.id} className="schedule-item">
                        <div>
                         <span className="item-name block">{item.title} 
-                          <span className="text-xs font-normal text-gray-500 ml-2">({item.day})</span>
+                          <span className="item-day">({item.day})</span>
                         </span>
-                        {item.description && <span className="text-sm text-gray-500">{item.description}</span>}
+                        {item.description && <span className="item-description">{item.description}</span>}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="item-time">{formatTime(item.time)}</span>
-                        {isAdmin && (
-                          <button 
-                            onClick={() => handleDelete(item.id)}
-                            className="text-red-500 hover:text-red-700 p-1"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        )}
-                      </div>
+                      <span className="item-time">{formatTime(item.time)}</span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 italic text-center py-2">No Weekday services scheduled</p>
+                  <p className="no-items-message">No Weekday services scheduled</p>
                 )}
               </div>
             </div>
@@ -738,6 +706,27 @@ const ChurchSchedule = () => {
         .item-time {
           color: #0284c7;
           font-weight: 500;
+        }
+
+        .item-description {
+          display: block;
+          font-size: 0.875rem;
+          color: #64748b;
+          margin-top: 0.25rem;
+        }
+
+        .item-day {
+          font-size: 0.75rem;
+          font-weight: 400;
+          color: #64748b;
+          margin-left: 0.5rem;
+        }
+
+        .no-items-message {
+          color: #64748b;
+          font-style: italic;
+          text-align: center;
+          padding: 0.5rem 0;
         }
 
         .special-time {
