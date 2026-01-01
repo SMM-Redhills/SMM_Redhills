@@ -46,6 +46,41 @@ class GallerySerializer(serializers.ModelSerializer):
         model = Gallery
         fields = ['id', 'title', 'description', 'media_type', 'image', 'image_url', 'video', 'video_url', 'category', 'created_at', 'media_url']
 
+    def validate(self, data):
+        """Validate file uploads based on media type"""
+        media_type = data.get('media_type', 'image')
+        
+        # Validate video uploads
+        if media_type == 'video':
+            video_file = data.get('video')
+            if video_file and hasattr(video_file, 'size'):
+                # Max 100MB for videos
+                max_size = 100 * 1024 * 1024  # 100MB in bytes
+                if video_file.size > max_size:
+                    raise serializers.ValidationError({
+                        'video': f'Video file size cannot exceed 100MB. Current size: {video_file.size / (1024*1024):.2f}MB'
+                    })
+                
+                # Validate video file type
+                allowed_video_types = ['video/mp4', 'video/mpeg', 'video/quicktime', 'video/x-msvideo', 'video/webm']
+                if hasattr(video_file, 'content_type') and video_file.content_type not in allowed_video_types:
+                    raise serializers.ValidationError({
+                        'video': f'Invalid video format. Allowed formats: MP4, MPEG, MOV, AVI, WebM'
+                    })
+        
+        # Validate image uploads
+        elif media_type == 'image':
+            image_file = data.get('image')
+            if image_file and hasattr(image_file, 'size'):
+                # Max 10MB for images
+                max_size = 10 * 1024 * 1024  # 10MB in bytes
+                if image_file.size > max_size:
+                    raise serializers.ValidationError({
+                        'image': f'Image file size cannot exceed 10MB. Current size: {image_file.size / (1024*1024):.2f}MB'
+                    })
+        
+        return data
+
     def get_media_url(self, obj):
         if obj.media_type == 'video':
             if obj.video:

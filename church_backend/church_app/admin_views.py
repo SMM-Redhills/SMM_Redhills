@@ -79,6 +79,37 @@ class AdminGalleryViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+    
+    def create(self, request, *args, **kwargs):
+        """Override create to add better error handling for file uploads"""
+        try:
+            # Log the incoming data for debugging
+            print(f"Gallery upload - Media Type: {request.data.get('media_type')}")
+            if 'video' in request.FILES:
+                video_file = request.FILES['video']
+                print(f"Video file: {video_file.name}, Size: {video_file.size / (1024*1024):.2f}MB")
+            if 'image' in request.FILES:
+                image_file = request.FILES['image']
+                print(f"Image file: {image_file.name}, Size: {image_file.size / (1024*1024):.2f}MB")
+            
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            print(f"Error creating gallery item: {str(e)}")
+            return Response(
+                {'error': str(e), 'detail': 'Failed to upload media file'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    def update(self, request, *args, **kwargs):
+        """Override update to add better error handling for file uploads"""
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            print(f"Error updating gallery item: {str(e)}")
+            return Response(
+                {'error': str(e), 'detail': 'Failed to update media file'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class AdminScheduleViewSet(viewsets.ModelViewSet):
     queryset = Schedule.objects.all()
@@ -127,7 +158,7 @@ def mark_message_read(request, message_id):
 @login_required
 @user_passes_test(is_staff)
 def admin_dashboard_view(request):
-    """Render admin dashboard HTML"""
+    """Render admin dashboard using Django template"""
     from django.utils import timezone
     
     stats = {
@@ -139,119 +170,4 @@ def admin_dashboard_view(request):
         'gallery_items': Gallery.objects.count(),
     }
     
-    dashboard_html = f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Church Admin Dashboard</title>
-        <style>
-            * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; }}
-            .header {{ background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 2rem; }}
-            .container {{ max-width: 1200px; margin: 0 auto; padding: 2rem; }}
-            .stats-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }}
-            .stat-card {{ background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 4px solid #0284c7; }}
-            .stat-number {{ font-size: 2.5rem; font-weight: bold; color: #0284c7; margin-bottom: 0.5rem; }}
-            .stat-label {{ color: #64748b; font-weight: 500; }}
-            .sections {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }}
-            .section {{ background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }}
-            .section-header {{ background: #f1f5f9; padding: 1.5rem; border-bottom: 1px solid #e2e8f0; }}
-            .section-content {{ padding: 1.5rem; }}
-            .btn {{ background: #0284c7; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; text-decoration: none; display: inline-block; margin: 0.25rem; font-weight: 500; }}
-            .btn:hover {{ background: #0369a1; }}
-            .nav-links {{ background: white; padding: 1rem; margin-bottom: 2rem; border-radius: 12px; }}
-            .nav-links a {{ color: #0284c7; text-decoration: none; margin-right: 2rem; font-weight: 500; }}
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <div class="container">
-                <h1>🏛️ Saint Mary Magdalene Church</h1>
-                <p>Admin Dashboard - Manage your church content and community</p>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="nav-links">
-                <a href="/admin/">Django Admin</a>
-                <a href="/api/admin-dashboard/">Dashboard</a>
-                <a href="https://smmc.netlify.app/admin">Frontend Admin</a>
-                <!-- <a href="http://localhost:5173/admin">Frontend Admin</a> -->
-                <a href="/admin/logout/">Logout</a>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">{stats['unread_messages']}</div>
-                    <div class="stat-label">Unread Messages</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{stats['prayer_requests']}</div>
-                    <div class="stat-label">Prayer Requests</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{stats['published_news']}</div>
-                    <div class="stat-label">Published News</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{stats['upcoming_events']}</div>
-                    <div class="stat-label">Upcoming Events</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{stats['gallery_items']}</div>
-                    <div class="stat-label">Gallery Items</div>
-                </div>
-            </div>
-
-            <div class="sections">
-                <div class="section">
-                    <div class="section-header">
-                        <h3>📧 Contact Messages</h3>
-                    </div>
-                    <div class="section-content">
-                        <a href="/admin/church_app/contactmessage/" class="btn">Manage Messages</a>
-                        <a href="/api/admin/contact-messages/" class="btn">API View</a>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-header">
-                        <h3>🙏 Prayer Requests</h3>
-                    </div>
-                    <div class="section-content">
-                        <a href="/admin/church_app/prayerrequest/" class="btn">Manage Requests</a>
-                        <a href="/api/admin/prayer-requests/" class="btn">API View</a>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-header">
-                        <h3>📰 Content Management</h3>
-                    </div>
-                    <div class="section-content">
-                        <a href="/admin/church_app/news/" class="btn">Manage News</a>
-                        <a href="/admin/church_app/event/" class="btn">Manage Events</a>
-                        <a href="/api/admin/news/" class="btn">News API</a>
-                        <a href="/api/admin/events/" class="btn">Events API</a>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-header">
-                        <h3>🎨 Media & Schedule</h3>
-                    </div>
-                    <div class="section-content">
-                        <a href="/admin/church_app/gallery/" class="btn">Manage Gallery</a>
-                        <a href="/admin/church_app/schedule/" class="btn">Manage Schedule</a>
-                        <a href="/api/admin/gallery/" class="btn">Gallery API</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-    
-    return HttpResponse(dashboard_html)
+    return render(request, 'admin/dashboard.html', {'stats': stats})

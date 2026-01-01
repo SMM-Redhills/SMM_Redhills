@@ -168,6 +168,11 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# File Upload Settings - Allow larger files for videos
+# 100MB in bytes
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', '').strip(),
     'API_KEY': os.getenv('CLOUDINARY_API_KEY', '').strip(),

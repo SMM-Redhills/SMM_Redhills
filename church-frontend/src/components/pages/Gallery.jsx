@@ -401,15 +401,81 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
                 <X size={24} />
               </button>
               
-              {selectedMedia.media_type === 'video' ? (
-                <video 
-                  className="viewer-media"
-                  src={selectedMedia.media_url || selectedMedia.video_url || (selectedMedia.video ? (selectedMedia.video.startsWith('http') ? selectedMedia.video : `${BASE_URL}${selectedMedia.video.startsWith('/') ? '' : '/'}${selectedMedia.video}`) : '')}
-                  autoPlay
-                  controls
-                  playsInline
-                />
-              ) : (
+              {selectedMedia.media_type === 'video' ? (() => {
+                // Get the video URL
+                let videoUrl = selectedMedia.media_url || selectedMedia.video_url || (selectedMedia.video ? (selectedMedia.video.startsWith('http') ? selectedMedia.video : `${BASE_URL}${selectedMedia.video.startsWith('/') ? '' : '/'}${selectedMedia.video}`) : '');
+                
+                // Check if it's a Google Drive URL and convert to embed format
+                const isGoogleDrive = videoUrl && (videoUrl.includes('drive.google.com') || videoUrl.includes('docs.google.com'));
+                if (isGoogleDrive) {
+                  // Extract file ID from various Google Drive URL formats
+                  let fileId = '';
+                  
+                  // Format: https://drive.google.com/file/d/FILE_ID/view
+                  if (videoUrl.includes('/file/d/')) {
+                    fileId = videoUrl.split('/file/d/')[1]?.split('/')[0];
+                  }
+                  // Format: https://drive.google.com/open?id=FILE_ID
+                  else if (videoUrl.includes('open?id=')) {
+                    fileId = videoUrl.split('open?id=')[1]?.split('&')[0];
+                  }
+                  // Format: https://docs.google.com/file/d/FILE_ID
+                  else if (videoUrl.includes('docs.google.com/file/d/')) {
+                    fileId = videoUrl.split('/file/d/')[1]?.split('/')[0];
+                  }
+                  
+                  if (fileId) {
+                    return (
+                      <iframe
+                        className="viewer-media"
+                        src={`https://drive.google.com/file/d/${fileId}/preview`}
+                        title={selectedMedia.title}
+                        frameBorder="0"
+                        allow="autoplay"
+                        allowFullScreen
+                      />
+                    );
+                  }
+                }
+                
+                // Check if it's a YouTube URL and convert to embed format
+                const isYouTube = videoUrl && (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be'));
+                if (isYouTube) {
+                  // Extract video ID from various YouTube URL formats
+                  let videoId = '';
+                  if (videoUrl.includes('youtube.com/watch?v=')) {
+                    videoId = videoUrl.split('v=')[1]?.split('&')[0];
+                  } else if (videoUrl.includes('youtu.be/')) {
+                    videoId = videoUrl.split('youtu.be/')[1]?.split('?')[0];
+                  } else if (videoUrl.includes('youtube.com/embed/')) {
+                    videoId = videoUrl.split('embed/')[1]?.split('?')[0];
+                  }
+                  
+                  if (videoId) {
+                    return (
+                      <iframe
+                        className="viewer-media"
+                        src={`https://www.youtube.com/embed/${videoId}`}
+                        title={selectedMedia.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    );
+                  }
+                }
+                
+                // For other direct video URLs, use regular video tag
+                return (
+                  <video 
+                    className="viewer-media"
+                    src={videoUrl}
+                    autoPlay
+                    controls
+                    playsInline
+                  />
+                );
+              })() : (
                 <img 
                   className="viewer-media"
                   src={selectedMedia.image ? (selectedMedia.image.startsWith('http') ? selectedMedia.image : `${BASE_URL}${selectedMedia.image.startsWith('/') ? '' : '/'}${selectedMedia.image}`) : (selectedMedia.image_url || selectedMedia.media_url)}
