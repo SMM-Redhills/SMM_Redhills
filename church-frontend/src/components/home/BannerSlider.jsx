@@ -7,7 +7,7 @@ const BannerSlider = () => {
     {
       id: 1,
       image: '/assets/images/wishes.jpg',
-      mobile_image: '/assets/images/wishes.jpg',
+      mobile_image: '/assets/images/wishes1.jpg',
     },
     {
       id: 2,
@@ -189,7 +189,7 @@ const BannerSlider = () => {
                 left: 0, 
                 width: '100%', 
                 height: '100%', 
-                backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                backgroundColor: 'transparent', 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center'

@@ -5,7 +5,7 @@ import './App.css';
 import Header from './components/common/Header.jsx';
 import Footer from './components/common/Footer.jsx';
 import Loading from './components/common/Loading.jsx';
-
+import PongalDecorations from './components/common/PongalDecorations.jsx';
 // Home components - Keep Homepage eager loaded for immediate First Contentful Paint
 import Homepage from './components/home/Homepage.jsx';
 
@@ -247,7 +247,7 @@ const App = () => {
             isScrolling={isScrolling}
           />
         )}
-        
+        <PongalDecorations />
         <main 
           ref={mainContentRef}
           className={`flex-1 transition-all duration-500 ease-in-out ${

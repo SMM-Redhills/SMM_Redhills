@@ -17,6 +17,37 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
   const [galleryItems, setGalleryItems] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const handleOpenMedia = async (item) => {
+    setSelectedMedia(item);
+    if (item.media_type === 'video') {
+      // Small delay to ensure modal is rendered
+      setTimeout(() => {
+        const overlay = document.querySelector('.viewer-overlay');
+        if (overlay && overlay.requestFullscreen) {
+          overlay.requestFullscreen().catch(err => {
+            console.log('Fullscreen request failed:', err);
+          });
+        }
+      }, 100);
+    }
+  };
+
+  const handleCloseMedia = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(err => console.log(err));
+    }
+    setSelectedMedia(null);
+  };
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
@@ -259,6 +290,13 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
           animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
+        .viewer-container.is-video {
+          max-width: 100vw;
+          max-height: 100vh;
+          height: 100%;
+          justify-content: center;
+        }
+
         .viewer-close {
           position: absolute;
           top: -3.5rem;
@@ -289,6 +327,13 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
           object-fit: contain;
           background: black;
+        }
+
+        .viewer-container.is-video .viewer-media {
+          max-height: 100vh;
+          width: 100%;
+          height: 100%;
+          border-radius: 0;
         }
 
         .viewer-title {
@@ -377,7 +422,7 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
                         }}
                       />
                     )}
-                    <div className="gallery-item-overlay" onClick={() => setSelectedMedia(item)}>
+                    <div className="gallery-item-overlay" onClick={() => handleOpenMedia(item)}>
                       {item.media_type === 'video' ? <Video size={48} color="white" /> : <Camera size={48} color="white" />}
                     </div>
                   </div>
@@ -395,9 +440,13 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
 
         {/* Media Viewer Modal */}
         {selectedMedia && (
-          <div className="viewer-overlay" onClick={() => setSelectedMedia(null)}>
-            <div className="viewer-container" onClick={(e) => e.stopPropagation()}>
-              <button className="viewer-close" onClick={() => setSelectedMedia(null)}>
+          <div className="viewer-overlay" onClick={handleCloseMedia}>
+            <div className={`viewer-container ${selectedMedia.media_type === 'video' ? 'is-video' : ''}`} onClick={(e) => e.stopPropagation()}>
+              <button 
+                className="viewer-close" 
+                style={selectedMedia.media_type === 'video' ? { top: '1rem', right: '1rem', opacity: 0.5 } : {}}
+                onClick={handleCloseMedia}
+              >
                 <X size={24} />
               </button>
               
@@ -428,10 +477,10 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
                     return (
                       <iframe
                         className="viewer-media"
-                        src={`https://drive.google.com/file/d/${fileId}/preview`}
+                        src={`https://drive.google.com/file/d/${fileId}/preview?autoplay=1`}
                         title={selectedMedia.title}
                         frameBorder="0"
-                        allow="autoplay"
+                        allow="autoplay; fullscreen"
                         allowFullScreen
                       />
                     );
@@ -455,10 +504,10 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
                     return (
                       <iframe
                         className="viewer-media"
-                        src={`https://www.youtube.com/embed/${videoId}`}
+                        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
                         title={selectedMedia.title}
                         frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                         allowFullScreen
                       />
                     );
