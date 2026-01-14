@@ -247,7 +247,7 @@ const App = () => {
             isScrolling={isScrolling}
           />
         )}
-        <PongalDecorations />
+        {!isAdminPage && <PongalDecorations />}
         <main 
           ref={mainContentRef}
           className={`flex-1 transition-all duration-500 ease-in-out ${
