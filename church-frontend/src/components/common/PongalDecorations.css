@@ -95,33 +95,46 @@
     bottom: -20px;
     left: -20px;
     width: 300px;
-    opacity: 0.8;
+    /* opacity: 0.8; */
     z-index: 9999;
     animation: spinSlow 90s linear infinite;
 }
 
 /* --- MOBILE RESPONSIVENESS --- */
-@media (max-width: 768px) {
+/* --- MOBILE & TABLET RESPONSIVENESS --- */
+@media (max-width: 1024px) {
     .pongal-pot-container {
-        width: 90px;
-        /* Move down to clear sticky headers which are usually 60-80px */
+        width: 100px;
+        height: 120px;
         top: 80px;
         left: 0px;
     }
 
     .pongal-sugarcane-container {
-        /* Large visibility on mobile */
-        bottom: 90px;
-        /* Elevated to avoid ScrollTop FAB */
-        right: -10px;
-        top: auto;
-        width: 100px;
+        /* Force stick to bottom right corner */
+        bottom: 0px !important;
+        right: 0px !important;
+        top: auto !important;
+        width: 130px;
+        /* Slightly wider */
+        height: auto;
     }
 
     .pongal-kolam-container {
-        width: 180px;
+        width: 220px;
         bottom: -30px;
         left: -30px;
-        opacity: 0.4;
+        /* opacity: 0.8; */
+    }
+}
+
+/* Extra tweak for very small screens */
+@media (max-width: 480px) {
+    .pongal-sugarcane-container {
+        width: 200px;
+        /* Increased from 100px prevents shrinking */
+        height: auto;
+        bottom: -10px !important;
+        right: -10px !important;
     }
 }
