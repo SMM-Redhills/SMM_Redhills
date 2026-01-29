@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
-import './App.css'; 
+import './App.css';
 // Common components
 import Header from './components/common/Header.jsx';
 import Footer from './components/common/Footer.jsx';
 import Loading from './components/common/Loading.jsx';
-import PongalDecorations from './components/common/PongalDecorations.jsx';
+// import PongalDecorations from './components/common/PongalDecorations.jsx';
 // Home components - Keep Homepage eager loaded for immediate First Contentful Paint
 import Homepage from './components/home/Homepage.jsx';
 
@@ -94,7 +94,7 @@ const App = () => {
     setIsLoading(true);
     // Smooth scroll to top before transition
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+
     setTimeout(() => {
       setCurrentPage(page);
       window.history.pushState({}, '', `/${page === 'home' ? '' : page}`);
@@ -140,7 +140,7 @@ const App = () => {
     switch (currentPage) {
       case 'home':
         return <Homepage onNavigate={handleNavigation} scrollToSection={scrollToSection} openModal={handleOpenModal} />;
-      
+
       // church   pages
       case 'church':
       case 'mission':
@@ -154,7 +154,7 @@ const App = () => {
       case 'parish':
       case 'archdiocese':
         return <About onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
-      
+
       // Group pages
       case 'youth-group':
         return <YouthGroup onNavigate={handleNavigation} />;
@@ -164,10 +164,10 @@ const App = () => {
         return <LegionOfMary onNavigate={handleNavigation} />;
       case 'st-joseph-group':
         return <StJosephGroup onNavigate={handleNavigation} />;
-      
+
       case 'news-events':
         return <News onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
-      
+
       // Gallery pages
       case 'gallery':
       case 'photos':
@@ -186,25 +186,25 @@ const App = () => {
             </div>
           </div>
         );
-      
+
       // Prayer pages
       case 'prayers':
       case 'english-prayers':
       case 'tamil-prayers':
         return <Prayer onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
-      
+
       case 'schedule':
         return <ChurchSchedule onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
-      
+
       case 'contact':
         return <Contact onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
-      
+
       case 'donate':
         return <Donate onNavigate={handleNavigation} />;
 
       case 'st-mary-magdalene':
         return <STMaryMagdelene onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
-      
+
       case 'admin':
       case 'react-admin':
         const adminToken = localStorage.getItem('adminToken');
@@ -216,7 +216,7 @@ const App = () => {
           }} />;
         }
         return <ReactAdmin />;
-      
+
       default:
         return <Homepage onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
     }
@@ -231,7 +231,7 @@ const App = () => {
         {/* Scroll Progress Bar - hide on admin */}
         {!isAdminPage && (
           <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ease-out"
               style={{ width: `${scrollProgress * 100}%` }}
             />
@@ -240,23 +240,22 @@ const App = () => {
 
         {/* Header - hide on admin */}
         {!isAdminPage && (
-          <Header 
-            currentPage={currentPage} 
+          <Header
+            currentPage={currentPage}
             onNavigate={handleNavigation}
             scrollToSection={scrollToSection}
             isScrolling={isScrolling}
           />
         )}
-        {!isAdminPage && <PongalDecorations />}
-        <main 
+        {/* {!isAdminPage && <PongalDecorations />} */}
+        <main
           ref={mainContentRef}
-          className={`flex-1 transition-all duration-500 ease-in-out ${
-            isLoading ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
-          }`}
+          className={`flex-1 transition-all duration-500 ease-in-out ${isLoading ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
+            }`}
         >
           {renderPage()}
         </main>
-        
+
         {/* Footer - hide on admin */}
         {!isAdminPage && (
           <Footer onNavigate={handleNavigation} scrollToSection={scrollToSection} />
@@ -284,7 +283,7 @@ const App = () => {
           <div className="custom-modal-container" onClick={e => e.stopPropagation()}>
             <div className="custom-modal-header">
               <h2 className="custom-modal-title">{modalData.title}</h2>
-              <button 
+              <button
                 onClick={handleCloseModal}
                 className="custom-modal-close-icon"
                 aria-label="Close modal"
@@ -298,7 +297,7 @@ const App = () => {
               {modalData.content}
             </div>
             <div className="custom-modal-footer">
-              <button 
+              <button
                 onClick={handleCloseModal}
                 className="custom-modal-close-btn"
               >
