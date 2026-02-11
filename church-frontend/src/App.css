@@ -32,6 +32,16 @@ html {
   }
 }
 
+/* Home News Card Styles */
+.home-news-location {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 /* Scroll-based Animation Classes */
 .scroll-fade-in {
   opacity: 0;

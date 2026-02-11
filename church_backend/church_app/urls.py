@@ -6,7 +6,6 @@ from . import views, auth_views
 # Public API router
 router = DefaultRouter()
 router.register(r'news', views.NewsViewSet)
-router.register(r'events', views.EventViewSet)
 router.register(r'gallery', views.GalleryViewSet)
 router.register(r'schedule', views.ScheduleViewSet)
 router.register(r'prayers', views.PrayerViewSet)  # Public endpoint

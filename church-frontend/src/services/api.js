@@ -28,8 +28,17 @@ export const churchAPI = {
   submitPrayerRequest: (data) => api.post('/submit-prayer/', data),
 
   // Content APIs
-  getNews: () => api.get('/news/'),
-  getEvents: () => api.get('/events/'),
+  getNews: (category = null) => {
+    const url = category ? `/news/?category=${category}` : '/news/';
+    return api.get(url);
+  },
+  getEvents: () => api.get('/news/?content_type=event'),
+  getLatestUpdates: () => api.get('/news/?category=news&content_type=news'),
+  getMassSchedule: () => api.get('/news/?category=mass'),
+  getFestivalEvents: () => api.get('/news/?category=festival'),
+  getSpecialMass: () => api.get('/news/?category=special%20mass'),
+  getLentMass: () => api.get('/news/?category=lent%20mass'),
+  getRetreat: () => api.get('/news/?category=retreat'),
   getGallery: () => api.get('/gallery/'),
   getSchedule: () => api.get('/schedule/'),
   getPrayers: () => api.get('/prayers/'),

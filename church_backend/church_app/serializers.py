@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
+from .models import ContactMessage, PrayerRequest, News, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,23 +13,11 @@ class PrayerRequestSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     media_url = serializers.SerializerMethodField()
+    content_type_display = serializers.CharField(source='get_content_type_display', read_only=True)
+    
     class Meta:
         model = News
-        fields = ['id', 'title', 'content', 'image', 'image_url', 'date', 'category', 'is_published', 'created_at', 'media_url']
-    
-    def get_media_url(self, obj):
-        if obj.image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
-        return obj.image_url
-
-class EventSerializer(serializers.ModelSerializer):
-    media_url = serializers.SerializerMethodField()
-    class Meta:
-        model = Event
-        fields = ['id', 'title', 'description', 'date', 'location', 'image', 'image_url', 'created_at', 'media_url']
+        fields = ['id', 'title', 'content', 'description', 'image', 'image_url', 'date', 'time', 'location', 'content_type', 'content_type_display', 'category', 'is_published', 'created_at', 'media_url']
     
     def get_media_url(self, obj):
         if obj.image:

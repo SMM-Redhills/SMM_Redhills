@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
+from .models import ContactMessage, PrayerRequest, News, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
@@ -22,12 +22,6 @@ class NewsAdmin(admin.ModelAdmin):
     list_filter = ['category', 'is_published', 'date']
     search_fields = ['title', 'content']
     list_editable = ['is_published']
-
-@admin.register(Event)
-class EventAdmin(admin.ModelAdmin):
-    list_display = ['title', 'date', 'location', 'created_at']
-    list_filter = ['date', 'location']
-    search_fields = ['title', 'description']
 
 @admin.register(Gallery)
 class GalleryAdmin(admin.ModelAdmin):

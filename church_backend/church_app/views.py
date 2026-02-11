@@ -3,10 +3,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
+from .models import ContactMessage, PrayerRequest, News, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 from .serializers import (
     ContactMessageSerializer, PrayerRequestSerializer, NewsSerializer, 
-    EventSerializer, GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer,
+    GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer,
     ParishGroupSerializer, GroupActivitySerializer
 )
 
@@ -31,15 +31,6 @@ def submit_prayer_request(request):
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = News.objects.filter(is_published=True)
     serializer_class = NewsSerializer
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context
-
-class EventViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

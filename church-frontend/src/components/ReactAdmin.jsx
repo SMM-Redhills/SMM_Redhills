@@ -28,8 +28,7 @@ const ReactAdmin = () => {
   const models = [
     { key: 'contactmessage', name: 'Contact Messages', api: 'contact-messages' },
     { key: 'prayerrequest', name: 'Prayer Requests', api: 'prayer-requests' },
-    { key: 'news', name: 'News', api: 'news', canAdd: true },
-    { key: 'event', name: 'Events', api: 'events', canAdd: true },
+    { key: 'news', name: 'News & Events', api: 'news', canAdd: true },
     { key: 'gallery', name: 'Gallery', api: 'gallery', canAdd: true },
     { key: 'schedule', name: 'Schedule', api: 'schedule', canAdd: true },
     { key: 'prayers', name: 'Prayers', api: 'prayers', canAdd: true },
@@ -76,13 +75,20 @@ const ReactAdmin = () => {
     try {
       const model = models.find(m => m.key === activeModel);
       
-      let dataToSend;
-      // Check if any field is a File
-      const hasFile = Object.values(formData).some(val => val instanceof File);
+      let dataToSend = { ...formData };
       
-      if (hasFile || editingItem) { // Always use FormData for updates to be safe, or logic below
-        // Actually, always use FormData if file field exists in model? 
-        // Safer to just check data.
+      // Handle date/time combination for events
+      if (activeModel === 'news' && formData.content_type === 'event' && formData.date && formData.time) {
+        // Combine date and time for events
+        const eventDateTime = new Date(`${formData.date}T${formData.time}`);
+        dataToSend.date = eventDateTime.toISOString().split('T')[0]; // Keep date part
+        // Keep time separate as the backend expects it
+      }
+      
+      // Check if any field is a File
+      const hasFile = Object.values(dataToSend).some(val => val instanceof File);
+      
+      if (hasFile || editingItem) {
         dataToSend = new FormData();
         Object.keys(formData).forEach(key => {
           const value = formData[key];
@@ -91,12 +97,16 @@ const ReactAdmin = () => {
             if ((key === 'image' || key === 'logo' || key === 'video') && !(value instanceof File)) {
                 return;
             }
-            // For date fields, ensure proper formatting if needed, but standard input value is usually fine.
-            dataToSend.append(key, value);
+            // Handle date/time combination for events
+            if (activeModel === 'news' && formData.content_type === 'event' && key === 'date' && formData.date && formData.time) {
+              const eventDateTime = new Date(`${formData.date}T${formData.time}`);
+              dataToSend.append(key, eventDateTime.toISOString().split('T')[0]);
+              dataToSend.append('time', formData.time);
+            } else {
+              dataToSend.append(key, value);
+            }
           }
         });
-      } else {
-        dataToSend = formData;
       }
 
       let response;
@@ -149,23 +159,17 @@ const ReactAdmin = () => {
       switch(activeModel) {
         case 'news':
           return [
-            { name: 'title', type: 'text', placeholder: 'News Title', required: true },
-            { name: 'content', type: 'textarea', placeholder: 'News Content', required: true },
+            { name: 'content_type', type: 'select', options: ['news', 'event'], label: 'Content Type', required: true },
+            { name: 'title', type: 'text', placeholder: 'Title', required: true },
+            { name: 'content', type: 'textarea', placeholder: 'Content', required: true },
+            { name: 'description', type: 'textarea', placeholder: 'Description (for events)', condition: (data) => data.content_type === 'event' },
             { name: 'image', type: 'file', label: 'Upload Image' },
             { name: 'image_url', type: 'text', placeholder: 'Or Image URL' },
             { name: 'date', type: 'date', placeholder: 'Date', required: true },
-            { name: 'category', type: 'text', placeholder: 'Category' },
-            { name: 'is_published', type: 'checkbox', label: 'Published' }
-          ];
-        case 'event':
-          return [
-            { name: 'title', type: 'text', placeholder: 'Event Title', required: true },
-            { name: 'description', type: 'textarea', placeholder: 'Event Description', required: true },
-            { name: 'image', type: 'file', label: 'Upload Image' },
-            { name: 'image_url', type: 'text', placeholder: 'Or Image URL' },
-            { name: 'date', type: 'datetime-local', placeholder: 'Event Date', required: true },
-            { name: 'location', type: 'text', placeholder: 'Location' },
-            { name: 'category', type: 'text', placeholder: 'Category' }
+            { name: 'time', type: 'time', placeholder: 'Time', condition: (data) => data.content_type === 'event' },
+            { name: 'location', type: 'text', placeholder: 'Location', condition: (data) => data.content_type === 'event' },
+            { name: 'category', type: 'select', options: ['news', 'mass', 'festival', 'special mass', 'lent mass', 'retreat', 'General'], required: true },
+            { name: 'is_published', type: 'checkbox', label: 'Published', condition: (data) => data.content_type === 'news' }
           ];
         case 'gallery':
           return [
@@ -626,8 +630,12 @@ const ReactAdmin = () => {
       
       if (col === 'id') return { ...baseStyle, width: '60px', textAlign: 'center', fontWeight: '600', color: '#6b7280' };
       if (col === 'title') return { ...baseStyle, minWidth: '150px', maxWidth: '200px', fontWeight: '500' };
+      if (col === 'content_type' || col === 'content_type_display') return { ...baseStyle, width: '100px', textAlign: 'center', fontWeight: '500' };
       if (col === 'subtitle' || col === 'description' || col === 'content') return { ...baseStyle, maxWidth: '180px' };
       if (col === 'image' || col === 'image_url' || col === 'media_url' || col === 'video_url' || col === 'video') return { ...baseStyle, maxWidth: '200px' };
+      if (col === 'date') return { ...baseStyle, width: '120px', textAlign: 'center' };
+      if (col === 'time') return { ...baseStyle, width: '80px', textAlign: 'center' };
+      if (col === 'location') return { ...baseStyle, minWidth: '120px', maxWidth: '150px' };
       if (col === 'order') return { ...baseStyle, width: '80px', textAlign: 'center' };
       if (col === 'is_active' || col === 'is_published' || col === 'is_read' || col === 'is_public') return { ...baseStyle, width: '80px', textAlign: 'center' };
       return baseStyle;
@@ -636,6 +644,26 @@ const ReactAdmin = () => {
     // Render cell content based on column type
     const renderCellContent = (col, value, item) => {
       if (value === null || value === undefined) return <span style={{color: '#9ca3af', fontStyle: 'italic'}}>—</span>;
+      
+      // Content type - show with badge
+      if (col === 'content_type' || col === 'content_type_display') {
+        const displayValue = col === 'content_type_display' ? value : (value === 'news' ? 'News' : 'Event');
+        const bgColor = value === 'news' || value === 'News' ? '#dbeafe' : '#fef3c7';
+        const textColor = value === 'news' || value === 'News' ? '#1e40af' : '#92400e';
+        return (
+          <span style={{
+            backgroundColor: bgColor,
+            color: textColor,
+            padding: '0.25rem 0.75rem',
+            borderRadius: '9999px',
+            fontSize: '0.75rem',
+            fontWeight: '600',
+            textTransform: 'capitalize'
+          }}>
+            {displayValue}
+          </span>
+        );
+      }
       
       // Boolean fields
       if (typeof value === 'boolean') {

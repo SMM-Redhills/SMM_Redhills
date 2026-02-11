@@ -43,32 +43,26 @@ class PrayerRequest(models.Model):
         return f"{self.name} - {self.get_prayer_type_display()}"
 
 class News(models.Model):
+    CONTENT_TYPES = [
+        ('news', 'News'),
+        ('event', 'Event'),
+    ]
+    
     title = models.CharField(max_length=200)
     content = models.TextField()
+    description = models.TextField(blank=True, null=True, help_text="Additional description for events")
     image = models.ImageField(upload_to='news/', blank=True, null=True)
     image_url = models.URLField(max_length=500, blank=True, null=True)
     date = models.DateField()
+    time = models.TimeField(blank=True, null=True, help_text="Time for events")
+    location = models.CharField(max_length=200, blank=True, null=True, help_text="Location for events")
+    content_type = models.CharField(max_length=10, choices=CONTENT_TYPES, default='news')
     category = models.CharField(max_length=50, default='General')
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-date']
-
-    def __str__(self):
-        return self.title
-
-class Event(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    date = models.DateTimeField()
-    location = models.CharField(max_length=200, default="Main Church")
-    image = models.ImageField(upload_to='events/', blank=True, null=True)
-    image_url = models.URLField(max_length=500, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['date']
 
     def __str__(self):
         return self.title

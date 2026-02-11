@@ -4,16 +4,30 @@ import { churchAPI } from '../../services/api';
 
 const News = ({ onNavigate, scrollToSection }) => {
   const [news, setNews] = useState([]);
+  const [filteredNews, setFilteredNews] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const observerRef = useRef(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    category: 'Updates',
+    category: 'news',
+    content_type: 'news',
     image_url: ''
   });
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedNews, setSelectedNews] = useState(null);
+
+  const categories = [
+    { value: 'all', label: 'All' },
+    { value: 'news', label: 'News' },
+    { value: 'mass', label: 'Mass' },
+    { value: 'festival', label: 'Festival' },
+    { value: 'special mass', label: 'Special Mass' },
+    { value: 'lent mass', label: 'Lent Mass' },
+    { value: 'retreat', label: 'Retreat' },
+    { value: 'General', label: 'General' }
+  ];
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
@@ -23,13 +37,18 @@ const News = ({ onNavigate, scrollToSection }) => {
 
   const fetchNews = async () => {
     try {
-      const response = await churchAPI.getNews();
+      const response = await churchAPI.getNews(selectedCategory === 'all' ? null : selectedCategory);
       const data = response.data.results || response.data;
       setNews(data);
+      setFilteredNews(data);
     } catch (error) {
       console.error('Error fetching news:', error);
     }
   };
+
+  useEffect(() => {
+    fetchNews();
+  }, [selectedCategory]);
 
   // Initialize scroll animations
   useEffect(() => {
@@ -67,9 +86,13 @@ const News = ({ onNavigate, scrollToSection }) => {
   
   const getCategoryIcon = (category) => {
     switch(category) {
-      case 'Celebration': return <Calendar style={{width: '1.25rem', height: '1.25rem'}} />;
-      case 'Updates': return <Clock style={{width: '1.25rem', height: '1.25rem'}} />;
-      case 'Community': return <Users style={{width: '1.25rem', height: '1.25rem'}} />;
+      case 'news': return <Calendar style={{width: '1.25rem', height: '1.25rem'}} />;
+      case 'mass': return <Clock style={{width: '1.25rem', height: '1.25rem'}} />;
+      case 'festival': return <Calendar style={{width: '1.25rem', height: '1.25rem'}} />;
+      case 'special mass': return <Calendar style={{width: '1.25rem', height: '1.25rem'}} />;
+      case 'lent mass': return <Calendar style={{width: '1.25rem', height: '1.25rem'}} />;
+      case 'retreat': return <Calendar style={{width: '1.25rem', height: '1.25rem'}} />;
+      case 'General': return <Users style={{width: '1.25rem', height: '1.25rem'}} />;
       default: return <Calendar style={{width: '1.25rem', height: '1.25rem'}} />;
     }
   };
@@ -98,13 +121,13 @@ const News = ({ onNavigate, scrollToSection }) => {
 
   const handleCancelClick = () => {
     setShowAddForm(false);
-    setFormData({ title: '', content: '', category: 'Updates', image_url: '' });
+    setFormData({ title: '', content: '', category: 'news', content_type: 'news', image_url: '' });
   };
 
   const handleAddNewsClick = async () => {
     if (formData.title && formData.content) {
       try {
-        const response = await fetch('http://localhost:8001/api/church_app/news/', {
+        const response = await fetch('https://smm-redhills-1.onrender.com/api/admin/news/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -117,15 +140,9 @@ const News = ({ onNavigate, scrollToSection }) => {
         });
         
         if (response.ok) {
-          const newNews = {
-            id: Date.now(),
-            ...formData,
-            date: new Date().toLocaleDateString('en-GB'),
-            created_at: new Date().toISOString()
-          };
-          setNews([newNews, ...news]);
+          await fetchNews(); // Refresh the news list
           setShowAddForm(false);
-          setFormData({ title: '', content: '', category: 'Updates', image_url: '' });
+          setFormData({ title: '', content: '', category: 'news', content_type: 'news', image_url: '' });
           alert('News added successfully!');
         } else {
           alert('Error adding news. Please try again.');
@@ -445,11 +462,42 @@ const News = ({ onNavigate, scrollToSection }) => {
         {/* Main Content */}
         <div className="main-content">
           <div className="content-container">
+            {/* Category Filter */}
+            <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              {categories.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => setSelectedCategory(cat.value)}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '0.5rem',
+                    backgroundColor: selectedCategory === cat.value ? '#0284c7' : '#ffffff',
+                    color: selectedCategory === cat.value ? '#ffffff' : '#374151',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#f3f4f6';
+                    e.target.style.borderColor = '#d1d5db';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = selectedCategory === cat.value ? '#0284c7' : '#ffffff';
+                    e.target.style.borderColor = '#e2e8f0';
+                  }}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+            
             <div 
               id="news-content"
               className="scroll-stagger-children smooth-scroll-section news-grid"
             >
-              {news.map((n, index) => (
+              {filteredNews.map((n, index) => (
                 <div 
                   key={n.id} 
                   className="hover-lift news-card"

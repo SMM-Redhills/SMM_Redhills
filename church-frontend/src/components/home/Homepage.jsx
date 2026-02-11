@@ -16,7 +16,7 @@ const Homepage = ({ openModal, onNavigate }) => {
   const fetchData = async () => {
     try {
       const [newsRes, eventsRes, scheduleRes] = await Promise.all([
-        churchAPI.getNews(),
+        churchAPI.getLatestUpdates(),
         churchAPI.getEvents(),
         churchAPI.getSchedule()
       ]);

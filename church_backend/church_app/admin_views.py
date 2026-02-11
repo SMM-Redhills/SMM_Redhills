@@ -7,10 +7,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
-from .models import ContactMessage, PrayerRequest, News, Event, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
+from .models import ContactMessage, PrayerRequest, News, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 from .serializers import (
     ContactMessageSerializer, PrayerRequestSerializer, NewsSerializer, 
-    EventSerializer, GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer,
+    GallerySerializer, ScheduleSerializer, PrayerSerializer, BannerSlideSerializer,
     ParishGroupSerializer, GroupActivitySerializer
 )
 
@@ -25,10 +25,10 @@ def admin_stats(request):
         'unread_messages': ContactMessage.objects.filter(is_read=False).count(),
         'total_messages': ContactMessage.objects.count(),
         'prayer_requests': PrayerRequest.objects.count(),
-        'published_news': News.objects.filter(is_published=True).count(),
-        'total_news': News.objects.count(),
-        'upcoming_events': Event.objects.filter(date__gte=timezone.now()).count(),
-        'total_events': Event.objects.count(),
+        'published_news': News.objects.filter(is_published=True, content_type='news').count(),
+        'total_news': News.objects.filter(content_type='news').count(),
+        'upcoming_events': News.objects.filter(content_type='event', date__gte=timezone.now()).count(),
+        'total_events': News.objects.filter(content_type='event').count(),
         'gallery_items': Gallery.objects.count(),
         'schedules': Schedule.objects.count(),
         'prayers': Prayer.objects.count(),
@@ -50,17 +50,6 @@ class AdminPrayerRequestViewSet(viewsets.ModelViewSet):
 class AdminNewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
-    permission_classes = [IsAdminUser]
-    parser_classes = [MultiPartParser, FormParser, JSONParser]
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context
-
-class AdminEventViewSet(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
     permission_classes = [IsAdminUser]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
