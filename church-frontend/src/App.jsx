@@ -5,6 +5,7 @@ import './App.css';
 import Header from './components/common/Header.jsx';
 import Footer from './components/common/Footer.jsx';
 import Loading from './components/common/Loading.jsx';
+import NotFound404 from './components/common/NotFound404.jsx';
 // import PongalDecorations from './components/common/PongalDecorations.jsx';
 // Home components - Keep Homepage eager loaded for immediate First Contentful Paint
 import Homepage from './components/home/Homepage.jsx';
@@ -139,6 +140,7 @@ const App = () => {
   const renderContent = () => {
     switch (currentPage) {
       case 'home':
+      case '':
         return <Homepage onNavigate={handleNavigation} scrollToSection={scrollToSection} openModal={handleOpenModal} />;
 
       // church   pages
@@ -218,18 +220,36 @@ const App = () => {
         return <ReactAdmin />;
 
       default:
-        return <Homepage onNavigate={handleNavigation} scrollToSection={scrollToSection} />;
+        return <NotFound404 onNavigate={handleNavigation} />;
     }
   };
 
   // Check if current page is admin
   const isAdminPage = currentPage === 'admin' || currentPage === 'react-admin';
+  
+  // Check if current page is 404 (not found)
+  const is404Page = () => {
+    const validPages = [
+      'home', '', // empty string for root
+      'church', 'mission', 'history', 'st-thomas', 'tomb-chapel', 'mylai-madha', 'papal-visit', 'museum', 'parish-team', 'parish', 'archdiocese',
+      'youth-group', 'vincent-de-paul', 'legion-of-mary', 'st-joseph-group',
+      'news-events',
+      'gallery', 'photos', 'videos',
+      'prayers', 'english-prayers', 'tamil-prayers',
+      'schedule',
+      'contact',
+      'donate',
+      'st-mary-magdalene',
+      'admin', 'react-admin'
+    ];
+    return !validPages.includes(currentPage);
+  };
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        {/* Scroll Progress Bar - hide on admin */}
-        {!isAdminPage && (
+      <div className={`min-h-screen ${is404Page() ? 'bg-gray-900' : 'bg-gray-50'} flex flex-col`}>
+        {/* Scroll Progress Bar - hide on admin and 404 */}
+        {!isAdminPage && !is404Page() && (
           <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
             <div
               className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ease-out"
@@ -238,8 +258,8 @@ const App = () => {
           </div>
         )}
 
-        {/* Header - hide on admin */}
-        {!isAdminPage && (
+        {/* Header - hide on admin and 404 */}
+        {!isAdminPage && !is404Page() && (
           <Header
             currentPage={currentPage}
             onNavigate={handleNavigation}
@@ -256,13 +276,13 @@ const App = () => {
           {renderPage()}
         </main>
 
-        {/* Footer - hide on admin */}
-        {!isAdminPage && (
+        {/* Footer - hide on admin and 404 */}
+        {!isAdminPage && !is404Page() && (
           <Footer onNavigate={handleNavigation} scrollToSection={scrollToSection} />
         )}
 
-        {/* Scroll to Top Button - hide on admin */}
-        {!isAdminPage && scrollProgress > 0.2 && (
+        {/* Scroll to Top Button - hide on admin and 404 */}
+        {!isAdminPage && !is404Page() && scrollProgress > 0.2 && (
           <button
             onClick={scrollToTop}
             className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-40 animate-bounce cursor-pointer flex items-center justify-center"

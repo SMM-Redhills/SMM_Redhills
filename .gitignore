@@ -164,3 +164,5 @@ junit.xml
 .runtime
 .history
 .eslintcache
+
+migrations/

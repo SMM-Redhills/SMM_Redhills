@@ -169,14 +169,18 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # File Upload Settings - Allow larger files for videos
-# 100MB in bytes
-DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
+# 200MB in bytes for video uploads
+DATA_UPLOAD_MAX_MEMORY_SIZE = 209715200  # 200MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 209715200  # 200MB
+# Maximum file upload size
+FILE_UPLOAD_MAX_SIZE = 209715200  # 200MB
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', '').strip(),
     'API_KEY': os.getenv('CLOUDINARY_API_KEY', '').strip(),
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', '').strip(),
+    'VIDEO_TAG': 'church_videos',
+    'IMAGE_TAG': 'church_images',
 }
 
 cloudinary.config(

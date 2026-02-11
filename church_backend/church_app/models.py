@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from .storage import HybridCloudinaryStorage
 
 class ContactMessage(models.Model):
     name = models.CharField(max_length=100)
@@ -93,6 +94,19 @@ class Gallery(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        # Handle video upload with custom storage
+        if self.video and hasattr(self.video, 'file'):
+            # Get the storage for video files
+            video_storage = HybridCloudinaryStorage()
+            
+            # Save video using the custom storage
+            if self.video.name:
+                file_name = self.video.name
+                self.video.name = video_storage.save(file_name, self.video)
+        
+        super().save(*args, **kwargs)
 
 class Schedule(models.Model):
     DAYS_OF_WEEK = [
