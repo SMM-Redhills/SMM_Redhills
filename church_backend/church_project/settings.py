@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'django_filters',
-    'django_ratelimit',
     'church_app',
 ]
 
@@ -279,14 +278,15 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/hour',
-        'user': '1000/hour'
-    },
+    # Rate limiting disabled for deployment
+    # 'DEFAULT_THROTTLE_CLASSES': [
+    #     'rest_framework.throttling.AnonRateThrottle',
+    #     'rest_framework.throttling.UserRateThrottle'
+    # ],
+    # 'DEFAULT_THROTTLE_RATES': {
+    #     'anon': '100/hour',
+    #     'user': '1000/hour'
+    # },
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
@@ -312,31 +312,23 @@ CACHES = {
     }
 }
 
-# For production, use Redis or Memcached
+# For production, use file-based cache to avoid rate limiting issues
 if not DEBUG:
-    try:
-        import redis
-        CACHES = {
-            'default': {
-                'BACKEND': 'django_redis.cache.RedisCache',
-                'LOCATION': os.getenv('REDIS_URL', 'redis://localhost:6379/1'),
-                'OPTIONS': {
-                    'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-                }
-            }
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': '/tmp/django_cache',
         }
-    except ImportError:
-        # Fallback to file-based cache for production
-        CACHES = {
-            'default': {
-                'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-                'LOCATION': '/tmp/django_cache',
-            }
-        }
+    }
 
 # Session Configuration - 1 hour timeout
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+if DEBUG:
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+    SESSION_CACHE_ALIAS = 'default'
+else:
+    # Use database backend for production to avoid cache issues
+    SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+    
 SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
@@ -344,8 +336,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # Admin specific session settings
 ADMIN_SESSION_TIMEOUT = 3600  # 1 hour for admin sessions
 
-# Rate limiting for specific views
-RATELIMIT_ENABLE = True
+# Rate limiting for specific views (disabled for deployment)
+RATELIMIT_ENABLE = False
 RATELIMIT_USE_CACHE = 'default'
 
 # File upload security
