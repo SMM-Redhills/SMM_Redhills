@@ -1,8 +1,10 @@
 import time
 from django.http import HttpResponse
 from django.core.cache import cache
-from ratelimit import ALL, UNSAFE
-from ratelimit.decorators import ratelimit
+from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SecurityHeadersMiddleware:
@@ -31,7 +33,7 @@ class SecurityHeadersMiddleware:
 
 class RateLimitMiddleware:
     """
-    Custom rate limiting middleware for API endpoints
+    Custom rate limiting middleware for API endpoints (simplified version)
     """
     
     def __init__(self, get_response):
