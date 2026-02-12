@@ -58,7 +58,7 @@ const ReactAdmin = () => {
 
   const deleteItem = async (id) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
-    
+
     try {
       const model = models.find(m => m.key === activeModel);
       await adminAPI.deleteItem(model.api, id);
@@ -74,9 +74,9 @@ const ReactAdmin = () => {
     if (e) e.preventDefault();
     try {
       const model = models.find(m => m.key === activeModel);
-      
+
       let dataToSend = { ...formData };
-      
+
       // Handle date/time combination for events
       if (activeModel === 'news' && formData.content_type === 'event' && formData.date && formData.time) {
         // Combine date and time for events
@@ -84,10 +84,10 @@ const ReactAdmin = () => {
         dataToSend.date = eventDateTime.toISOString().split('T')[0]; // Keep date part
         // Keep time separate as the backend expects it
       }
-      
+
       // Check if any field is a File
       const hasFile = Object.values(dataToSend).some(val => val instanceof File);
-      
+
       if (hasFile || editingItem) {
         dataToSend = new FormData();
         Object.keys(formData).forEach(key => {
@@ -95,7 +95,7 @@ const ReactAdmin = () => {
           if (value !== undefined && value !== null) {
             // If field is file type (image/logo/video) but value is string (existing URL), DO NOT send it.
             if ((key === 'image' || key === 'logo' || key === 'video') && !(value instanceof File)) {
-                return;
+              return;
             }
             // Handle date/time combination for events
             if (activeModel === 'news' && formData.content_type === 'event' && key === 'date' && formData.date && formData.time) {
@@ -111,11 +111,11 @@ const ReactAdmin = () => {
 
       let response;
       if (editingItem) {
-         response = await adminAPI.updateItem(model.api, editingItem, dataToSend);
+        response = await adminAPI.updateItem(model.api, editingItem, dataToSend);
       } else {
-         response = await adminAPI.createItem(model.api, dataToSend);
+        response = await adminAPI.createItem(model.api, dataToSend);
       }
-      
+
       if (response.status === 201 || response.status === 200) {
         setShowAddForm(false);
         setFormData({});
@@ -127,8 +127,8 @@ const ReactAdmin = () => {
       }
     } catch (error) {
       console.error('Error saving item:', error);
-      const errorMessage = error.response?.data 
-        ? JSON.stringify(error.response.data) 
+      const errorMessage = error.response?.data
+        ? JSON.stringify(error.response.data)
         : 'Unknown error occurred';
       alert(`Error saving item: ${errorMessage}`);
     }
@@ -137,7 +137,7 @@ const ReactAdmin = () => {
   const handleEdit = (item) => {
     // For date fields, we might need to format '2025-12-21' etc.
     // But input type='date' expects YYYY-MM-DD which API usually provides.
-    setFormData({...item}); 
+    setFormData({ ...item });
     setEditingItem(item.id);
     setShowAddForm(true);
   };
@@ -156,7 +156,7 @@ const ReactAdmin = () => {
 
   const renderAddForm = () => {
     const getFormFields = () => {
-      switch(activeModel) {
+      switch (activeModel) {
         case 'news':
           return [
             { name: 'content_type', type: 'select', options: ['news', 'event'], label: 'Content Type', required: true },
@@ -176,9 +176,9 @@ const ReactAdmin = () => {
             { name: 'title', type: 'text', placeholder: 'Gallery Title', required: true },
             { name: 'description', type: 'textarea', placeholder: 'Description' },
             { name: 'media_type', type: 'select', options: ['image', 'video'], required: true },
-            { name: 'image', type: 'file', label: 'Upload Image', condition: (data) => data.media_type === 'image' },
+            { name: 'image', type: 'file', label: 'Upload Image', condition: (data) => data.media_type === 'image', accept: 'image/*' },
             { name: 'image_url', type: 'text', placeholder: 'Image URL', condition: (data) => data.media_type === 'image' },
-            { name: 'video', type: 'file', label: 'Upload Video', condition: (data) => data.media_type === 'video' },
+            { name: 'video', type: 'file', label: 'Upload Video', condition: (data) => data.media_type === 'video', accept: 'video/*' },
             { name: 'video_url', type: 'text', placeholder: 'Or Video URL', condition: (data) => data.media_type === 'video' },
             { name: 'category', type: 'select', options: ['Youth', 'General', 'Celebrations', 'Worship'], required: true }
           ];
@@ -202,7 +202,7 @@ const ReactAdmin = () => {
             { name: 'title', type: 'text', placeholder: 'Slide Title' },
             { name: 'subtitle', type: 'text', placeholder: 'Subtitle' },
             { name: 'description', type: 'textarea', placeholder: 'Description' },
-            { name: 'image', type: 'file', label: 'Upload Image' },
+            { name: 'image', type: 'file', label: 'Upload Image', accept: 'image/*' },
             { name: 'image_url', type: 'text', placeholder: 'Or Image URL' },
             { name: 'order', type: 'number', placeholder: 'Display Order' },
             { name: 'is_active', type: 'checkbox', label: 'Is Active' }
@@ -211,19 +211,19 @@ const ReactAdmin = () => {
           return [
             { name: 'name', type: 'select', options: ['youth', 'vincent', 'legion', 'joseph'], required: true },
             { name: 'description', type: 'textarea', placeholder: 'Description' },
-            { name: 'logo', type: 'file', label: 'Upload Logo' }
+            { name: 'logo', type: 'file', label: 'Upload Logo', accept: 'image/*' }
           ];
         case 'group-activities':
-          const groupOptions = parishGroups.map(g => ({ 
-             value: g.id, 
-             label: (g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : 'Unknown') 
+          const groupOptions = parishGroups.map(g => ({
+            value: g.id,
+            label: (g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : 'Unknown')
           }));
           return [
-             { name: 'group', type: 'select', label: 'Select Group', options: groupOptions, required: true },
-             { name: 'title', type: 'text', placeholder: 'Activity Title', required: true },
-             { name: 'description', type: 'textarea', placeholder: 'Description' },
-             { name: 'image', type: 'file', label: 'Upload Image' },
-             { name: 'date', type: 'date', required: true }
+            { name: 'group', type: 'select', label: 'Select Group', options: groupOptions, required: true },
+            { name: 'title', type: 'text', placeholder: 'Activity Title', required: true },
+            { name: 'description', type: 'textarea', placeholder: 'Description' },
+            { name: 'image', type: 'file', label: 'Upload Image', accept: 'image/*' },
+            { name: 'date', type: 'date', required: true }
           ];
         default:
           return [];
@@ -231,12 +231,18 @@ const ReactAdmin = () => {
     };
 
     const fields = getFormFields();
-    
+
     return (
-      <div style={{position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50}}>
-        <div style={{backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
-          <h3 style={{fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#000000'}}>
-             {editingItem ? 'Edit' : 'Add New'} {models.find(m => m.key === activeModel)?.name}
+      <div
+        style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+        onClick={() => { setShowAddForm(false); setFormData({}); setEditingItem(null); }}
+      >
+        <div
+          style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto' }}
+          onClick={e => e.stopPropagation()}
+        >
+          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#000000' }}>
+            {editingItem ? 'Edit' : 'Add New'} {models.find(m => m.key === activeModel)?.name}
           </h3>
           <form onSubmit={handleSubmit}>
             {fields.map(field => {
@@ -247,70 +253,71 @@ const ReactAdmin = () => {
               const isVideoUrl = field.name === 'video_url';
 
               // Disable logic
-              const isDisabled = 
-                (isImageUrl && formData.image) || 
+              const isDisabled =
+                (isImageUrl && formData.image) ||
                 (isImageUpload && formData.image_url) ||
                 (field.name === 'video_url' && formData.video) ||
                 (field.name === 'video' && formData.video_url);
 
               return (
-                <div key={field.name} style={{marginBottom: '1.5rem'}}>
-                  <label style={{display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem'}}>
+                <div key={field.name} style={{ marginBottom: '1.5rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>
                     {field.label || field.placeholder}
-                    {field.required && <span style={{color: '#dc2626', marginLeft: '4px'}}>*</span>}
+                    {field.required && <span style={{ color: '#dc2626', marginLeft: '4px' }}>*</span>}
                   </label>
-                  
+
                   {field.type === 'textarea' ? (
                     <textarea
                       placeholder={field.placeholder}
                       value={formData[field.name] || ''}
-                      onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
-                      style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', minHeight: '100px'}}
+                      onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', minHeight: '100px' }}
                     />
                   ) : field.type === 'file' ? (
                     <div>
                       <input
                         type="file"
+                        accept={field.accept}
                         disabled={isDisabled}
                         onChange={(e) => {
                           const file = e.target.files[0];
-                          setFormData({...formData, [field.name]: file});
+                          setFormData({ ...formData, [field.name]: file });
                         }}
-                        style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', opacity: isDisabled ? 0.5 : 1}}
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', opacity: isDisabled ? 0.5 : 1 }}
                       />
                       {formData[field.name] && formData[field.name] instanceof File && (
-                        <div style={{marginTop: '0.5rem'}}>
-                          <p style={{fontSize: '0.75rem', color: '#6b7280'}}>Preview:</p>
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>Preview:</p>
                           {field.name === 'video' ? (
-                            <video 
-                              src={URL.createObjectURL(formData[field.name])} 
+                            <video
+                              src={URL.createObjectURL(formData[field.name])}
                               controls
-                              style={{maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem'}} 
+                              style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem' }}
                             />
                           ) : (
-                            <img 
-                              src={URL.createObjectURL(formData[field.name])} 
-                              alt="Preview" 
-                              style={{maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem'}} 
+                            <img
+                              src={URL.createObjectURL(formData[field.name])}
+                              alt="Preview"
+                              style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem' }}
                             />
                           )}
                         </div>
                       )}
                     </div>
                   ) : field.type === 'checkbox' ? (
-                    <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <input
                         type="checkbox"
                         checked={formData[field.name] || false}
-                        onChange={(e) => setFormData({...formData, [field.name]: e.target.checked})}
+                        onChange={(e) => setFormData({ ...formData, [field.name]: e.target.checked })}
                       />
                       {field.label}
                     </label>
                   ) : field.type === 'select' ? (
                     <select
                       value={formData[field.name] || ''}
-                      onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
-                      style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem'}}
+                      onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
                     >
                       <option value="">Select {field.label || field.name}</option>
                       {field.options.map((option, idx) => {
@@ -327,21 +334,21 @@ const ReactAdmin = () => {
                         placeholder={field.placeholder}
                         disabled={isDisabled}
                         value={formData[field.name] || ''}
-                        onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
-                        style={{width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', opacity: isDisabled ? 0.5 : 1}}
+                        onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', opacity: isDisabled ? 0.5 : 1 }}
                       />
                       {(isImageUrl || isVideoUrl) && formData[field.name] && !formData.image && (
-                        <div style={{marginTop: '0.5rem'}}>
-                          <p style={{fontSize: '0.75rem', color: '#6b7280'}}>Preview:</p>
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>Preview:</p>
                           {isImageUrl ? (
-                            <img 
-                              src={formData[field.name]} 
-                              alt="Preview" 
-                              style={{maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem'}} 
+                            <img
+                              src={formData[field.name]}
+                              alt="Preview"
+                              style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '0.375rem', marginTop: '0.25rem' }}
                               onError={(e) => e.target.style.display = 'none'}
                             />
                           ) : (
-                            <div style={{marginTop: '0.25rem', padding: '0.5rem', background: '#f3f4f6', borderRadius: '0.375rem', fontSize: '0.75rem'}}>
+                            <div style={{ marginTop: '0.25rem', padding: '0.5rem', background: '#f3f4f6', borderRadius: '0.375rem', fontSize: '0.75rem' }}>
                               Video URL provided: {formData[field.name]}
                             </div>
                           )}
@@ -352,18 +359,18 @@ const ReactAdmin = () => {
                 </div>
               );
             })}
-            <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
               <button
                 type="button"
-                onClick={() => {setShowAddForm(false); setFormData({}); setEditingItem(null);}}
-                style={{padding: '0.5rem 1rem', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
+                onClick={() => { setShowAddForm(false); setFormData({}); setEditingItem(null); }}
+                style={{ padding: '0.5rem 1rem', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSubmit}
-                style={{padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer'}}
+                style={{ padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}
               >
                 {editingItem ? 'Save Changes' : 'Add'}
               </button>
@@ -376,7 +383,7 @@ const ReactAdmin = () => {
 
   const renderMessageModal = () => {
     if (!viewingMessage) return null;
-    
+
     return (
       <div className="modal-overlay" style={{
         position: 'fixed',
@@ -397,7 +404,7 @@ const ReactAdmin = () => {
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
           position: 'relative'
         }} onClick={e => e.stopPropagation()}>
-          <button 
+          <button
             onClick={() => setViewingMessage(null)}
             style={{
               position: 'absolute',
@@ -411,38 +418,38 @@ const ReactAdmin = () => {
           >
             <X size={24} />
           </button>
-          
-          <h3 style={{fontSize: '1.5rem', fontWeight: '700', color: '#111827', marginBottom: '1.5rem', borderBottom: '2px solid #3b82f6', paddingBottom: '0.5rem'}}>
+
+          <h3 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#111827', marginBottom: '1.5rem', borderBottom: '2px solid #3b82f6', paddingBottom: '0.5rem' }}>
             Message Details
           </h3>
-          
-          <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-            <div style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem'}}>
-              <span style={{fontWeight: '600', color: '#4b5563'}}>From:</span>
-              <span style={{color: '#111827'}}>{viewingMessage.name}</span>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem' }}>
+              <span style={{ fontWeight: '600', color: '#4b5563' }}>From:</span>
+              <span style={{ color: '#111827' }}>{viewingMessage.name}</span>
             </div>
-            <div style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem'}}>
-              <span style={{fontWeight: '600', color: '#4b5563'}}>Email:</span>
-              <a href={`mailto:${viewingMessage.email}`} style={{color: '#2563eb', textDecoration: 'none'}}>{viewingMessage.email}</a>
+            <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem' }}>
+              <span style={{ fontWeight: '600', color: '#4b5563' }}>Email:</span>
+              <a href={`mailto:${viewingMessage.email}`} style={{ color: '#2563eb', textDecoration: 'none' }}>{viewingMessage.email}</a>
             </div>
-            <div style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem'}}>
-              <span style={{fontWeight: '600', color: '#4b5563'}}>Phone:</span>
-              <span style={{color: '#111827'}}>{viewingMessage.phone || 'N/A'}</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem' }}>
+              <span style={{ fontWeight: '600', color: '#4b5563' }}>Phone:</span>
+              <span style={{ color: '#111827' }}>{viewingMessage.phone || 'N/A'}</span>
             </div>
-            <div style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem'}}>
-              <span style={{fontWeight: '600', color: '#4b5563'}}>Subject:</span>
-              <span style={{fontWeight: '600', color: '#111827'}}>{viewingMessage.subject}</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.5rem' }}>
+              <span style={{ fontWeight: '600', color: '#4b5563' }}>Subject:</span>
+              <span style={{ fontWeight: '600', color: '#111827' }}>{viewingMessage.subject}</span>
             </div>
-            <div style={{marginTop: '1rem', padding: '1.5rem', backgroundColor: '#f9fafb', borderRadius: '0.5rem', border: '1px solid #e5e7eb'}}>
-              <span style={{display: 'block', fontWeight: '600', color: '#4b5563', marginBottom: '0.5rem'}}>Message content:</span>
-              <p style={{color: '#374151', lineHeight: '1.6', whiteSpace: 'pre-wrap', margin: 0}}>
+            <div style={{ marginTop: '1rem', padding: '1.5rem', backgroundColor: '#f9fafb', borderRadius: '0.5rem', border: '1px solid #e5e7eb' }}>
+              <span style={{ display: 'block', fontWeight: '600', color: '#4b5563', marginBottom: '0.5rem' }}>Message content:</span>
+              <p style={{ color: '#374151', lineHeight: '1.6', whiteSpace: 'pre-wrap', margin: 0 }}>
                 {viewingMessage.message}
               </p>
             </div>
           </div>
-          
-          <div style={{marginTop: '2rem', display: 'flex', justifyContent: 'flex-end'}}>
-            <button 
+
+          <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+            <button
               onClick={() => setViewingMessage(null)}
               style={{
                 padding: '0.6rem 1.5rem',
@@ -468,20 +475,20 @@ const ReactAdmin = () => {
 
     return (
       <div style={{
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
         gap: '1.5rem',
         padding: '0.5rem'
       }}>
         {data.map(item => {
-          const imageUrl = item.image 
+          const imageUrl = item.image
             ? (typeof item.image === 'string' && item.image.startsWith('http') ? item.image : `${BASE_URL}${item.image}`)
             : item.image_url;
-            
+
           const isVideo = item.media_type === 'video';
-          const videoUrl = item.video 
-             ? (typeof item.video === 'string' && item.video.startsWith('http') ? item.video : `${BASE_URL}${item.video}`)
-             : item.video_url;
+          const videoUrl = item.video
+            ? (typeof item.video === 'string' && item.video.startsWith('http') ? item.video : `${BASE_URL}${item.video}`)
+            : item.video_url;
 
           return (
             <div key={item.id} style={{
@@ -494,37 +501,37 @@ const ReactAdmin = () => {
               border: '1px solid #e5e7eb',
               transition: 'transform 0.2s, box-shadow 0.2s'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'none';
-              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-            }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'none';
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+              }}
             >
-              <div style={{height: '160px', overflow: 'hidden', backgroundColor: '#f3f4f6', position: 'relative'}}>
+              <div style={{ height: '160px', overflow: 'hidden', backgroundColor: '#f3f4f6', position: 'relative' }}>
                 {isVideo ? (
-                   <video 
-                     src={videoUrl} 
-                     controls 
-                     style={{width: '100%', height: '100%', objectFit: 'cover'}}
-                   />
+                  <video
+                    src={videoUrl}
+                    controls
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 ) : (
-                  <img 
-                    src={imageUrl || 'https://via.placeholder.com/300?text=No+Image'} 
-                    alt={item.title} 
-                    style={{width: '100%', height: '100%', objectFit: 'cover'}}
-                    onError={(e) => { e.target.src='https://via.placeholder.com/300?text=Error'; }}
+                  <img
+                    src={imageUrl || 'https://via.placeholder.com/300?text=No+Image'}
+                    alt={item.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/300?text=Error'; }}
                   />
                 )}
                 <div style={{
-                  position: 'absolute', 
-                  top: '0.5rem', 
-                  right: '0.5rem', 
-                  backgroundColor: 'rgba(0,0,0,0.6)', 
-                  color: 'white', 
-                  padding: '0.25rem 0.5rem', 
+                  position: 'absolute',
+                  top: '0.5rem',
+                  right: '0.5rem',
+                  backgroundColor: 'rgba(0,0,0,0.6)',
+                  color: 'white',
+                  padding: '0.25rem 0.5rem',
                   borderRadius: '0.25rem',
                   fontSize: '0.75rem',
                   fontWeight: '600'
@@ -532,16 +539,16 @@ const ReactAdmin = () => {
                   {item.category}
                 </div>
               </div>
-              
-              <div style={{padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column'}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem'}}>
-                  <h3 style={{fontWeight: '600', color: '#111827', fontSize: '1rem', margin: 0}}>{item.title}</h3>
+
+              <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                  <h3 style={{ fontWeight: '600', color: '#111827', fontSize: '1rem', margin: 0 }}>{item.title}</h3>
                 </div>
-                
+
                 {item.description && (
                   <p style={{
-                    color: '#6b7280', 
-                    fontSize: '0.875rem', 
+                    color: '#6b7280',
+                    fontSize: '0.875rem',
                     marginBottom: '1rem',
                     display: '-webkit-box',
                     WebkitLineClamp: 3,
@@ -551,9 +558,9 @@ const ReactAdmin = () => {
                     {item.description}
                   </p>
                 )}
-                
-                <div style={{marginTop: 'auto', display: 'flex', gap: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #f3f4f6'}}>
-                  <button 
+
+                <div style={{ marginTop: 'auto', display: 'flex', gap: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #f3f4f6' }}>
+                  <button
                     onClick={() => handleEdit(item)}
                     style={{
                       flex: 1,
@@ -570,9 +577,9 @@ const ReactAdmin = () => {
                       cursor: 'pointer'
                     }}
                   >
-                     <PenSquare size={14} /> Edit
+                    <PenSquare size={14} /> Edit
                   </button>
-                  <button 
+                  <button
                     onClick={() => deleteItem(item.id)}
                     style={{
                       display: 'flex',
@@ -586,7 +593,7 @@ const ReactAdmin = () => {
                       cursor: 'pointer'
                     }}
                   >
-                     <Trash2 size={14} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>
@@ -601,20 +608,20 @@ const ReactAdmin = () => {
     if (activeModel === 'gallery') return renderGalleryGrid();
 
     if (loading) return (
-      <div style={{padding: '3rem', textAlign: 'center', color: '#6b7280'}}>
-        <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>⏳</div>
+      <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
+        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⏳</div>
         Loading...
       </div>
     );
     if (!data.length) return (
-      <div style={{padding: '3rem', textAlign: 'center', color: '#6b7280'}}>
-        <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📭</div>
+      <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
+        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📭</div>
         No data found
       </div>
     );
 
     const firstItem = data[0];
-    const columns = Object.keys(firstItem).filter(key => 
+    const columns = Object.keys(firstItem).filter(key =>
       !['created_at', 'updated_at'].includes(key)
     );
 
@@ -627,7 +634,7 @@ const ReactAdmin = () => {
         color: '#374151',
         verticalAlign: 'middle'
       };
-      
+
       if (col === 'id') return { ...baseStyle, width: '60px', textAlign: 'center', fontWeight: '600', color: '#6b7280' };
       if (col === 'title') return { ...baseStyle, minWidth: '150px', maxWidth: '200px', fontWeight: '500' };
       if (col === 'content_type' || col === 'content_type_display') return { ...baseStyle, width: '100px', textAlign: 'center', fontWeight: '500' };
@@ -643,8 +650,8 @@ const ReactAdmin = () => {
 
     // Render cell content based on column type
     const renderCellContent = (col, value, item) => {
-      if (value === null || value === undefined) return <span style={{color: '#9ca3af', fontStyle: 'italic'}}>—</span>;
-      
+      if (value === null || value === undefined) return <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>—</span>;
+
       // Content type - show with badge
       if (col === 'content_type' || col === 'content_type_display') {
         const displayValue = col === 'content_type_display' ? value : (value === 'news' ? 'News' : 'Event');
@@ -664,80 +671,80 @@ const ReactAdmin = () => {
           </span>
         );
       }
-      
+
       // Boolean fields
       if (typeof value === 'boolean') {
         const isUnreadMessage = col === 'is_read' && value === false && activeModel === 'contactmessage';
         return (
-          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center'}}>
-            {value ? 
-              <span style={{color: '#10b981', fontWeight: '600'}}>✓ Yes</span> : 
-              <span style={{color: '#ef4444'}}>✗ No</span>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+            {value ?
+              <span style={{ color: '#10b981', fontWeight: '600' }}>✓ Yes</span> :
+              <span style={{ color: '#ef4444' }}>✗ No</span>}
             {isUnreadMessage && (
-               <button 
-                 onClick={() => handleMarkRead(item)} 
-                 style={{padding: '2px 8px', fontSize: '10px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
-               >
-                 Read
-               </button>
+              <button
+                onClick={() => handleMarkRead(item)}
+                style={{ padding: '2px 8px', fontSize: '10px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                Read
+              </button>
             )}
           </div>
         );
       }
-      
+
       // Image/URL fields - show thumbnail or truncated URL
       if (col === 'image' || col === 'media_url' || col === 'logo') {
-        if (!value) return <span style={{color: '#9ca3af', fontStyle: 'italic'}}>—</span>;
+        if (!value) return <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>—</span>;
         const imageUrl = typeof value === 'string' && value.startsWith('http') ? value : `${BASE_URL}${value}`;
         return (
-          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-            <img 
-              src={imageUrl} 
-              alt="Preview" 
-              style={{width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb'}}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <img
+              src={imageUrl}
+              alt="Preview"
+              style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
-            <span style={{fontSize: '0.75rem', color: '#6b7280', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
+            <span style={{ fontSize: '0.75rem', color: '#6b7280', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {String(value).split('/').pop()}
             </span>
           </div>
         );
       }
-      
+
       // URL fields - truncate and show as link
       if (col === 'image_url' || col === 'video_url' || col === 'video') {
-        if (!value) return <span style={{color: '#9ca3af', fontStyle: 'italic'}}>—</span>;
+        if (!value) return <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>—</span>;
         return (
-          <a 
-            href={value} 
-            target="_blank" 
+          <a
+            href={value}
+            target="_blank"
             rel="noopener noreferrer"
-            style={{color: '#2563eb', fontSize: '0.75rem', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', textDecoration: 'none'}}
+            style={{ color: '#2563eb', fontSize: '0.75rem', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', textDecoration: 'none' }}
             title={value}
           >
             🔗 {String(value).substring(0, 30)}...
           </a>
         );
       }
-      
+
       // Text fields - truncate long text
       const strValue = String(value);
       if (strValue.length > 50) {
         return (
-          <span title={strValue} style={{cursor: 'help'}}>
+          <span title={strValue} style={{ cursor: 'help' }}>
             {strValue.substring(0, 50)}...
           </span>
         );
       }
-      
+
       return strValue;
     };
 
     return (
-      <div style={{overflowX: 'auto', borderRadius: '0.5rem'}}>
-        <table style={{width: '100%', backgroundColor: 'white', borderCollapse: 'collapse'}}>
+      <div style={{ overflowX: 'auto', borderRadius: '0.5rem' }}>
+        <table style={{ width: '100%', backgroundColor: 'white', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{backgroundColor: '#1e40af'}}>
+            <tr style={{ backgroundColor: '#1e40af' }}>
               {columns.map(col => (
                 <th key={col} style={{
                   padding: '0.75rem 1rem',
@@ -768,8 +775,8 @@ const ReactAdmin = () => {
           </thead>
           <tbody>
             {data.map((item, index) => (
-              <tr 
-                key={item.id} 
+              <tr
+                key={item.id}
                 style={{
                   backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8fafc',
                   transition: 'background-color 0.15s'
@@ -782,8 +789,8 @@ const ReactAdmin = () => {
                     {renderCellContent(col, item[col], item)}
                   </td>
                 ))}
-                <td style={{padding: '0.75rem 1rem', borderBottom: '1px solid #e5e7eb'}}>
-                  <div style={{display: 'flex', gap: '0.5rem', justifyContent: 'center'}}>
+                <td style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
                     {activeModel === 'contactmessage' && !item.is_read && (
                       <button
                         onClick={() => handleMarkRead(item)}
@@ -813,7 +820,7 @@ const ReactAdmin = () => {
                       </button>
                     )}
                     {/* Edit Button */}
-                    <button 
+                    <button
                       onClick={() => handleEdit(item)}
                       title="Edit"
                       style={{
@@ -840,7 +847,7 @@ const ReactAdmin = () => {
                       <PenSquare size={16} />
                     </button>
 
-                    <button 
+                    <button
                       onClick={() => deleteItem(item.id)}
                       title="Delete"
                       style={{
@@ -877,20 +884,20 @@ const ReactAdmin = () => {
   };
 
   return (
-    <div style={{minHeight: '100vh', backgroundColor: '#f3f4f6'}}>
-      <div style={{background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: 'white', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
-          <img 
-            src="/assets/images/smm_logo.png" 
-            alt="Church Logo" 
-            style={{width: '100px', height: '100px'}}
+    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
+      <div style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: 'white', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <img
+            src="/assets/images/smm_logo.png"
+            alt="Church Logo"
+            style={{ width: '100px', height: '100px' }}
           />
           <div>
-            <h1 style={{fontSize: '1.5rem', fontWeight: '700', fontFamily: 'serif'}}>Church Administration</h1>
-            <p style={{marginTop: '0.25rem', color: '#dbeafe'}}>Manage your church content and community</p>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: '700', fontFamily: 'serif' }}>Church Administration</h1>
+            <p style={{ marginTop: '0.25rem', color: '#dbeafe' }}>Manage your church content and community</p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => {
             localStorage.removeItem('adminToken');
             localStorage.removeItem('adminUser');
@@ -914,10 +921,10 @@ const ReactAdmin = () => {
         </button>
       </div>
 
-      <div style={{display: 'flex'}}>
-        <div style={{width: '16rem', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', minHeight: 'calc(100vh - 80px)'}}>
-          <div style={{padding: '1rem'}}>
-            <h2 style={{fontWeight: '600', color: '#1f2937', marginBottom: '1rem'}}>Management</h2>
+      <div style={{ display: 'flex' }}>
+        <div style={{ width: '16rem', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', minHeight: 'calc(100vh - 80px)' }}>
+          <div style={{ padding: '1rem' }}>
+            <h2 style={{ fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>Management</h2>
             {models.map(model => (
               <button
                 key={model.key}
@@ -952,10 +959,10 @@ const ReactAdmin = () => {
           </div>
         </div>
 
-        <div style={{flex: 1, padding: '1.5rem'}}>
-          <div style={{backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'}}>
-            <div style={{padding: '1rem', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <h2 style={{fontSize: '1.25rem', fontWeight: '600', color: '#1f2937'}}>
+        <div style={{ flex: 1, padding: '1.5rem' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+            <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937' }}>
                 {models.find(m => m.key === activeModel)?.name}
               </h2>
               {models.find(m => m.key === activeModel)?.canAdd && (

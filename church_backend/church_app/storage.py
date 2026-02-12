@@ -26,6 +26,10 @@ class VideoCloudinaryStorage(RawMediaCloudinaryStorage):
         Override save method to ensure video resource type
         """
         try:
+            # Ensure file pointer is at the beginning
+            if hasattr(content, 'seek'):
+                content.seek(0)
+
             # Upload using cloudinary uploader with video resource type
             result = cloudinary.uploader.upload(
                 content,

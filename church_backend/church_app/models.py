@@ -98,7 +98,12 @@ class Gallery(models.Model):
             # Save video using the custom storage
             if self.video.name:
                 file_name = self.video.name
-                self.video.name = video_storage.save(file_name, self.video)
+                saved_path = video_storage.save(file_name, self.video)
+                self.video.name = saved_path
+                # Mark as committed so Django doesn't try to save it again using default storage
+                # This prevents "Empty file" errors and double uploads
+                if hasattr(self.video, '_committed'):
+                    self.video._committed = True
         
         super().save(*args, **kwargs)
 
