@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { churchAPI, BASE_URL } from '../../services/api';
 import { MapPin } from 'lucide-react';
+import ashDesktop from '../../assets/img/ash_1.png';
+import ashMobile from '../../assets/img/ash.png';
 
 const BannerSlider = () => {
   const DEFAULT_SLIDES = [
     {
       id: 1,
-      image: '/src/assets/img/ash_1.png',
-      mobile_image: '/src/assets/img/ash.png',
+      image: ashDesktop,
+      mobile_image: ashMobile,
     },
     {
       id: 2,
