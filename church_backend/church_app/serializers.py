@@ -1,73 +1,7 @@
 from rest_framework import serializers
-from django.core.exceptions import ValidationError
-from django.utils.html import escape
-import bleach
 from .models import ContactMessage, PrayerRequest, News, Gallery, Schedule, Prayer, BannerSlide, ParishGroup, GroupActivity
 
-# Sanitize HTML content
-def sanitize_html(content):
-    """
-    Sanitize HTML content to prevent XSS attacks
-    """
-    if not content:
-        return content
-    
-    # Allow basic HTML tags for content formatting
-    allowed_tags = ['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
-    allowed_attributes = {'*': ['class']}
-    
-    # Clean the HTML
-    clean_content = bleach.clean(content, tags=allowed_tags, attributes=allowed_attributes, strip=True)
-    return clean_content
-
-def validate_no_sql_injection(value):
-    """
-    Basic SQL injection validation
-    """
-    sql_patterns = [
-        'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'UNION', 'FROM', 'WHERE',
-        'EXEC', 'ALTER', 'CREATE', 'TRUNCATE', '--', '/*', '*/', 'xp_', 'sp_'
-    ]
-    
-    upper_value = value.upper()
-    for pattern in sql_patterns:
-        if pattern in upper_value:
-            raise ValidationError(f"Potentially dangerous content detected: {pattern}")
-    
-    return value
-
 class ContactMessageSerializer(serializers.ModelSerializer):
-    def validate_name(self, value):
-        # Sanitize and validate name
-        value = escape(value.strip())
-        validate_no_sql_injection(value)
-        if len(value) < 2 or len(value) > 100:
-            raise ValidationError("Name must be between 2 and 100 characters.")
-        return value
-    
-    def validate_email(self, value):
-        # Basic email validation
-        value = value.strip().lower()
-        if '@' not in value or '.' not in value:
-            raise ValidationError("Please enter a valid email address.")
-        return value
-    
-    def validate_subject(self, value):
-        # Sanitize and validate subject
-        value = escape(value.strip())
-        validate_no_sql_injection(value)
-        if len(value) < 2 or len(value) > 200:
-            raise ValidationError("Subject must be between 2 and 200 characters.")
-        return value
-    
-    def validate_message(self, value):
-        # Sanitize message content
-        value = sanitize_html(value.strip())
-        validate_no_sql_injection(value)
-        if len(value) < 10 or len(value) > 2000:
-            raise ValidationError("Message must be between 10 and 2000 characters.")
-        return value
-    
     class Meta:
         model = ContactMessage
         fields = '__all__'
@@ -140,21 +74,8 @@ class GallerySerializer(serializers.ModelSerializer):
             if obj.video:
                 request = self.context.get('request')
                 if request:
-                    video_url = request.build_absolute_uri(obj.video.url)
-                else:
-                    video_url = obj.video.url
-                
-                # Check if it's a Cloudinary URL and ensure it's properly formatted for video
-                if 'cloudinary' in video_url:
-                    # For Cloudinary videos, we need to ensure proper format
-                    if not video_url.endswith('.mp4'):
-                        # Add .mp4 extension if not present
-                        if '?' in video_url:
-                            video_url = video_url.replace('?', '.mp4?')
-                        else:
-                            video_url = video_url + '.mp4'
-                
-                return video_url
+                    return request.build_absolute_uri(obj.video.url)
+                return obj.video.url
             return obj.video_url
         if obj.image:
             request = self.context.get('request')

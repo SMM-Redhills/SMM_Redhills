@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { adminAPI } from '../services/adminApi';
 import { BASE_URL } from '../services/api';
 import { PenSquare, Trash2, Plus, X, CheckCircle } from 'lucide-react';
-import SessionManager from '../utils/sessionManager';
 
 const ReactAdmin = () => {
   const [activeModel, setActiveModel] = useState('contactmessage');
@@ -13,36 +12,6 @@ const ReactAdmin = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [parishGroups, setParishGroups] = useState([]);
   const [viewingMessage, setViewingMessage] = useState(null);
-
-  // Initialize session manager for admin panel
-  useEffect(() => {
-    // Only initialize session manager if user is on admin page
-    if (window.location.pathname.includes('/admin')) {
-      const sessionManager = new SessionManager({
-        timeout: 3600000, // 1 hour
-        warningTime: 300000, // 5 minutes before timeout
-        onTimeout: () => {
-          console.log('Admin session timed out');
-          // Redirect to login will be handled by session manager
-        },
-        onWarning: (remainingTime) => {
-          console.log(`Session warning: ${Math.floor(remainingTime / 60000)} minutes remaining`);
-        },
-        onExtend: () => {
-          console.log('Admin session extended');
-        }
-      });
-
-      // Store session manager reference for cleanup
-      window.currentSessionManager = sessionManager;
-
-      return () => {
-        if (window.currentSessionManager) {
-          window.currentSessionManager.stopMonitoring();
-        }
-      };
-    }
-  }, []);
 
   useEffect(() => {
     const fetchGroups = async () => {

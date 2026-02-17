@@ -10,8 +10,5 @@ whitenoise
 dj-database-url
 cloudinary
 django-cloudinary-storage
-django-filter
-django-ratelimit
-bleach
 
 

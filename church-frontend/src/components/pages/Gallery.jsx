@@ -454,9 +454,6 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
                 // Get the video URL
                 let videoUrl = selectedMedia.media_url || selectedMedia.video_url || (selectedMedia.video ? (selectedMedia.video.startsWith('http') ? selectedMedia.video : `${BASE_URL}${selectedMedia.video.startsWith('/') ? '' : '/'}${selectedMedia.video}`) : '');
                 
-                console.log('Video URL:', videoUrl);
-                console.log('Selected media:', selectedMedia);
-                
                 // Check if it's a Google Drive URL and convert to embed format
                 const isGoogleDrive = videoUrl && (videoUrl.includes('drive.google.com') || videoUrl.includes('docs.google.com'));
                 if (isGoogleDrive) {
@@ -519,73 +516,13 @@ const Gallery = ({ onNavigate, scrollToSection }) => {
                 
                 // For other direct video URLs, use regular video tag
                 return (
-                  <div>
-                    <video 
-                      className="viewer-media"
-                      key={videoUrl} // Force re-render when URL changes
-                      src={videoUrl}
-                      autoPlay
-                      controls
-                      playsInline
-                      muted={false}
-                      preload="metadata"
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                        maxHeight: '80vh',
-                        borderRadius: '0.75rem'
-                      }}
-                      onError={(e) => {
-                        console.error('Video error:', e);
-                        console.error('Failed video URL:', videoUrl);
-                        
-                        // Try alternative URL formats for Cloudinary
-                        if (videoUrl && videoUrl.includes('cloudinary')) {
-                          let altUrl = videoUrl;
-                          if (!altUrl.includes('video/upload')) {
-                            altUrl = altUrl.replace('upload/', 'video/upload/');
-                          }
-                          if (!altUrl.endsWith('.mp4')) {
-                            altUrl = altUrl + '.mp4';
-                          }
-                          
-                          console.log('Trying alternative URL:', altUrl);
-                          e.target.src = altUrl;
-                          
-                          // If still fails, show error
-                          e.target.onerror = () => {
-                            e.target.style.display = 'none';
-                            const errorMsg = document.createElement('div');
-                            errorMsg.innerHTML = `
-                              <div style="color: white; text-align: center; padding: 2rem;">
-                                <p>Video cannot be played.</p>
-                                <p style="font-size: 0.8rem; margin-top: 1rem;">URL: ${videoUrl}</p>
-                                <a href="${videoUrl}" target="_blank" style="color: #60a5fa; text-decoration: underline;">
-                                  Open in new tab
-                                </a>
-                              </div>
-                            `;
-                            e.target.parentNode.appendChild(errorMsg);
-                          };
-                        } else {
-                          e.target.style.display = 'none';
-                          const errorMsg = document.createElement('div');
-                          errorMsg.innerHTML = `
-                            <div style="color: white; text-align: center; padding: 2rem;">
-                              <p>Video cannot be played. Please check the format.</p>
-                              <a href="${videoUrl}" target="_blank" style="color: #60a5fa; text-decoration: underline;">
-                                Open in new tab
-                              </a>
-                            </div>
-                          `;
-                          e.target.parentNode.appendChild(errorMsg);
-                        }
-                      }}
-                      onLoadStart={() => console.log('Video loading started...')}
-                      onCanPlay={() => console.log('Video can play')}
-                      onLoadedData={() => console.log('Video data loaded')}
-                    />
-                  </div>
+                  <video 
+                    className="viewer-media"
+                    src={videoUrl}
+                    autoPlay
+                    controls
+                    playsInline
+                  />
                 );
               })() : (
                 <img 

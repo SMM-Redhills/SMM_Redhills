@@ -30,24 +30,13 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-key-change-in-production")
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
-# SECURITY: Restrict allowed hosts in production
-if DEBUG:
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
-else:
-    ALLOWED_HOSTS = [
-        "smm-redhills-1.onrender.com",
-        "marymagdeleneredhills.in",
-        "www.marymagdeleneredhills.in",
-        "api.marymagdeleneredhills.in",
-        "galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com",
-        "harvard-oral-entirely-pound.trycloudflare.com",
-        "raise-stating-accessory-higher.trycloudflare.com",
-    ]
+# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS","*","localhost,127.0.0.1,.trycloudflare.com,galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com,harvard-oral-entirely-pound.trycloudflare.com,raise-stating-accessory-higher.trycloudflare.com").split(",")
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -63,9 +52,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'django_filters',
-    'django_ratelimit',
     'church_app',
+
 ]
 
 MIDDLEWARE = [
@@ -73,15 +61,12 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "church_app.admin_session_middleware.AdminSessionMiddleware",
-    "church_app.middleware.SecurityHeadersMiddleware",
-    "church_app.middleware.RateLimitMiddleware",
-    "church_app.middleware.RequestLoggingMiddleware",
 ]
 
 ROOT_URLCONF = "church_project.urls"
@@ -206,46 +191,20 @@ cloudinary.config(
 )
 
 
-# SECURITY: Configure CORS settings properly
-if DEBUG:
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ]
-    CORS_ALLOW_ALL_ORIGINS = False
-else:
-    CORS_ALLOWED_ORIGINS = [
-        "https://smmc.netlify.app",
-        "https://smm-redhills-1.onrender.com",
-        "https://marymagdeleneredhills.in",
-        "https://www.marymagdeleneredhills.in",
-        "https://galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com",
-        "https://harvard-oral-entirely-pound.trycloudflare.com",
-        "https://raise-stating-accessory-higher.trycloudflare.com",
-    ]
-    CORS_ALLOW_ALL_ORIGINS = False
+# CORS settings
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+#     "http://127.0.0.1:5173",
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "https://raise-stating-accessory-higher.trycloudflare.com",
+#     "https://harvard-oral-entirely-pound.trycloudflare.com",
+#     "https://smmc.netlify.app",
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
-
-# Additional CORS security settings
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
-
-CORS_EXPOSE_HEADERS = [
-    'content-type',
-    'x-csrftoken',
-]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://galaxy-miscellaneous-midnight-starsmerchant.trycloudflare.com",
@@ -265,94 +224,18 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
-# REST Framework settings with security enhancements
+# REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/hour',
-        'user': '1000/hour'
-    },
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ],
 }
-
-# SECURITY: Add security headers
-if not DEBUG:
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_REDIRECT_EXEMPT = []
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    X_FRAME_OPTIONS = 'DENY'
-
-# Cache configuration for rate limiting
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-    }
-}
-
-# For production, use Redis or Memcached
-if not DEBUG:
-    try:
-        import redis
-        CACHES = {
-            'default': {
-                'BACKEND': 'django_redis.cache.RedisCache',
-                'LOCATION': os.getenv('REDIS_URL', 'redis://localhost:6379/1'),
-                'OPTIONS': {
-                    'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-                }
-            }
-        }
-    except ImportError:
-        # Fallback to file-based cache for production
-        CACHES = {
-            'default': {
-                'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-                'LOCATION': '/tmp/django_cache',
-            }
-        }
-
-# Session Configuration - 1 hour timeout
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
-SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-
-# Admin specific session settings
-ADMIN_SESSION_TIMEOUT = 3600  # 1 hour for admin sessions
-
-# Rate limiting for specific views
-RATELIMIT_ENABLE = True
-RATELIMIT_USE_CACHE = 'default'
-
-# File upload security
-FILE_UPLOAD_HANDLERS = [
-    'django.core.files.uploadhandler.MemoryFileUploadHandler',
-    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
-]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

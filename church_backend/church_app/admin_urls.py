@@ -1,7 +1,7 @@
 # church_app/admin_urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import admin_views, session_views
+from . import admin_views
 
 router = DefaultRouter()
 # Register all admin viewsets here
@@ -19,8 +19,4 @@ urlpatterns = [
     path('', include(router.urls)),
     path('stats/', admin_views.admin_stats),
     path('mark-message-read/<int:message_id>/', admin_views.mark_message_read),
-    # Session management endpoints
-    path('session-status/', session_views.session_status),
-    path('extend-session/', session_views.extend_session),
-    path('logout/', session_views.logout_admin),
 ]
