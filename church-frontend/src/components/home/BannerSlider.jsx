@@ -6,8 +6,8 @@ const BannerSlider = () => {
   const DEFAULT_SLIDES = [
     {
       id: 1,
-      image: '/assets/images/wishes.jpg',
-      mobile_image: '/assets/images/wishes1.jpg',
+      image: '/src/assets/img/ash_1.png',
+      mobile_image: '/src/assets/img/ash.png',
     },
     {
       id: 2,
